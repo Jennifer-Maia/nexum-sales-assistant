@@ -1,0 +1,735 @@
+Company_ID,Industry,Company_Size,Annual_Revenue (M₺),Marketing_Spend (K₺),Campaign_Type,Leads_Generated,Conversion_Rate (%),Region,District,Last_Product_1,Last_Product_2,Frequency_of_Purchase,Days_Since_Last_Purchase,Contract_Status,Total_Purchases_Last_Year,Payment_Behavior,Preferred_Channel,Sales_Rep
+C0001,"Mining, metals & minerals",Medium,17.3,33,SEM,12,0.9,Adana,Ceyhan,Process safety & automation,Valves,Monthly,6,Pending,15,On-time,Sales Rep,E**** T*******
+C0002,Space,Small,4.9,12,Content Marketing,4,1.2,Sakarya,Arifiye,Energy storage systems,Actuators & motion control,Occasionally,310,Active,0,On-time,Sales Rep,D**** S*******
+C0003,Buildings,Small,1.1,11,Content Marketing,9,1.1,Ankara,Etimesgut,Lighting & controls,Conduit & cable management,Quarterly,63,Active,4,Occasional delay,Sales Rep,B**** K*******
+C0004,Oil & gas,Small,5.7,29,Trade Show,9,0.4,Eskisehir,Tepebasi,Medium-voltage power systems,Process safety & automation,Monthly,17,Active,8,On-time,Sales Rep,A**** Y*******
+C0005,Oil & gas,Small,8.3,23,Trade Show,11,0.5,Zonguldak,Kozlu,Medium-voltage power systems,Fuel systems & emissions,Quarterly,93,Active,3,On-time,Sales Rep,C**** D*******
+C0006,Data centres,Small,2.1,23,Webinar,8,0.7,Kayseri,Melikgazi,Low-voltage power systems,Energy storage systems,Quarterly,85,Active,4,On-time,Online,A**** Y*******
+C0007,Food & beverage,Medium,20.0,38,SEM,4,1.0,Kocaeli,Izmit,Pumps,Valves,Yearly,277,Active,2,On-time,Email,A**** Y*******
+C0008,Residential,Medium,44.4,30,Trade Show,2,1.2,Izmir,Cigli,Wiring devices & connectivity,Conduit & cable management,Monthly,19,Active,10,On-time,Online,A**** Y*******
+C0009,Space,Large,95.2,32,Email,12,0.8,Kocaeli,Korfez,Medium-voltage power systems,Energy storage systems,Monthly,5,Active,8,On-time,Dealer,H**** N*******
+C0010,"Mining, metals & minerals",Small,7.9,11,Content Marketing,3,1.5,Kocaeli,Izmit,"Hose, tubing, fittings",Valves,Quarterly,75,Active,3,On-time,Dealer,C**** D*******
+C0011,Data centres,Medium,42.4,18,LinkedIn Ads,9,0.7,Konya,Meram,Low-voltage power systems,Energy storage systems,Yearly,191,Active,1,On-time,Email,D**** S*******
+C0012,Aerospace,Small,9.1,28,SEM,4,0.5,Izmir,Karsiyaka,Actuators & motion control,Engine solutions,Yearly,269,Active,1,On-time,Sales Rep,F**** O*******
+C0013,Residential,Small,1.0,9,Trade Show,10,0.3,Adana,Seyhan,Conduit & cable management,Electronic components,Quarterly,62,Active,3,On-time,Dealer,F**** O*******
+C0014,Machine building,Large,128.1,34,Email,13,0.8,Istanbul,Atasehir,Actuators & motion control,Clutches and brakes,Monthly,20,Active,10,Occasional delay,Sales Rep,D**** S*******
+C0015,Healthcare,Medium,39.9,25,SEM,2,0.7,Zonguldak,Kozlu,Safety & emergency comms,Electronic components,Monthly,22,Active,8,Occasional delay,Email,F**** O*******
+C0016,Machine building,Small,3.3,12,Email,7,0.6,Zonguldak,Kozlu,Actuators & motion control,Hydraulic motors & generators,Monthly,30,Active,10,On-time,Sales Rep,G**** R*******
+C0017,Food & beverage,Small,7.3,25,Content Marketing,3,0.9,Kocaeli,Korfez,Valves,Filtration solutions,Quarterly,81,Pending,4,On-time,Sales Rep,G**** R*******
+C0018,Vehicles,Small,8.5,12,Webinar,5,0.5,Izmir,Konak,Vehicle controls & automation,Transmissions,Monthly,20,Expired,12,Occasional delay,Sales Rep,H**** N*******
+C0019,Vehicles,Medium,20.0,17,Content Marketing,6,0.3,Kocaeli,Gebze,Vehicle controls & automation,Transmissions,Quarterly,60,Active,6,On-time,Sales Rep,E**** T*******
+C0020,Vehicles,Small,2.4,8,Email,5,0.7,Antalya,Kepez,Transmissions,Engine solutions,Yearly,234,Active,1,On-time,Dealer,B**** K*******
+C0021,Healthcare,Medium,20.4,43,Trade Show,5,1.0,Ankara,Cankaya,Life support systems,Electronic components,Yearly,309,Pending,1,On-time,Dealer,A**** Y*******
+C0022,Data centres,Medium,35.0,35,Trade Show,13,0.9,Ankara,Cankaya,"Server racks, enclosures",Low-voltage power systems,Monthly,7,Active,14,On-time,Online,B**** K*******
+C0023,Data centres,Small,2.1,22,Content Marketing,10,0.6,Eskisehir,Tepebasi,"Server racks, enclosures",Energy storage systems,Yearly,341,Expired,1,On-time,Sales Rep,G**** R*******
+C0024,Healthcare,Small,7.1,23,Email,5,1.1,Konya,Meram,Safety & emergency comms,Life support systems,Monthly,23,Active,8,Late,Online,A**** Y*******
+C0025,Food & beverage,Small,6.7,16,SEM,6,1.1,Konya,Selcuklu,Pumps,Valves,Monthly,14,Active,9,On-time,Sales Rep,G**** R*******
+C0026,Utilities,Small,2.3,24,Webinar,9,1.0,Eskisehir,Tepebasi,Low-voltage power systems,Medium-voltage power systems,Yearly,271,Active,2,On-time,Email,H**** N*******
+C0027,Machine building,Medium,47.9,38,SEM,13,0.1,Eskisehir,Tepebasi,Hydraulic motors & generators,Actuators & motion control,Monthly,7,Active,12,On-time,Sales Rep,D**** S*******
+C0028,Residential,Medium,37.2,27,Email,9,1.3,Istanbul,Atasehir,Electronic components,Wiring devices & connectivity,Occasionally,223,Expired,0,On-time,Online,F**** O*******
+C0029,Vehicles,Small,6.0,29,Webinar,2,1.2,Zonguldak,Kozlu,Transmissions,Engine solutions,Yearly,223,Active,2,On-time,Sales Rep,E**** T*******
+C0030,Food & beverage,Small,4.2,20,SEM,7,1.4,Istanbul,Sariyer,Filtration solutions,Valves,Monthly,24,Active,12,On-time,Email,E**** T*******
+C0031,Data centres,Medium,34.5,43,Trade Show,6,0.8,Istanbul,Kartal,Energy storage systems,Low-voltage power systems,Occasionally,356,Active,2,On-time,Email,C**** D*******
+C0032,Aerospace,Small,4.7,12,Email,6,0.7,Antalya,Kepez,Actuators & motion control,Engine solutions,Yearly,172,Pending,1,Occasional delay,Sales Rep,E**** T*******
+C0033,Aerospace,Large,144.9,40,Content Marketing,9,0.8,Kocaeli,Izmit,Electrical circuit protection,Actuators & motion control,Yearly,199,Pending,2,Late,Sales Rep,C**** D*******
+C0034,"Mining, metals & minerals",Medium,34.8,21,Content Marketing,3,0.7,Kocaeli,Izmit,Process safety & automation,Valves,Quarterly,89,Active,5,Late,Sales Rep,F**** O*******
+C0035,Vehicles,Small,5.7,22,Email,11,0.8,Ankara,Cankaya,Vehicle controls & automation,Transmissions,Monthly,15,Active,15,On-time,Dealer,H**** N*******
+C0036,Machine building,Small,2.6,22,SEM,3,0.6,Eskisehir,Tepebasi,Hydraulic motors & generators,Actuators & motion control,Monthly,9,Active,9,On-time,Sales Rep,A**** Y*******
+C0037,Vehicles,Small,4.3,18,Email,10,0.8,Kayseri,Melikgazi,Vehicle controls & automation,Transmissions,Monthly,21,Pending,9,On-time,Dealer,D**** S*******
+C0038,Oil & gas,Small,6.6,14,Webinar,9,1.5,Izmir,Konak,Process safety & automation,Fuel systems & emissions,Quarterly,82,Pending,4,On-time,Online,F**** O*******
+C0039,Residential,Medium,17.3,40,Webinar,13,0.6,Konya,Meram,Wiring devices & connectivity,Electronic components,Monthly,13,Active,12,On-time,Online,G**** R*******
+C0040,Data centres,Small,4.0,27,SEM,7,0.4,Antalya,Muratpasa,"Server racks, enclosures",Low-voltage power systems,Monthly,26,Active,12,On-time,Sales Rep,C**** D*******
+C0041,Oil & gas,Medium,13.2,27,Webinar,3,1.1,Kocaeli,Izmit,Medium-voltage power systems,Fuel systems & emissions,Monthly,28,Active,13,Late,Dealer,H**** N*******
+C0042,Vehicles,Small,9.7,23,Content Marketing,2,0.9,Eskisehir,Odunpazari,Transmissions,Engine solutions,Monthly,9,Active,13,On-time,Dealer,A**** Y*******
+C0043,Oil & gas,Small,1.6,30,Email,6,1.5,Izmir,Cigli,Medium-voltage power systems,Process safety & automation,Monthly,9,Pending,13,On-time,Email,C**** D*******
+C0044,Vehicles,Small,9.3,23,SEM,10,0.6,Antalya,Kepez,Vehicle controls & automation,Engine solutions,Yearly,184,Active,1,On-time,Dealer,F**** O*******
+C0045,Space,Small,8.3,16,Webinar,2,0.8,Konya,Selcuklu,Energy storage systems,Medium-voltage power systems,Yearly,343,Active,2,On-time,Dealer,F**** O*******
+C0046,"Mining, metals & minerals",Medium,37.7,41,Webinar,8,1.4,Kayseri,Kocasinan,"Hose, tubing, fittings",Process safety & automation,Occasionally,276,Active,0,Occasional delay,Sales Rep,F**** O*******
+C0047,Healthcare,Medium,23.7,18,Content Marketing,9,1.5,Bursa,Osmangazi,Safety & emergency comms,Life support systems,Quarterly,90,Active,5,On-time,Sales Rep,E**** T*******
+C0048,Space,Small,3.0,16,LinkedIn Ads,9,0.9,Ankara,Cankaya,Energy storage systems,Actuators & motion control,Monthly,12,Active,11,On-time,Email,E**** T*******
+C0049,Space,Medium,25.0,17,Email,7,0.6,Bursa,Nilufer,Actuators & motion control,Energy storage systems,Yearly,150,Active,1,On-time,Dealer,G**** R*******
+C0050,Residential,Small,8.1,20,LinkedIn Ads,12,0.6,Kocaeli,Izmit,Conduit & cable management,Electronic components,Quarterly,86,Expired,4,On-time,Sales Rep,C**** D*******
+C0051,Oil & gas,Small,2.5,6,SEM,7,0.6,Istanbul,Sariyer,Medium-voltage power systems,Process safety & automation,Occasionally,356,Pending,1,On-time,Sales Rep,G**** R*******
+C0052,"Mining, metals & minerals",Small,8.2,14,Trade Show,9,0.6,Izmir,Cigli,Process safety & automation,"Hose, tubing, fittings",Monthly,23,Active,14,On-time,Dealer,F**** O*******
+C0053,Food & beverage,Small,8.8,29,Webinar,3,0.7,Sakarya,Serdivan,Pumps,Filtration solutions,Quarterly,88,Active,6,On-time,Sales Rep,C**** D*******
+C0054,Oil & gas,Small,8.2,9,LinkedIn Ads,4,0.8,Adana,Seyhan,Medium-voltage power systems,Fuel systems & emissions,Quarterly,75,Expired,6,On-time,Sales Rep,G**** R*******
+C0055,Space,Small,2.9,6,Content Marketing,3,0.4,Ankara,Yenimahalle,Energy storage systems,Actuators & motion control,Quarterly,71,Active,6,On-time,Dealer,B**** K*******
+C0056,Data centres,Large,166.9,37,Webinar,8,0.5,Istanbul,Kartal,Low-voltage power systems,"Server racks, enclosures",Monthly,18,Active,8,On-time,Sales Rep,F**** O*******
+C0057,Food & beverage,Small,9.1,22,Trade Show,11,0.2,Istanbul,Atasehir,Valves,Filtration solutions,Quarterly,71,Active,5,On-time,Sales Rep,G**** R*******
+C0058,Oil & gas,Small,6.7,17,Trade Show,11,1.0,Ankara,Mamak,Fuel systems & emissions,Process safety & automation,Occasionally,372,Active,2,Occasional delay,Sales Rep,C**** D*******
+C0059,Food & beverage,Medium,21.9,29,Webinar,7,0.5,Bursa,Yildirim,Valves,Pumps,Monthly,7,Active,11,On-time,Dealer,B**** K*******
+C0060,Buildings,Small,1.7,23,LinkedIn Ads,10,1.0,Zonguldak,Kozlu,Wiring devices & connectivity,Lighting & controls,Yearly,257,Expired,2,On-time,Sales Rep,E**** T*******
+C0061,Aerospace,Small,9.6,16,SEM,9,1.2,Antalya,Kepez,Actuators & motion control,Electrical circuit protection,Quarterly,67,Expired,3,On-time,Dealer,A**** Y*******
+C0062,Space,Small,10.0,19,Trade Show,8,1.0,Konya,Selcuklu,Energy storage systems,Medium-voltage power systems,Yearly,208,Pending,1,Occasional delay,Sales Rep,C**** D*******
+C0063,Space,Small,6.9,14,SEM,6,0.0,Zonguldak,Eregli,Medium-voltage power systems,Energy storage systems,Quarterly,63,Active,3,Occasional delay,Dealer,E**** T*******
+C0064,Buildings,Small,8.8,6,SEM,8,1.3,Bursa,Osmangazi,Lighting & controls,Conduit & cable management,Yearly,211,Active,1,On-time,Sales Rep,A**** Y*******
+C0065,Residential,Small,5.7,23,Webinar,3,0.4,Konya,Meram,Conduit & cable management,Electronic components,Monthly,18,Active,14,On-time,Dealer,D**** S*******
+C0066,Healthcare,Medium,13.6,41,SEM,3,0.5,Konya,Selcuklu,Safety & emergency comms,Life support systems,Occasionally,238,Active,0,On-time,Dealer,B**** K*******
+C0067,Residential,Small,2.7,24,Email,10,0.7,Ankara,Etimesgut,Electronic components,Wiring devices & connectivity,Quarterly,83,Pending,5,On-time,Sales Rep,G**** R*******
+C0068,Food & beverage,Small,1.8,27,Email,4,0.4,Konya,Meram,Filtration solutions,Pumps,Yearly,158,Active,1,On-time,Sales Rep,H**** N*******
+C0069,Oil & gas,Small,1.4,18,Content Marketing,6,0.8,Izmir,Cigli,Process safety & automation,Medium-voltage power systems,Quarterly,93,Active,6,On-time,Online,C**** D*******
+C0070,Utilities,Small,4.0,11,SEM,7,1.2,Sakarya,Arifiye,Low-voltage power systems,Utility & grid solutions,Yearly,194,Active,2,Occasional delay,Sales Rep,H**** N*******
+C0071,"Mining, metals & minerals",Small,8.4,26,Trade Show,12,0.8,Ankara,Mamak,Process safety & automation,"Hose, tubing, fittings",Monthly,17,Active,10,On-time,Sales Rep,A**** Y*******
+C0072,Vehicles,Small,9.4,8,LinkedIn Ads,5,0.8,Kayseri,Kocasinan,Transmissions,Engine solutions,Quarterly,81,Active,3,On-time,Dealer,C**** D*******
+C0073,Vehicles,Medium,15.2,16,Webinar,4,0.8,Bursa,Osmangazi,Engine solutions,Transmissions,Monthly,13,Active,14,Occasional delay,Sales Rep,H**** N*******
+C0074,Food & beverage,Small,3.5,29,Trade Show,6,0.4,Kayseri,Kocasinan,Valves,Filtration solutions,Monthly,29,Expired,12,On-time,Online,G**** R*******
+C0075,Data centres,Small,6.9,14,Content Marketing,10,0.9,Kayseri,Kocasinan,"Server racks, enclosures",Energy storage systems,Quarterly,66,Pending,5,On-time,Email,B**** K*******
+C0076,Residential,Small,6.4,20,Email,7,1.0,Kocaeli,Gebze,Conduit & cable management,Wiring devices & connectivity,Monthly,28,Active,15,On-time,Sales Rep,B**** K*******
+C0077,Buildings,Small,6.4,12,Webinar,10,0.8,Adana,Ceyhan,Conduit & cable management,Wiring devices & connectivity,Monthly,29,Active,13,On-time,Dealer,D**** S*******
+C0078,Oil & gas,Small,3.9,18,Email,5,0.6,Eskisehir,Odunpazari,Fuel systems & emissions,Process safety & automation,Monthly,10,Active,14,On-time,Online,B**** K*******
+C0079,Aerospace,Large,77.4,40,Email,3,1.2,Kayseri,Melikgazi,Electrical circuit protection,Engine solutions,Monthly,24,Active,15,Occasional delay,Dealer,C**** D*******
+C0080,Vehicles,Medium,13.3,22,Trade Show,4,1.0,Eskisehir,Tepebasi,Transmissions,Engine solutions,Occasionally,352,Pending,0,On-time,Dealer,B**** K*******
+C0081,Data centres,Small,10.0,29,SEM,7,1.2,Eskisehir,Tepebasi,Energy storage systems,Low-voltage power systems,Yearly,186,Pending,2,Occasional delay,Dealer,B**** K*******
+C0082,Residential,Small,7.5,17,Webinar,8,0.8,Eskisehir,Tepebasi,Conduit & cable management,Wiring devices & connectivity,Quarterly,71,Active,5,On-time,Online,C**** D*******
+C0083,Food & beverage,Medium,17.2,44,Trade Show,7,0.2,Sakarya,Arifiye,Valves,Filtration solutions,Quarterly,84,Active,6,On-time,Sales Rep,A**** Y*******
+C0084,Healthcare,Small,6.3,20,SEM,11,0.8,Izmir,Cigli,Safety & emergency comms,Life support systems,Monthly,14,Active,12,Occasional delay,Sales Rep,D**** S*******
+C0085,Aerospace,Small,4.2,14,Content Marketing,6,1.0,Adana,Seyhan,Electrical circuit protection,Engine solutions,Yearly,283,Active,2,On-time,Email,A**** Y*******
+C0086,Food & beverage,Small,6.8,11,Email,2,1.1,Izmir,Cigli,Valves,Filtration solutions,Quarterly,79,Active,3,On-time,Sales Rep,A**** Y*******
+C0087,Residential,Small,3.3,18,Webinar,5,0.5,Zonguldak,Eregli,Conduit & cable management,Electronic components,Occasionally,308,Active,2,On-time,Online,F**** O*******
+C0088,Aerospace,Medium,47.8,30,Email,13,1.0,Kayseri,Kocasinan,Electrical circuit protection,Actuators & motion control,Yearly,345,Active,1,Late,Online,H**** N*******
+C0089,Space,Small,2.4,20,Email,10,0.7,Kayseri,Kocasinan,Actuators & motion control,Medium-voltage power systems,Quarterly,63,Active,4,Late,Online,G**** R*******
+C0090,Utilities,Small,3.7,21,LinkedIn Ads,8,0.6,Antalya,Konyaalti,Low-voltage power systems,Utility & grid solutions,Monthly,29,Active,8,On-time,Sales Rep,B**** K*******
+C0091,Oil & gas,Small,6.6,17,LinkedIn Ads,7,0.2,Bursa,Yildirim,Process safety & automation,Fuel systems & emissions,Monthly,27,Pending,13,Occasional delay,Dealer,E**** T*******
+C0092,"Mining, metals & minerals",Medium,12.9,35,Content Marketing,6,0.9,Kocaeli,Korfez,"Hose, tubing, fittings",Valves,Monthly,8,Active,15,On-time,Email,D**** S*******
+C0093,Space,Small,7.4,12,SEM,8,0.5,Zonguldak,Kozlu,Energy storage systems,Medium-voltage power systems,Monthly,14,Active,12,Late,Dealer,G**** R*******
+C0094,Vehicles,Small,6.7,29,Webinar,10,1.0,Eskisehir,Tepebasi,Engine solutions,Transmissions,Quarterly,83,Active,4,Late,Online,A**** Y*******
+C0095,Healthcare,Small,7.6,26,SEM,5,0.7,Antalya,Konyaalti,Life support systems,Safety & emergency comms,Monthly,16,Active,9,On-time,Sales Rep,E**** T*******
+C0096,Vehicles,Small,6.7,11,Email,3,0.4,Izmir,Konak,Engine solutions,Transmissions,Quarterly,62,Active,4,Occasional delay,Dealer,G**** R*******
+C0097,Food & beverage,Medium,33.1,17,Email,5,0.6,Kayseri,Kocasinan,Valves,Pumps,Monthly,8,Active,12,On-time,Online,C**** D*******
+C0098,Machine building,Small,7.1,11,LinkedIn Ads,8,0.4,Sakarya,Serdivan,Hydraulic motors & generators,Actuators & motion control,Monthly,7,Active,9,On-time,Dealer,B**** K*******
+C0099,Residential,Small,4.7,16,Content Marketing,9,0.6,Adana,Seyhan,Conduit & cable management,Electronic components,Occasionally,427,Pending,0,On-time,Dealer,B**** K*******
+C0100,Aerospace,Small,5.6,9,LinkedIn Ads,3,0.3,Konya,Selcuklu,Actuators & motion control,Engine solutions,Monthly,29,Active,8,Occasional delay,Sales Rep,B**** K*******
+C0101,Machine building,Medium,29.9,41,Email,11,1.5,Adana,Seyhan,Clutches and brakes,Hydraulic motors & generators,Yearly,283,Pending,1,On-time,Sales Rep,E**** T*******
+C0102,Utilities,Small,4.1,29,Email,7,1.0,Istanbul,Beylikduzu,Medium-voltage power systems,Low-voltage power systems,Quarterly,60,Pending,4,Occasional delay,Sales Rep,C**** D*******
+C0103,Residential,Small,2.1,17,Trade Show,5,0.5,Kocaeli,Gebze,Wiring devices & connectivity,Conduit & cable management,Monthly,6,Active,11,On-time,Dealer,B**** K*******
+C0104,Buildings,Small,7.8,20,Email,4,0.7,Antalya,Muratpasa,Wiring devices & connectivity,Conduit & cable management,Yearly,264,Active,1,On-time,Dealer,G**** R*******
+C0105,"Mining, metals & minerals",Small,2.6,21,Trade Show,5,1.4,Izmir,Konak,"Hose, tubing, fittings",Process safety & automation,Quarterly,81,Active,4,On-time,Email,G**** R*******
+C0106,Utilities,Small,8.1,20,Trade Show,2,0.4,Antalya,Kepez,Medium-voltage power systems,Low-voltage power systems,Monthly,25,Pending,12,Late,Dealer,C**** D*******
+C0107,Utilities,Small,8.6,7,Content Marketing,3,0.0,Bursa,Osmangazi,Low-voltage power systems,Medium-voltage power systems,Quarterly,80,Pending,4,Late,Online,A**** Y*******
+C0108,Buildings,Small,3.3,26,Trade Show,12,0.6,Zonguldak,Eregli,Wiring devices & connectivity,Lighting & controls,Monthly,26,Active,15,Occasional delay,Dealer,E**** T*******
+C0109,Vehicles,Small,7.1,6,Trade Show,4,0.3,Kayseri,Kocasinan,Transmissions,Engine solutions,Yearly,284,Active,1,On-time,Sales Rep,F**** O*******
+C0110,Oil & gas,Small,1.2,7,Email,10,0.5,Ankara,Yenimahalle,Fuel systems & emissions,Process safety & automation,Monthly,21,Active,11,Occasional delay,Dealer,B**** K*******
+C0111,Buildings,Small,2.1,17,Content Marketing,3,0.7,Adana,Seyhan,Lighting & controls,Conduit & cable management,Monthly,29,Active,15,On-time,Dealer,F**** O*******
+C0112,Healthcare,Small,5.5,5,Webinar,8,0.5,Zonguldak,Kozlu,Electronic components,Safety & emergency comms,Monthly,19,Active,9,On-time,Email,F**** O*******
+C0113,"Mining, metals & minerals",Small,2.6,19,Trade Show,3,0.9,Bursa,Yildirim,"Hose, tubing, fittings",Valves,Occasionally,267,Active,0,Occasional delay,Online,C**** D*******
+C0114,Data centres,Small,1.8,19,LinkedIn Ads,11,0.6,Adana,Ceyhan,Energy storage systems,"Server racks, enclosures",Quarterly,62,Active,3,On-time,Online,B**** K*******
+C0115,Space,Medium,42.6,36,Email,5,1.2,Eskisehir,Odunpazari,Actuators & motion control,Medium-voltage power systems,Yearly,355,Pending,2,Occasional delay,Dealer,H**** N*******
+C0116,"Mining, metals & minerals",Small,5.5,8,LinkedIn Ads,9,0.8,Kocaeli,Korfez,Valves,Process safety & automation,Monthly,10,Active,12,On-time,Sales Rep,F**** O*******
+C0117,Food & beverage,Small,8.9,18,LinkedIn Ads,8,0.7,Adana,Seyhan,Filtration solutions,Valves,Quarterly,78,Active,5,On-time,Dealer,C**** D*******
+C0118,Vehicles,Medium,38.3,31,Content Marketing,8,0.8,Istanbul,Sariyer,Engine solutions,Transmissions,Monthly,24,Active,8,Occasional delay,Email,D**** S*******
+C0119,Aerospace,Small,6.7,25,Webinar,12,0.9,Eskisehir,Odunpazari,Electrical circuit protection,Actuators & motion control,Monthly,15,Active,8,On-time,Dealer,C**** D*******
+C0120,Healthcare,Small,8.7,11,Content Marketing,2,0.3,Antalya,Kepez,Electronic components,Life support systems,Yearly,249,Active,2,On-time,Email,C**** D*******
+C0121,Residential,Small,1.5,11,Content Marketing,9,0.7,Adana,Seyhan,Wiring devices & connectivity,Conduit & cable management,Monthly,26,Active,11,On-time,Online,B**** K*******
+C0122,Space,Medium,20.7,41,LinkedIn Ads,11,0.8,Kayseri,Melikgazi,Medium-voltage power systems,Actuators & motion control,Monthly,22,Pending,8,On-time,Sales Rep,H**** N*******
+C0123,Oil & gas,Small,9.4,6,Email,6,0.4,Adana,Ceyhan,Medium-voltage power systems,Process safety & automation,Quarterly,84,Active,3,On-time,Sales Rep,B**** K*******
+C0124,Space,Small,7.2,19,Content Marketing,11,1.0,Kayseri,Melikgazi,Actuators & motion control,Energy storage systems,Yearly,326,Active,1,On-time,Online,B**** K*******
+C0125,Buildings,Small,2.9,7,Webinar,9,0.7,Kayseri,Kocasinan,Lighting & controls,Wiring devices & connectivity,Occasionally,422,Active,2,On-time,Online,B**** K*******
+C0126,Food & beverage,Small,2.8,27,SEM,10,0.9,Adana,Seyhan,Valves,Pumps,Yearly,262,Active,1,On-time,Sales Rep,D**** S*******
+C0127,Food & beverage,Medium,24.9,27,Trade Show,4,0.6,Adana,Seyhan,Filtration solutions,Valves,Monthly,13,Active,11,On-time,Dealer,G**** R*******
+C0128,Buildings,Small,7.3,25,SEM,12,0.6,Ankara,Yenimahalle,Wiring devices & connectivity,Lighting & controls,Occasionally,399,Active,0,On-time,Online,H**** N*******
+C0129,Food & beverage,Medium,48.7,19,Email,8,0.9,Ankara,Mamak,Valves,Pumps,Occasionally,402,Active,2,On-time,Dealer,A**** Y*******
+C0130,Buildings,Small,4.4,29,Webinar,3,0.6,Kocaeli,Korfez,Lighting & controls,Conduit & cable management,Yearly,270,Expired,1,On-time,Sales Rep,H**** N*******
+C0131,Data centres,Medium,31.0,18,Email,6,1.1,Izmir,Konak,"Server racks, enclosures",Energy storage systems,Monthly,15,Active,8,On-time,Online,D**** S*******
+C0132,Utilities,Small,2.1,22,Content Marketing,8,0.7,Kocaeli,Gebze,Low-voltage power systems,Medium-voltage power systems,Quarterly,60,Active,6,On-time,Sales Rep,B**** K*******
+C0133,Machine building,Small,1.6,24,Content Marketing,2,1.1,Ankara,Yenimahalle,Actuators & motion control,Hydraulic motors & generators,Yearly,300,Active,1,On-time,Dealer,D**** S*******
+C0134,Data centres,Small,8.2,17,Webinar,11,1.0,Kocaeli,Korfez,Energy storage systems,Low-voltage power systems,Monthly,29,Expired,10,Occasional delay,Dealer,D**** S*******
+C0135,Residential,Small,8.5,12,Webinar,6,0.5,Konya,Meram,Wiring devices & connectivity,Electronic components,Quarterly,84,Active,4,On-time,Sales Rep,F**** O*******
+C0136,Utilities,Medium,44.1,33,Trade Show,2,0.8,Sakarya,Arifiye,Utility & grid solutions,Low-voltage power systems,Monthly,18,Active,9,On-time,Sales Rep,E**** T*******
+C0137,Aerospace,Medium,31.0,41,Email,9,0.0,Sakarya,Serdivan,Engine solutions,Electrical circuit protection,Quarterly,74,Active,3,On-time,Sales Rep,E**** T*******
+C0138,Food & beverage,Medium,35.6,19,Content Marketing,4,1.0,Kocaeli,Izmit,Valves,Filtration solutions,Monthly,27,Active,8,On-time,Sales Rep,A**** Y*******
+C0139,Vehicles,Small,9.2,11,Trade Show,2,0.6,Bursa,Osmangazi,Engine solutions,Vehicle controls & automation,Quarterly,67,Pending,5,On-time,Dealer,E**** T*******
+C0140,Space,Small,9.4,15,Trade Show,4,1.5,Kayseri,Melikgazi,Actuators & motion control,Energy storage systems,Quarterly,72,Pending,6,Late,Sales Rep,F**** O*******
+C0141,Oil & gas,Small,4.7,28,Email,11,0.9,Ankara,Etimesgut,Process safety & automation,Medium-voltage power systems,Monthly,5,Active,14,On-time,Dealer,H**** N*******
+C0142,Vehicles,Small,4.2,29,LinkedIn Ads,4,0.6,Kayseri,Melikgazi,Engine solutions,Transmissions,Monthly,22,Expired,10,On-time,Online,D**** S*******
+C0143,Healthcare,Medium,12.7,19,Webinar,4,0.5,Eskisehir,Tepebasi,Electronic components,Life support systems,Monthly,21,Active,14,Occasional delay,Dealer,D**** S*******
+C0144,Utilities,Small,7.1,12,Content Marketing,3,0.8,Izmir,Konak,Low-voltage power systems,Utility & grid solutions,Yearly,228,Active,1,On-time,Dealer,B**** K*******
+C0145,Machine building,Medium,37.5,20,Content Marketing,6,0.7,Bursa,Yildirim,Hydraulic motors & generators,Actuators & motion control,Monthly,22,Active,11,On-time,Online,C**** D*******
+C0146,Machine building,Medium,31.2,32,Content Marketing,2,1.1,Ankara,Cankaya,Actuators & motion control,Clutches and brakes,Monthly,28,Active,10,On-time,Sales Rep,F**** O*******
+C0147,Utilities,Small,1.2,24,Trade Show,11,1.0,Bursa,Nilufer,Utility & grid solutions,Medium-voltage power systems,Yearly,262,Active,1,Late,Sales Rep,E**** T*******
+C0148,Healthcare,Small,6.0,19,SEM,4,0.7,Eskisehir,Odunpazari,Life support systems,Safety & emergency comms,Monthly,23,Active,9,On-time,Sales Rep,D**** S*******
+C0149,Food & beverage,Small,6.2,8,SEM,5,0.9,Konya,Meram,Filtration solutions,Pumps,Quarterly,80,Active,6,On-time,Dealer,C**** D*******
+C0150,Utilities,Medium,38.9,41,SEM,8,1.1,Sakarya,Arifiye,Utility & grid solutions,Medium-voltage power systems,Yearly,169,Pending,1,Late,Sales Rep,C**** D*******
+C0151,Vehicles,Small,8.8,20,Email,9,1.5,Konya,Selcuklu,Vehicle controls & automation,Transmissions,Quarterly,73,Active,5,Occasional delay,Online,D**** S*******
+C0152,Data centres,Small,2.0,26,SEM,7,0.4,Izmir,Konak,Low-voltage power systems,Energy storage systems,Monthly,19,Active,13,Occasional delay,Online,F**** O*******
+C0153,Utilities,Medium,31.1,34,Email,9,0.9,Izmir,Konak,Low-voltage power systems,Medium-voltage power systems,Monthly,30,Active,8,On-time,Sales Rep,D**** S*******
+C0154,Aerospace,Small,1.1,28,Email,5,1.4,Izmir,Cigli,Actuators & motion control,Engine solutions,Monthly,27,Pending,8,On-time,Dealer,G**** R*******
+C0155,Data centres,Small,6.7,19,SEM,12,0.9,Istanbul,Kartal,"Server racks, enclosures",Energy storage systems,Yearly,293,Active,2,On-time,Sales Rep,G**** R*******
+C0156,Buildings,Small,8.2,28,Trade Show,8,1.1,Antalya,Konyaalti,Conduit & cable management,Wiring devices & connectivity,Monthly,13,Expired,13,On-time,Sales Rep,A**** Y*******
+C0157,Aerospace,Medium,44.7,40,Content Marketing,3,1.1,Bursa,Osmangazi,Electrical circuit protection,Engine solutions,Yearly,171,Active,2,On-time,Online,B**** K*******
+C0158,Buildings,Small,6.7,6,Email,11,0.5,Eskisehir,Odunpazari,Conduit & cable management,Wiring devices & connectivity,Monthly,10,Active,8,Occasional delay,Sales Rep,E**** T*******
+C0159,Vehicles,Small,4.2,12,Content Marketing,3,0.7,Istanbul,Beylikduzu,Transmissions,Vehicle controls & automation,Quarterly,76,Active,4,On-time,Email,A**** Y*******
+C0160,"Mining, metals & minerals",Small,8.9,10,Content Marketing,10,1.1,Konya,Selcuklu,Valves,Process safety & automation,Quarterly,78,Expired,6,On-time,Dealer,G**** R*******
+C0161,Buildings,Small,7.9,5,Trade Show,5,0.7,Konya,Meram,Lighting & controls,Wiring devices & connectivity,Quarterly,81,Pending,3,Occasional delay,Sales Rep,A**** Y*******
+C0162,Buildings,Medium,49.0,35,Email,5,1.0,Antalya,Konyaalti,Lighting & controls,Conduit & cable management,Monthly,29,Active,8,On-time,Sales Rep,E**** T*******
+C0163,Healthcare,Medium,43.5,43,SEM,7,1.5,Adana,Ceyhan,Life support systems,Safety & emergency comms,Quarterly,95,Active,4,On-time,Sales Rep,D**** S*******
+C0164,Oil & gas,Small,8.7,19,Email,3,1.1,Antalya,Kepez,Fuel systems & emissions,Medium-voltage power systems,Quarterly,91,Active,3,Occasional delay,Sales Rep,A**** Y*******
+C0165,Utilities,Small,5.9,27,Email,8,0.7,Kocaeli,Korfez,Utility & grid solutions,Low-voltage power systems,Monthly,7,Active,12,On-time,Dealer,G**** R*******
+C0166,Space,Small,9.9,11,SEM,7,1.3,Konya,Selcuklu,Actuators & motion control,Medium-voltage power systems,Monthly,16,Active,14,On-time,Online,E**** T*******
+C0167,Healthcare,Small,9.2,9,Content Marketing,7,0.7,Konya,Meram,Electronic components,Life support systems,Monthly,21,Active,9,On-time,Sales Rep,F**** O*******
+C0168,Machine building,Small,3.2,18,Webinar,7,0.2,Ankara,Etimesgut,Hydraulic motors & generators,Actuators & motion control,Quarterly,72,Active,5,On-time,Sales Rep,D**** S*******
+C0169,Vehicles,Medium,49.2,41,Webinar,10,0.8,Kayseri,Melikgazi,Vehicle controls & automation,Transmissions,Quarterly,78,Active,5,On-time,Email,D**** S*******
+C0170,Utilities,Small,7.3,15,Trade Show,11,0.9,Adana,Seyhan,Medium-voltage power systems,Utility & grid solutions,Quarterly,89,Active,3,Occasional delay,Email,B**** K*******
+C0171,Machine building,Small,8.5,25,SEM,6,0.6,Ankara,Yenimahalle,Actuators & motion control,Hydraulic motors & generators,Quarterly,86,Active,4,On-time,Dealer,E**** T*******
+C0172,Food & beverage,Small,4.6,28,Trade Show,8,0.4,Istanbul,Umraniye,Valves,Pumps,Monthly,25,Expired,13,Late,Dealer,F**** O*******
+C0173,Food & beverage,Small,6.2,15,LinkedIn Ads,5,0.8,Kayseri,Melikgazi,Valves,Pumps,Monthly,30,Active,8,Occasional delay,Sales Rep,E**** T*******
+C0174,Utilities,Small,4.8,13,LinkedIn Ads,9,0.5,Antalya,Muratpasa,Medium-voltage power systems,Low-voltage power systems,Yearly,172,Pending,2,On-time,Sales Rep,H**** N*******
+C0175,Data centres,Small,1.3,21,SEM,6,0.5,Kayseri,Kocasinan,Energy storage systems,Low-voltage power systems,Monthly,8,Pending,9,On-time,Online,B**** K*******
+C0176,"Mining, metals & minerals",Small,3.6,28,Email,10,0.8,Konya,Meram,"Hose, tubing, fittings",Valves,Quarterly,69,Active,6,On-time,Sales Rep,C**** D*******
+C0177,Food & beverage,Large,91.4,46,LinkedIn Ads,3,0.5,Konya,Meram,Valves,Pumps,Monthly,19,Active,13,On-time,Online,F**** O*******
+C0178,Aerospace,Small,4.7,24,Webinar,10,0.5,Istanbul,Umraniye,Electrical circuit protection,Actuators & motion control,Quarterly,81,Active,3,Late,Dealer,C**** D*******
+C0179,Machine building,Medium,38.3,44,LinkedIn Ads,9,0.7,Eskisehir,Tepebasi,Clutches and brakes,Actuators & motion control,Yearly,206,Active,1,On-time,Sales Rep,F**** O*******
+C0180,Food & beverage,Small,2.1,24,Email,2,0.9,Izmir,Cigli,Valves,Filtration solutions,Monthly,8,Active,9,Occasional delay,Sales Rep,F**** O*******
+C0181,Buildings,Small,3.1,23,Email,9,0.8,Kayseri,Kocasinan,Lighting & controls,Wiring devices & connectivity,Yearly,162,Pending,2,On-time,Sales Rep,C**** D*******
+C0182,Residential,Small,3.8,12,Trade Show,9,0.6,Zonguldak,Eregli,Electronic components,Wiring devices & connectivity,Quarterly,62,Pending,4,Late,Sales Rep,H**** N*******
+C0183,Vehicles,Small,3.8,14,Email,6,0.6,Izmir,Cigli,Vehicle controls & automation,Transmissions,Monthly,6,Active,13,Late,Dealer,F**** O*******
+C0184,"Mining, metals & minerals",Small,4.8,24,LinkedIn Ads,11,0.2,Konya,Selcuklu,Process safety & automation,Valves,Monthly,14,Active,8,On-time,Email,A**** Y*******
+C0185,Space,Small,2.8,18,LinkedIn Ads,10,1.1,Adana,Seyhan,Actuators & motion control,Medium-voltage power systems,Quarterly,85,Active,5,On-time,Email,D**** S*******
+C0186,Machine building,Small,5.1,7,Webinar,4,1.3,Kocaeli,Korfez,Actuators & motion control,Clutches and brakes,Quarterly,68,Active,3,On-time,Dealer,C**** D*******
+C0187,Food & beverage,Large,74.8,43,Trade Show,12,1.0,Konya,Selcuklu,Pumps,Valves,Quarterly,63,Active,5,On-time,Email,D**** S*******
+C0188,Space,Medium,18.6,30,LinkedIn Ads,4,1.3,Bursa,Yildirim,Energy storage systems,Medium-voltage power systems,Monthly,29,Pending,11,Occasional delay,Dealer,C**** D*******
+C0189,Oil & gas,Small,5.9,22,Email,6,0.9,Istanbul,Sariyer,Medium-voltage power systems,Fuel systems & emissions,Monthly,15,Expired,15,On-time,Sales Rep,F**** O*******
+C0190,Utilities,Small,4.3,13,Content Marketing,9,1.0,Izmir,Cigli,Medium-voltage power systems,Utility & grid solutions,Quarterly,86,Active,4,Occasional delay,Sales Rep,E**** T*******
+C0191,Residential,Small,8.8,28,SEM,6,1.1,Kayseri,Kocasinan,Wiring devices & connectivity,Conduit & cable management,Yearly,317,Active,2,On-time,Online,B**** K*******
+C0192,Machine building,Medium,34.0,33,SEM,7,0.7,Adana,Seyhan,Actuators & motion control,Clutches and brakes,Monthly,5,Pending,14,On-time,Sales Rep,F**** O*******
+C0193,Healthcare,Medium,47.7,37,SEM,4,0.8,Eskisehir,Tepebasi,Electronic components,Life support systems,Monthly,30,Pending,11,Occasional delay,Sales Rep,G**** R*******
+C0194,Space,Small,3.4,11,Webinar,4,1.1,Izmir,Konak,Energy storage systems,Medium-voltage power systems,Monthly,26,Active,12,Occasional delay,Online,C**** D*******
+C0195,Machine building,Small,5.1,15,Trade Show,2,1.0,Antalya,Kepez,Actuators & motion control,Clutches and brakes,Yearly,243,Active,2,On-time,Sales Rep,H**** N*******
+C0196,Space,Small,1.9,11,Webinar,8,0.9,Zonguldak,Kozlu,Actuators & motion control,Energy storage systems,Monthly,23,Active,13,Late,Dealer,E**** T*******
+C0197,Aerospace,Small,5.9,22,LinkedIn Ads,3,1.2,Ankara,Cankaya,Actuators & motion control,Engine solutions,Quarterly,72,Active,6,On-time,Sales Rep,H**** N*******
+C0198,"Mining, metals & minerals",Small,7.9,22,Email,2,0.7,Istanbul,Umraniye,Process safety & automation,Valves,Monthly,7,Pending,14,On-time,Online,H**** N*******
+C0199,Vehicles,Small,7.8,17,Content Marketing,4,0.9,Izmir,Konak,Engine solutions,Transmissions,Yearly,322,Active,1,On-time,Sales Rep,H**** N*******
+C0200,Buildings,Small,8.9,15,Content Marketing,5,0.2,Konya,Selcuklu,Conduit & cable management,Lighting & controls,Monthly,6,Pending,12,On-time,Email,C**** D*******
+C0201,Data centres,Small,4.2,14,SEM,5,0.8,Kayseri,Kocasinan,Low-voltage power systems,Energy storage systems,Monthly,21,Active,8,Occasional delay,Online,G**** R*******
+C0202,Oil & gas,Small,5.9,18,Content Marketing,2,0.7,Izmir,Bornova,Medium-voltage power systems,Process safety & automation,Monthly,16,Active,12,On-time,Sales Rep,F**** O*******
+C0203,Aerospace,Small,6.4,16,Trade Show,7,0.5,Kayseri,Kocasinan,Engine solutions,Actuators & motion control,Monthly,12,Active,10,On-time,Online,F**** O*******
+C0204,Utilities,Small,1.7,22,LinkedIn Ads,2,1.2,Kocaeli,Gebze,Medium-voltage power systems,Low-voltage power systems,Monthly,10,Active,10,On-time,Sales Rep,D**** S*******
+C0205,Utilities,Small,3.4,22,Webinar,9,0.9,Sakarya,Arifiye,Low-voltage power systems,Utility & grid solutions,Quarterly,60,Active,3,On-time,Online,C**** D*******
+C0206,Vehicles,Small,7.0,13,Trade Show,8,0.6,Adana,Ceyhan,Transmissions,Vehicle controls & automation,Yearly,151,Active,2,On-time,Sales Rep,H**** N*******
+C0207,Vehicles,Small,7.7,25,SEM,2,0.7,Sakarya,Serdivan,Vehicle controls & automation,Transmissions,Monthly,26,Active,13,Late,Online,D**** S*******
+C0208,Utilities,Small,9.4,15,Content Marketing,4,1.2,Kayseri,Kocasinan,Utility & grid solutions,Low-voltage power systems,Quarterly,84,Active,6,Occasional delay,Sales Rep,B**** K*******
+C0209,Healthcare,Small,5.2,16,LinkedIn Ads,5,0.8,Kayseri,Melikgazi,Life support systems,Safety & emergency comms,Quarterly,77,Expired,6,On-time,Dealer,A**** Y*******
+C0210,Residential,Small,3.5,9,Content Marketing,7,1.1,Kocaeli,Izmit,Electronic components,Conduit & cable management,Quarterly,88,Active,4,On-time,Online,G**** R*******
+C0211,Vehicles,Small,7.2,28,Trade Show,3,0.2,Bursa,Nilufer,Transmissions,Engine solutions,Quarterly,67,Active,6,On-time,Sales Rep,H**** N*******
+C0212,Aerospace,Small,8.9,27,Trade Show,12,1.0,Adana,Seyhan,Actuators & motion control,Engine solutions,Monthly,27,Pending,15,On-time,Sales Rep,E**** T*******
+C0213,"Mining, metals & minerals",Small,9.5,24,Trade Show,8,1.4,Eskisehir,Odunpazari,"Hose, tubing, fittings",Process safety & automation,Monthly,18,Pending,10,On-time,Sales Rep,C**** D*******
+C0214,Oil & gas,Small,2.5,9,Content Marketing,9,0.4,Zonguldak,Eregli,Process safety & automation,Medium-voltage power systems,Monthly,12,Active,12,On-time,Sales Rep,A**** Y*******
+C0215,Food & beverage,Small,8.3,9,Webinar,3,1.0,Antalya,Kepez,Pumps,Valves,Yearly,277,Active,2,On-time,Sales Rep,G**** R*******
+C0216,"Mining, metals & minerals",Large,115.4,34,Webinar,10,1.1,Ankara,Yenimahalle,Process safety & automation,Valves,Occasionally,285,Active,2,On-time,Dealer,H**** N*******
+C0217,Food & beverage,Small,5.7,17,Webinar,4,0.5,Ankara,Mamak,Pumps,Valves,Monthly,8,Pending,10,On-time,Sales Rep,A**** Y*******
+C0218,Machine building,Small,6.2,17,Email,12,0.9,Kocaeli,Korfez,Clutches and brakes,Actuators & motion control,Quarterly,87,Active,3,On-time,Sales Rep,B**** K*******
+C0219,Machine building,Large,140.0,45,SEM,12,1.2,Antalya,Kepez,Clutches and brakes,Actuators & motion control,Occasionally,306,Active,0,On-time,Dealer,G**** R*******
+C0220,Space,Medium,35.1,20,Trade Show,2,0.5,Adana,Seyhan,Actuators & motion control,Energy storage systems,Monthly,17,Active,14,On-time,Sales Rep,C**** D*******
+C0221,Healthcare,Small,7.8,9,Email,8,0.7,Ankara,Cankaya,Electronic components,Life support systems,Quarterly,89,Active,3,On-time,Sales Rep,G**** R*******
+C0222,Space,Medium,14.9,23,Email,7,1.0,Istanbul,Beylikduzu,Actuators & motion control,Energy storage systems,Monthly,6,Active,15,On-time,Online,F**** O*******
+C0223,Oil & gas,Small,2.6,14,SEM,8,0.9,Eskisehir,Tepebasi,Fuel systems & emissions,Process safety & automation,Yearly,317,Expired,1,On-time,Sales Rep,E**** T*******
+C0224,Oil & gas,Medium,19.4,16,SEM,8,0.6,Sakarya,Arifiye,Fuel systems & emissions,Medium-voltage power systems,Quarterly,78,Active,6,Occasional delay,Email,C**** D*******
+C0225,Aerospace,Small,9.7,5,Content Marketing,4,0.4,Adana,Seyhan,Engine solutions,Actuators & motion control,Quarterly,60,Active,4,Occasional delay,Email,H**** N*******
+C0226,Machine building,Small,1.8,9,Webinar,10,0.4,Ankara,Yenimahalle,Clutches and brakes,Hydraulic motors & generators,Monthly,26,Expired,9,On-time,Sales Rep,C**** D*******
+C0227,Healthcare,Small,9.5,25,Content Marketing,11,1.1,Ankara,Mamak,Electronic components,Safety & emergency comms,Yearly,281,Active,1,On-time,Sales Rep,B**** K*******
+C0228,Space,Small,8.8,26,Content Marketing,7,1.0,Eskisehir,Odunpazari,Actuators & motion control,Energy storage systems,Monthly,19,Active,13,On-time,Sales Rep,F**** O*******
+C0229,Vehicles,Medium,36.3,40,SEM,9,0.2,Istanbul,Umraniye,Engine solutions,Transmissions,Yearly,154,Active,2,On-time,Sales Rep,E**** T*******
+C0230,Healthcare,Small,6.4,23,Content Marketing,8,0.5,Eskisehir,Tepebasi,Safety & emergency comms,Life support systems,Quarterly,87,Pending,4,On-time,Online,H**** N*******
+C0231,"Mining, metals & minerals",Small,1.2,18,Email,2,0.9,Eskisehir,Tepebasi,Process safety & automation,Valves,Quarterly,81,Pending,4,Occasional delay,Sales Rep,A**** Y*******
+C0232,Space,Small,8.5,14,Webinar,9,0.5,Kocaeli,Gebze,Energy storage systems,Medium-voltage power systems,Monthly,21,Active,14,Late,Sales Rep,F**** O*******
+C0233,"Mining, metals & minerals",Small,1.3,17,LinkedIn Ads,3,1.0,Zonguldak,Eregli,"Hose, tubing, fittings",Valves,Monthly,19,Pending,10,On-time,Dealer,C**** D*******
+C0234,Food & beverage,Small,9.5,6,SEM,3,0.7,Istanbul,Umraniye,Filtration solutions,Valves,Monthly,17,Active,13,On-time,Sales Rep,G**** R*******
+C0235,Oil & gas,Small,8.4,6,Trade Show,3,0.3,Adana,Ceyhan,Fuel systems & emissions,Process safety & automation,Quarterly,68,Active,5,Occasional delay,Email,C**** D*******
+C0236,Residential,Small,1.8,13,Content Marketing,3,0.9,Kayseri,Kocasinan,Electronic components,Wiring devices & connectivity,Monthly,9,Active,13,Occasional delay,Sales Rep,D**** S*******
+C0237,Machine building,Small,8.6,17,Content Marketing,7,0.7,Izmir,Cigli,Clutches and brakes,Actuators & motion control,Monthly,21,Expired,15,On-time,Online,E**** T*******
+C0238,Machine building,Small,2.2,15,LinkedIn Ads,4,0.8,Konya,Meram,Hydraulic motors & generators,Clutches and brakes,Monthly,18,Active,8,On-time,Sales Rep,B**** K*******
+C0239,Healthcare,Small,5.9,15,Email,11,0.5,Konya,Selcuklu,Life support systems,Safety & emergency comms,Quarterly,93,Active,4,On-time,Online,E**** T*******
+C0240,Aerospace,Small,8.8,28,SEM,2,0.7,Izmir,Cigli,Engine solutions,Actuators & motion control,Yearly,336,Expired,2,Occasional delay,Sales Rep,G**** R*******
+C0241,Vehicles,Small,9.8,19,Webinar,9,0.7,Kayseri,Melikgazi,Engine solutions,Transmissions,Monthly,21,Active,15,On-time,Sales Rep,D**** S*******
+C0242,Vehicles,Small,3.5,13,Trade Show,6,0.5,Izmir,Konak,Transmissions,Vehicle controls & automation,Monthly,18,Active,11,On-time,Online,C**** D*******
+C0243,Food & beverage,Medium,23.9,19,Webinar,5,0.2,Ankara,Cankaya,Pumps,Filtration solutions,Monthly,26,Active,12,On-time,Sales Rep,A**** Y*******
+C0244,Data centres,Small,8.9,25,LinkedIn Ads,3,1.1,Antalya,Konyaalti,Low-voltage power systems,"Server racks, enclosures",Quarterly,81,Active,4,Late,Sales Rep,A**** Y*******
+C0245,"Mining, metals & minerals",Small,2.5,14,SEM,6,0.7,Eskisehir,Odunpazari,"Hose, tubing, fittings",Valves,Quarterly,83,Active,3,On-time,Sales Rep,G**** R*******
+C0246,Aerospace,Small,1.9,20,Email,2,1.3,Kayseri,Kocasinan,Engine solutions,Electrical circuit protection,Monthly,19,Pending,11,Occasional delay,Dealer,D**** S*******
+C0247,Utilities,Large,154.3,42,Email,7,1.4,Sakarya,Serdivan,Medium-voltage power systems,Low-voltage power systems,Quarterly,87,Active,3,On-time,Email,A**** Y*******
+C0248,Residential,Small,3.3,21,LinkedIn Ads,12,1.1,Kayseri,Melikgazi,Wiring devices & connectivity,Electronic components,Occasionally,339,Active,1,On-time,Sales Rep,B**** K*******
+C0249,Residential,Small,1.3,21,Webinar,12,1.2,Ankara,Cankaya,Wiring devices & connectivity,Conduit & cable management,Yearly,250,Active,2,On-time,Sales Rep,F**** O*******
+C0250,Buildings,Small,8.2,27,Trade Show,5,1.0,Kocaeli,Izmit,Lighting & controls,Conduit & cable management,Yearly,338,Active,2,On-time,Online,D**** S*******
+C0251,Data centres,Small,7.8,7,SEM,8,1.2,Zonguldak,Eregli,"Server racks, enclosures",Energy storage systems,Monthly,16,Pending,8,Late,Dealer,E**** T*******
+C0252,"Mining, metals & minerals",Medium,41.2,15,Email,4,0.4,Kocaeli,Izmit,Valves,Process safety & automation,Quarterly,72,Pending,5,Occasional delay,Dealer,G**** R*******
+C0253,Machine building,Small,9.9,11,Content Marketing,8,0.8,Kocaeli,Izmit,Actuators & motion control,Hydraulic motors & generators,Monthly,24,Active,13,On-time,Dealer,A**** Y*******
+C0254,Food & beverage,Small,3.8,8,SEM,5,0.9,Bursa,Osmangazi,Filtration solutions,Valves,Yearly,168,Active,2,Occasional delay,Dealer,A**** Y*******
+C0255,Food & beverage,Small,8.2,11,LinkedIn Ads,4,1.5,Sakarya,Arifiye,Filtration solutions,Pumps,Monthly,23,Active,15,On-time,Dealer,F**** O*******
+C0256,Space,Medium,11.7,36,Webinar,2,0.6,Eskisehir,Odunpazari,Energy storage systems,Actuators & motion control,Yearly,221,Active,1,Occasional delay,Sales Rep,G**** R*******
+C0257,Residential,Medium,40.8,43,Trade Show,9,0.6,Bursa,Nilufer,Electronic components,Conduit & cable management,Quarterly,91,Active,3,On-time,Sales Rep,A**** Y*******
+C0258,"Mining, metals & minerals",Small,6.2,14,Email,5,1.1,Izmir,Cigli,Valves,Process safety & automation,Quarterly,62,Active,6,Late,Online,F**** O*******
+C0259,Machine building,Small,6.9,16,Email,11,0.6,Istanbul,Sariyer,Actuators & motion control,Hydraulic motors & generators,Monthly,29,Active,14,On-time,Online,A**** Y*******
+C0260,Healthcare,Small,1.3,20,Webinar,3,0.9,Konya,Selcuklu,Electronic components,Safety & emergency comms,Quarterly,83,Active,5,On-time,Dealer,H**** N*******
+C0261,Buildings,Small,8.9,19,Trade Show,2,0.1,Zonguldak,Kozlu,Conduit & cable management,Lighting & controls,Yearly,307,Active,2,On-time,Online,B**** K*******
+C0262,"Mining, metals & minerals",Small,3.9,30,Content Marketing,9,0.9,Adana,Seyhan,Process safety & automation,Valves,Quarterly,77,Expired,5,On-time,Online,B**** K*******
+C0263,Machine building,Small,4.1,27,SEM,6,1.5,Antalya,Kepez,Hydraulic motors & generators,Clutches and brakes,Monthly,11,Active,10,Occasional delay,Email,D**** S*******
+C0264,Space,Small,2.8,12,LinkedIn Ads,7,0.5,Eskisehir,Tepebasi,Actuators & motion control,Medium-voltage power systems,Quarterly,80,Active,5,Occasional delay,Sales Rep,H**** N*******
+C0265,Aerospace,Small,2.7,6,SEM,11,0.0,Zonguldak,Kozlu,Engine solutions,Electrical circuit protection,Monthly,7,Pending,10,On-time,Dealer,D**** S*******
+C0266,Data centres,Medium,20.8,29,SEM,9,1.1,Zonguldak,Eregli,"Server racks, enclosures",Low-voltage power systems,Quarterly,68,Active,6,On-time,Email,G**** R*******
+C0267,Residential,Medium,31.0,25,Email,10,1.0,Konya,Meram,Conduit & cable management,Electronic components,Monthly,15,Active,13,Late,Sales Rep,E**** T*******
+C0268,Vehicles,Small,1.0,22,Email,9,1.1,Bursa,Osmangazi,Transmissions,Vehicle controls & automation,Monthly,29,Active,9,Late,Dealer,H**** N*******
+C0269,Healthcare,Small,2.6,25,LinkedIn Ads,3,1.3,Izmir,Konak,Life support systems,Safety & emergency comms,Monthly,30,Expired,13,Occasional delay,Dealer,A**** Y*******
+C0270,"Mining, metals & minerals",Small,1.2,10,Content Marketing,2,1.2,Izmir,Karsiyaka,Process safety & automation,"Hose, tubing, fittings",Yearly,275,Expired,1,Occasional delay,Dealer,H**** N*******
+C0271,"Mining, metals & minerals",Small,1.5,21,Content Marketing,8,0.6,Zonguldak,Kozlu,Valves,Process safety & automation,Quarterly,91,Expired,4,On-time,Sales Rep,E**** T*******
+C0272,"Mining, metals & minerals",Small,3.0,7,LinkedIn Ads,5,0.4,Kayseri,Kocasinan,Valves,Process safety & automation,Monthly,25,Active,12,On-time,Dealer,E**** T*******
+C0273,"Mining, metals & minerals",Small,9.2,7,LinkedIn Ads,3,1.1,Kocaeli,Izmit,"Hose, tubing, fittings",Valves,Monthly,18,Expired,9,On-time,Dealer,H**** N*******
+C0274,Aerospace,Small,2.1,11,Email,3,0.7,Konya,Meram,Actuators & motion control,Engine solutions,Quarterly,78,Active,5,Occasional delay,Email,A**** Y*******
+C0275,Aerospace,Small,2.8,11,Webinar,6,1.5,Kayseri,Melikgazi,Electrical circuit protection,Actuators & motion control,Quarterly,69,Pending,4,On-time,Sales Rep,E**** T*******
+C0276,Food & beverage,Small,7.0,25,SEM,10,0.4,Bursa,Osmangazi,Valves,Pumps,Quarterly,79,Active,5,On-time,Email,B**** K*******
+C0277,Residential,Medium,12.0,42,SEM,6,1.5,Eskisehir,Odunpazari,Electronic components,Conduit & cable management,Yearly,201,Active,1,On-time,Sales Rep,H**** N*******
+C0278,"Mining, metals & minerals",Small,4.4,27,Content Marketing,8,0.8,Istanbul,Atasehir,"Hose, tubing, fittings",Valves,Quarterly,72,Active,4,On-time,Dealer,B**** K*******
+C0279,Utilities,Small,7.7,11,Webinar,9,1.0,Sakarya,Arifiye,Medium-voltage power systems,Low-voltage power systems,Yearly,163,Active,1,On-time,Sales Rep,A**** Y*******
+C0280,Machine building,Small,3.2,13,Trade Show,8,1.0,Kayseri,Kocasinan,Hydraulic motors & generators,Clutches and brakes,Yearly,302,Active,2,Late,Dealer,A**** Y*******
+C0281,Oil & gas,Small,3.2,13,Trade Show,4,0.8,Adana,Ceyhan,Process safety & automation,Medium-voltage power systems,Yearly,221,Expired,1,On-time,Online,A**** Y*******
+C0282,Oil & gas,Small,3.3,27,SEM,2,0.9,Kayseri,Kocasinan,Fuel systems & emissions,Process safety & automation,Yearly,321,Active,1,Occasional delay,Dealer,B**** K*******
+C0283,Healthcare,Small,6.4,17,Content Marketing,4,1.0,Istanbul,Beylikduzu,Life support systems,Safety & emergency comms,Quarterly,82,Active,4,Occasional delay,Sales Rep,F**** O*******
+C0284,Buildings,Small,3.4,11,Trade Show,5,1.1,Istanbul,Atasehir,Wiring devices & connectivity,Lighting & controls,Occasionally,258,Active,1,On-time,Sales Rep,E**** T*******
+C0285,Residential,Small,9.8,11,Webinar,5,1.3,Izmir,Bornova,Electronic components,Wiring devices & connectivity,Yearly,271,Active,2,On-time,Sales Rep,B**** K*******
+C0286,Buildings,Medium,22.5,23,SEM,10,0.7,Antalya,Muratpasa,Wiring devices & connectivity,Lighting & controls,Quarterly,61,Active,3,On-time,Sales Rep,B**** K*******
+C0287,Machine building,Medium,45.0,22,Content Marketing,5,0.8,Kayseri,Kocasinan,Hydraulic motors & generators,Actuators & motion control,Quarterly,95,Expired,6,On-time,Sales Rep,B**** K*******
+C0288,Oil & gas,Medium,23.6,35,LinkedIn Ads,8,0.8,Kocaeli,Korfez,Fuel systems & emissions,Medium-voltage power systems,Monthly,6,Active,9,Occasional delay,Sales Rep,G**** R*******
+C0289,Space,Small,9.9,26,Webinar,10,1.0,Bursa,Yildirim,Energy storage systems,Medium-voltage power systems,Monthly,5,Active,13,On-time,Sales Rep,C**** D*******
+C0290,Residential,Small,4.8,14,Trade Show,4,0.6,Konya,Meram,Conduit & cable management,Electronic components,Monthly,20,Active,9,On-time,Sales Rep,A**** Y*******
+C0291,Oil & gas,Small,6.7,8,Trade Show,2,0.9,Antalya,Muratpasa,Fuel systems & emissions,Medium-voltage power systems,Occasionally,398,Pending,0,On-time,Online,H**** N*******
+C0292,Vehicles,Medium,47.4,40,Content Marketing,6,1.3,Zonguldak,Eregli,Transmissions,Engine solutions,Monthly,18,Active,12,On-time,Sales Rep,C**** D*******
+C0293,Buildings,Small,5.5,25,Webinar,6,1.3,Kocaeli,Gebze,Lighting & controls,Wiring devices & connectivity,Monthly,27,Active,9,On-time,Email,A**** Y*******
+C0294,"Mining, metals & minerals",Small,9.5,9,Webinar,8,0.6,Eskisehir,Tepebasi,"Hose, tubing, fittings",Process safety & automation,Quarterly,82,Active,3,Late,Email,C**** D*******
+C0295,Buildings,Medium,42.8,35,LinkedIn Ads,8,1.0,Antalya,Kepez,Conduit & cable management,Wiring devices & connectivity,Monthly,5,Expired,9,On-time,Dealer,D**** S*******
+C0296,Utilities,Medium,17.7,29,LinkedIn Ads,8,1.1,Konya,Selcuklu,Medium-voltage power systems,Utility & grid solutions,Quarterly,85,Pending,3,Occasional delay,Sales Rep,E**** T*******
+C0297,Oil & gas,Small,3.7,7,Email,9,1.0,Antalya,Kepez,Medium-voltage power systems,Fuel systems & emissions,Occasionally,347,Pending,1,On-time,Online,H**** N*******
+C0298,Aerospace,Small,2.5,28,Email,5,0.7,Ankara,Yenimahalle,Engine solutions,Actuators & motion control,Quarterly,68,Active,3,On-time,Sales Rep,C**** D*******
+C0299,Space,Small,4.1,29,LinkedIn Ads,2,0.9,Istanbul,Beylikduzu,Energy storage systems,Actuators & motion control,Yearly,212,Active,1,Occasional delay,Sales Rep,D**** S*******
+C0300,"Mining, metals & minerals",Small,5.9,6,Email,11,1.1,Kocaeli,Izmit,"Hose, tubing, fittings",Process safety & automation,Quarterly,87,Active,4,On-time,Online,C**** D*******
+C0301,"Mining, metals & minerals",Small,1.2,15,LinkedIn Ads,12,1.2,Istanbul,Beylikduzu,"Hose, tubing, fittings",Process safety & automation,Occasionally,448,Active,1,On-time,Sales Rep,D**** S*******
+C0302,Residential,Small,4.0,15,Content Marketing,12,1.0,Izmir,Konak,Conduit & cable management,Wiring devices & connectivity,Quarterly,61,Expired,6,On-time,Sales Rep,E**** T*******
+C0303,Food & beverage,Small,4.0,25,SEM,7,1.0,Antalya,Konyaalti,Pumps,Valves,Yearly,160,Active,1,On-time,Online,E**** T*******
+C0304,Data centres,Small,2.9,6,LinkedIn Ads,9,0.7,Izmir,Konak,"Server racks, enclosures",Low-voltage power systems,Occasionally,193,Expired,1,On-time,Sales Rep,A**** Y*******
+C0305,Aerospace,Small,3.7,18,Trade Show,3,1.3,Bursa,Nilufer,Electrical circuit protection,Engine solutions,Quarterly,61,Pending,6,On-time,Sales Rep,C**** D*******
+C0306,Residential,Small,5.4,18,LinkedIn Ads,6,0.3,Bursa,Osmangazi,Wiring devices & connectivity,Conduit & cable management,Monthly,18,Active,15,On-time,Dealer,B**** K*******
+C0307,Food & beverage,Medium,30.1,37,Content Marketing,7,1.0,Eskisehir,Odunpazari,Valves,Pumps,Quarterly,83,Active,5,Late,Dealer,E**** T*******
+C0308,"Mining, metals & minerals",Small,4.9,7,LinkedIn Ads,11,0.7,Konya,Meram,Process safety & automation,"Hose, tubing, fittings",Monthly,14,Active,9,Occasional delay,Sales Rep,H**** N*******
+C0309,"Mining, metals & minerals",Small,8.6,12,SEM,4,1.4,Adana,Seyhan,"Hose, tubing, fittings",Process safety & automation,Monthly,16,Active,12,Occasional delay,Email,B**** K*******
+C0310,Aerospace,Small,7.3,12,SEM,11,1.4,Zonguldak,Kozlu,Actuators & motion control,Electrical circuit protection,Monthly,5,Expired,11,On-time,Dealer,A**** Y*******
+C0311,Machine building,Small,4.1,26,Content Marketing,3,1.3,Ankara,Yenimahalle,Actuators & motion control,Hydraulic motors & generators,Quarterly,85,Active,4,On-time,Dealer,D**** S*******
+C0312,Healthcare,Small,2.7,23,LinkedIn Ads,9,0.2,Zonguldak,Eregli,Safety & emergency comms,Life support systems,Quarterly,94,Active,5,On-time,Sales Rep,D**** S*******
+C0313,Space,Large,199.4,36,Trade Show,8,0.8,Bursa,Yildirim,Energy storage systems,Actuators & motion control,Monthly,29,Active,11,Occasional delay,Online,D**** S*******
+C0314,Healthcare,Medium,25.5,19,Trade Show,8,0.9,Eskisehir,Tepebasi,Electronic components,Life support systems,Quarterly,73,Expired,5,On-time,Sales Rep,H**** N*******
+C0315,Healthcare,Medium,18.2,37,SEM,7,0.5,Bursa,Yildirim,Life support systems,Electronic components,Quarterly,95,Active,3,On-time,Dealer,A**** Y*******
+C0316,Buildings,Medium,31.7,23,Trade Show,10,0.4,Ankara,Yenimahalle,Conduit & cable management,Lighting & controls,Monthly,20,Active,11,On-time,Sales Rep,H**** N*******
+C0317,Utilities,Small,6.2,27,Webinar,8,1.4,Konya,Meram,Utility & grid solutions,Low-voltage power systems,Quarterly,61,Active,3,On-time,Sales Rep,G**** R*******
+C0318,Data centres,Small,8.7,17,Trade Show,12,0.6,Bursa,Nilufer,Low-voltage power systems,Energy storage systems,Monthly,8,Active,10,On-time,Online,G**** R*******
+C0319,"Mining, metals & minerals",Small,7.5,27,Content Marketing,8,0.8,Istanbul,Kartal,Valves,"Hose, tubing, fittings",Yearly,296,Active,2,On-time,Dealer,D**** S*******
+C0320,Vehicles,Small,2.5,13,LinkedIn Ads,11,1.0,Konya,Selcuklu,Engine solutions,Vehicle controls & automation,Monthly,30,Active,9,On-time,Online,E**** T*******
+C0321,Aerospace,Small,2.7,6,Email,5,0.3,Izmir,Karsiyaka,Engine solutions,Actuators & motion control,Quarterly,72,Active,4,On-time,Online,D**** S*******
+C0322,Space,Small,9.2,25,Webinar,8,1.5,Bursa,Nilufer,Actuators & motion control,Energy storage systems,Monthly,9,Active,15,On-time,Email,C**** D*******
+C0323,Data centres,Medium,25.7,37,Trade Show,8,0.8,Zonguldak,Eregli,"Server racks, enclosures",Energy storage systems,Monthly,17,Expired,8,On-time,Online,C**** D*******
+C0324,Space,Large,135.3,36,Content Marketing,4,1.2,Istanbul,Atasehir,Energy storage systems,Medium-voltage power systems,Occasionally,425,Active,2,Occasional delay,Sales Rep,D**** S*******
+C0325,Healthcare,Small,8.6,6,Trade Show,3,0.9,Ankara,Cankaya,Safety & emergency comms,Life support systems,Yearly,352,Active,1,Occasional delay,Sales Rep,A**** Y*******
+C0326,Oil & gas,Small,5.6,25,Trade Show,2,0.6,Istanbul,Kartal,Medium-voltage power systems,Fuel systems & emissions,Monthly,11,Active,11,Occasional delay,Sales Rep,D**** S*******
+C0327,"Mining, metals & minerals",Medium,19.8,43,Content Marketing,3,0.7,Konya,Selcuklu,"Hose, tubing, fittings",Valves,Quarterly,67,Active,5,On-time,Dealer,F**** O*******
+C0328,Residential,Medium,16.4,23,Trade Show,7,0.6,Zonguldak,Eregli,Conduit & cable management,Wiring devices & connectivity,Yearly,150,Active,1,On-time,Sales Rep,B**** K*******
+C0329,Vehicles,Large,117.6,50,Content Marketing,8,1.2,Sakarya,Arifiye,Transmissions,Engine solutions,Monthly,27,Active,9,On-time,Online,F**** O*******
+C0330,Machine building,Medium,28.4,19,SEM,2,1.1,Zonguldak,Kozlu,Actuators & motion control,Clutches and brakes,Quarterly,63,Active,4,On-time,Sales Rep,E**** T*******
+C0331,Utilities,Small,2.3,27,Content Marketing,10,1.2,Izmir,Konak,Medium-voltage power systems,Low-voltage power systems,Monthly,29,Active,15,Occasional delay,Sales Rep,F**** O*******
+C0332,Oil & gas,Small,6.7,30,Content Marketing,12,0.5,Kayseri,Kocasinan,Process safety & automation,Fuel systems & emissions,Quarterly,62,Pending,5,Late,Email,G**** R*******
+C0333,Residential,Small,6.1,18,Webinar,4,0.1,Kayseri,Kocasinan,Electronic components,Wiring devices & connectivity,Yearly,333,Active,2,On-time,Sales Rep,C**** D*******
+C0334,Buildings,Medium,15.0,17,Content Marketing,8,0.7,Zonguldak,Kozlu,Lighting & controls,Conduit & cable management,Quarterly,65,Active,3,On-time,Sales Rep,H**** N*******
+C0335,Residential,Small,1.3,17,LinkedIn Ads,6,0.8,Antalya,Muratpasa,Electronic components,Conduit & cable management,Quarterly,90,Active,6,On-time,Dealer,B**** K*******
+C0336,Machine building,Small,5.4,18,Trade Show,8,0.7,Sakarya,Arifiye,Clutches and brakes,Hydraulic motors & generators,Monthly,24,Active,15,On-time,Dealer,B**** K*******
+C0337,Healthcare,Small,4.5,26,SEM,10,0.7,Izmir,Karsiyaka,Life support systems,Safety & emergency comms,Monthly,24,Active,10,On-time,Online,E**** T*******
+C0338,Machine building,Large,69.1,41,SEM,4,0.4,Sakarya,Arifiye,Actuators & motion control,Hydraulic motors & generators,Yearly,192,Active,2,On-time,Sales Rep,F**** O*******
+C0339,Space,Small,4.8,17,Content Marketing,5,0.5,Kocaeli,Gebze,Energy storage systems,Actuators & motion control,Occasionally,397,Pending,0,On-time,Sales Rep,B**** K*******
+C0340,Utilities,Small,1.1,8,SEM,6,0.8,Ankara,Etimesgut,Low-voltage power systems,Medium-voltage power systems,Quarterly,85,Active,4,On-time,Email,H**** N*******
+C0341,"Mining, metals & minerals",Small,1.9,28,Content Marketing,9,0.7,Konya,Selcuklu,Process safety & automation,Valves,Quarterly,74,Pending,4,On-time,Sales Rep,D**** S*******
+C0342,Healthcare,Small,6.3,26,Webinar,6,1.2,Istanbul,Sariyer,Life support systems,Safety & emergency comms,Monthly,28,Active,12,Occasional delay,Dealer,D**** S*******
+C0343,Healthcare,Medium,37.6,36,Email,6,0.6,Eskisehir,Odunpazari,Electronic components,Safety & emergency comms,Monthly,7,Active,13,On-time,Online,B**** K*******
+C0344,Buildings,Small,7.7,26,Email,12,0.9,Istanbul,Atasehir,Conduit & cable management,Wiring devices & connectivity,Monthly,13,Pending,14,Occasional delay,Sales Rep,H**** N*******
+C0345,Aerospace,Small,9.3,29,SEM,2,1.0,Konya,Meram,Engine solutions,Electrical circuit protection,Quarterly,74,Active,4,On-time,Sales Rep,B**** K*******
+C0346,Buildings,Small,4.2,19,Email,11,0.7,Istanbul,Atasehir,Wiring devices & connectivity,Conduit & cable management,Yearly,151,Active,1,On-time,Dealer,E**** T*******
+C0347,Vehicles,Small,3.7,7,LinkedIn Ads,4,0.7,Kocaeli,Korfez,Engine solutions,Vehicle controls & automation,Quarterly,95,Active,6,On-time,Sales Rep,H**** N*******
+C0348,Machine building,Small,3.0,6,LinkedIn Ads,6,0.9,Istanbul,Beylikduzu,Actuators & motion control,Clutches and brakes,Quarterly,68,Expired,5,On-time,Dealer,F**** O*******
+C0349,Aerospace,Large,156.1,28,SEM,12,0.7,Sakarya,Arifiye,Electrical circuit protection,Actuators & motion control,Quarterly,71,Active,5,On-time,Sales Rep,C**** D*******
+C0350,Space,Medium,20.1,23,Trade Show,3,1.1,Konya,Selcuklu,Medium-voltage power systems,Actuators & motion control,Monthly,14,Active,12,On-time,Dealer,A**** Y*******
+C0351,Utilities,Small,4.6,20,LinkedIn Ads,11,1.1,Konya,Selcuklu,Utility & grid solutions,Medium-voltage power systems,Monthly,8,Active,14,Late,Email,D**** S*******
+C0352,Healthcare,Small,9.8,29,Webinar,3,0.6,Sakarya,Arifiye,Life support systems,Electronic components,Yearly,334,Active,1,On-time,Email,F**** O*******
+C0353,"Mining, metals & minerals",Large,174.9,26,Content Marketing,3,0.5,Antalya,Kepez,Valves,"Hose, tubing, fittings",Monthly,14,Expired,15,On-time,Online,F**** O*******
+C0354,Machine building,Small,3.7,6,Webinar,11,0.4,Istanbul,Kartal,Clutches and brakes,Actuators & motion control,Yearly,343,Active,1,On-time,Sales Rep,H**** N*******
+C0355,Machine building,Small,5.0,14,LinkedIn Ads,10,1.1,Kayseri,Melikgazi,Clutches and brakes,Actuators & motion control,Monthly,23,Expired,14,On-time,Sales Rep,C**** D*******
+C0356,"Mining, metals & minerals",Medium,15.8,23,LinkedIn Ads,9,1.2,Antalya,Kepez,Valves,"Hose, tubing, fittings",Quarterly,64,Active,3,On-time,Online,A**** Y*******
+C0357,Aerospace,Small,2.8,21,LinkedIn Ads,2,0.7,Kocaeli,Izmit,Engine solutions,Electrical circuit protection,Yearly,255,Active,2,Occasional delay,Dealer,A**** Y*******
+C0358,Space,Medium,23.4,31,Webinar,4,0.6,Zonguldak,Eregli,Actuators & motion control,Energy storage systems,Monthly,22,Active,8,On-time,Online,C**** D*******
+C0359,Food & beverage,Small,9.3,23,LinkedIn Ads,9,0.7,Istanbul,Umraniye,Pumps,Valves,Monthly,11,Active,8,On-time,Sales Rep,F**** O*******
+C0360,Utilities,Small,4.7,8,SEM,7,1.1,Bursa,Yildirim,Utility & grid solutions,Low-voltage power systems,Quarterly,88,Active,5,On-time,Sales Rep,A**** Y*******
+C0361,Space,Small,7.3,12,SEM,9,0.7,Konya,Meram,Actuators & motion control,Energy storage systems,Monthly,7,Active,13,On-time,Online,A**** Y*******
+C0362,Utilities,Large,116.9,47,SEM,9,0.7,Eskisehir,Odunpazari,Low-voltage power systems,Medium-voltage power systems,Monthly,11,Active,11,On-time,Email,E**** T*******
+C0363,Utilities,Small,6.1,14,Webinar,6,0.8,Kayseri,Melikgazi,Medium-voltage power systems,Low-voltage power systems,Monthly,12,Active,8,On-time,Dealer,B**** K*******
+C0364,Healthcare,Small,5.5,7,LinkedIn Ads,7,0.9,Konya,Selcuklu,Life support systems,Safety & emergency comms,Yearly,150,Pending,1,On-time,Dealer,A**** Y*******
+C0365,Vehicles,Medium,33.4,16,Content Marketing,6,1.0,Adana,Seyhan,Transmissions,Engine solutions,Quarterly,75,Active,4,On-time,Sales Rep,A**** Y*******
+C0366,Oil & gas,Small,5.0,8,Content Marketing,3,0.9,Bursa,Osmangazi,Medium-voltage power systems,Fuel systems & emissions,Quarterly,81,Pending,6,Occasional delay,Sales Rep,G**** R*******
+C0367,Vehicles,Small,5.1,8,Email,2,1.0,Bursa,Nilufer,Engine solutions,Transmissions,Yearly,252,Active,2,On-time,Online,G**** R*******
+C0368,Aerospace,Large,161.6,40,LinkedIn Ads,5,0.8,Konya,Meram,Engine solutions,Electrical circuit protection,Occasionally,190,Pending,2,On-time,Sales Rep,A**** Y*******
+C0369,Data centres,Small,6.0,14,Content Marketing,2,0.8,Kayseri,Kocasinan,Energy storage systems,Low-voltage power systems,Quarterly,68,Active,6,On-time,Dealer,G**** R*******
+C0370,Aerospace,Large,188.4,45,LinkedIn Ads,7,0.3,Zonguldak,Eregli,Engine solutions,Actuators & motion control,Yearly,180,Active,2,On-time,Sales Rep,F**** O*******
+C0371,Oil & gas,Large,196.7,39,LinkedIn Ads,6,1.2,Adana,Seyhan,Process safety & automation,Fuel systems & emissions,Quarterly,81,Active,5,On-time,Sales Rep,C**** D*******
+C0372,"Mining, metals & minerals",Small,3.7,9,Trade Show,3,1.2,Kayseri,Kocasinan,Process safety & automation,"Hose, tubing, fittings",Monthly,24,Active,14,On-time,Sales Rep,C**** D*******
+C0373,Utilities,Small,9.8,24,Webinar,3,0.8,Konya,Selcuklu,Low-voltage power systems,Utility & grid solutions,Monthly,16,Active,11,Occasional delay,Dealer,C**** D*******
+C0374,Healthcare,Medium,49.8,30,LinkedIn Ads,8,0.7,Antalya,Kepez,Life support systems,Electronic components,Quarterly,94,Active,3,On-time,Dealer,A**** Y*******
+C0375,Buildings,Medium,10.4,32,Trade Show,2,0.5,Sakarya,Serdivan,Lighting & controls,Conduit & cable management,Yearly,219,Active,1,On-time,Sales Rep,H**** N*******
+C0376,Oil & gas,Large,156.9,46,Email,12,0.8,Sakarya,Serdivan,Fuel systems & emissions,Medium-voltage power systems,Quarterly,82,Expired,3,On-time,Sales Rep,E**** T*******
+C0377,Utilities,Small,4.6,6,Content Marketing,5,1.0,Adana,Ceyhan,Medium-voltage power systems,Utility & grid solutions,Quarterly,85,Pending,3,On-time,Sales Rep,G**** R*******
+C0378,Vehicles,Small,2.6,29,Email,8,1.0,Kocaeli,Gebze,Vehicle controls & automation,Transmissions,Quarterly,90,Active,5,Occasional delay,Dealer,C**** D*******
+C0379,"Mining, metals & minerals",Small,2.9,11,SEM,3,0.7,Konya,Meram,"Hose, tubing, fittings",Valves,Monthly,29,Pending,10,On-time,Sales Rep,B**** K*******
+C0380,Data centres,Small,9.3,22,SEM,7,0.6,Izmir,Bornova,"Server racks, enclosures",Low-voltage power systems,Occasionally,437,Pending,1,On-time,Online,C**** D*******
+C0381,Residential,Small,5.1,26,Webinar,2,0.7,Adana,Ceyhan,Wiring devices & connectivity,Electronic components,Quarterly,86,Pending,3,On-time,Dealer,E**** T*******
+C0382,Oil & gas,Large,123.3,49,Trade Show,7,1.0,Bursa,Nilufer,Process safety & automation,Fuel systems & emissions,Yearly,339,Pending,1,On-time,Sales Rep,H**** N*******
+C0383,Data centres,Medium,25.3,26,Content Marketing,2,0.8,Kocaeli,Gebze,Energy storage systems,"Server racks, enclosures",Monthly,21,Active,12,On-time,Sales Rep,F**** O*******
+C0384,Aerospace,Small,4.8,16,SEM,11,1.2,Konya,Selcuklu,Actuators & motion control,Electrical circuit protection,Monthly,15,Active,13,On-time,Sales Rep,G**** R*******
+C0385,Machine building,Small,3.6,11,SEM,8,0.5,Kocaeli,Gebze,Hydraulic motors & generators,Clutches and brakes,Occasionally,404,Pending,1,On-time,Dealer,H**** N*******
+C0386,"Mining, metals & minerals",Medium,48.7,29,Content Marketing,10,0.8,Adana,Seyhan,Valves,"Hose, tubing, fittings",Monthly,17,Active,14,On-time,Sales Rep,G**** R*******
+C0387,Food & beverage,Medium,34.6,33,Email,8,1.1,Eskisehir,Tepebasi,Filtration solutions,Valves,Monthly,17,Active,11,On-time,Online,G**** R*******
+C0388,Data centres,Large,97.3,41,Content Marketing,12,1.0,Istanbul,Sariyer,Low-voltage power systems,Energy storage systems,Occasionally,417,Pending,1,On-time,Email,E**** T*******
+C0389,Utilities,Medium,33.3,35,Webinar,7,1.0,Eskisehir,Tepebasi,Low-voltage power systems,Medium-voltage power systems,Monthly,16,Active,14,On-time,Sales Rep,D**** S*******
+C0390,Buildings,Medium,20.8,19,Webinar,10,0.8,Antalya,Kepez,Conduit & cable management,Wiring devices & connectivity,Monthly,29,Active,15,On-time,Online,B**** K*******
+C0391,Healthcare,Medium,32.5,18,Webinar,7,0.8,Ankara,Etimesgut,Electronic components,Safety & emergency comms,Occasionally,283,Active,0,On-time,Online,G**** R*******
+C0392,Machine building,Small,9.2,10,Webinar,5,0.7,Ankara,Cankaya,Actuators & motion control,Hydraulic motors & generators,Monthly,16,Expired,13,On-time,Online,B**** K*******
+C0393,Utilities,Small,9.4,24,Webinar,7,0.8,Adana,Seyhan,Utility & grid solutions,Low-voltage power systems,Quarterly,80,Active,6,On-time,Dealer,C**** D*******
+C0394,Oil & gas,Small,5.4,26,Trade Show,11,1.1,Zonguldak,Eregli,Fuel systems & emissions,Process safety & automation,Monthly,21,Active,11,Occasional delay,Sales Rep,G**** R*******
+C0395,Aerospace,Large,145.1,26,SEM,5,0.9,Zonguldak,Kozlu,Actuators & motion control,Engine solutions,Quarterly,83,Pending,6,On-time,Sales Rep,E**** T*******
+C0396,Buildings,Small,5.8,23,Trade Show,8,0.8,Antalya,Muratpasa,Lighting & controls,Wiring devices & connectivity,Quarterly,78,Active,5,Occasional delay,Dealer,F**** O*******
+C0397,Machine building,Small,1.7,11,LinkedIn Ads,4,0.9,Konya,Selcuklu,Clutches and brakes,Actuators & motion control,Monthly,11,Active,8,On-time,Dealer,B**** K*******
+C0398,Utilities,Small,5.7,20,Webinar,12,0.8,Istanbul,Atasehir,Medium-voltage power systems,Low-voltage power systems,Monthly,30,Active,12,On-time,Sales Rep,F**** O*******
+C0399,Food & beverage,Medium,14.7,25,Content Marketing,2,0.9,Adana,Seyhan,Filtration solutions,Valves,Monthly,12,Active,15,On-time,Email,F**** O*******
+C0400,Machine building,Small,5.2,6,Webinar,9,0.6,Izmir,Konak,Hydraulic motors & generators,Clutches and brakes,Quarterly,89,Active,5,On-time,Sales Rep,E**** T*******
+C0401,Oil & gas,Small,6.4,14,LinkedIn Ads,11,0.8,Adana,Seyhan,Fuel systems & emissions,Medium-voltage power systems,Monthly,27,Pending,10,On-time,Sales Rep,F**** O*******
+C0402,Residential,Small,4.3,18,Trade Show,7,0.4,Kocaeli,Korfez,Electronic components,Conduit & cable management,Quarterly,95,Pending,4,On-time,Dealer,G**** R*******
+C0403,Food & beverage,Small,7.0,18,Trade Show,10,1.4,Izmir,Konak,Valves,Filtration solutions,Quarterly,62,Active,6,On-time,Online,B**** K*******
+C0404,Residential,Medium,13.6,25,Content Marketing,3,0.5,Kayseri,Kocasinan,Wiring devices & connectivity,Electronic components,Monthly,14,Active,12,On-time,Sales Rep,B**** K*******
+C0405,"Mining, metals & minerals",Small,1.7,28,Webinar,2,1.1,Kayseri,Kocasinan,"Hose, tubing, fittings",Process safety & automation,Yearly,204,Active,1,On-time,Online,B**** K*******
+C0406,Aerospace,Small,8.8,13,LinkedIn Ads,4,0.9,Bursa,Nilufer,Actuators & motion control,Engine solutions,Yearly,291,Active,2,Occasional delay,Dealer,H**** N*******
+C0407,Aerospace,Small,8.3,12,Content Marketing,10,1.2,Istanbul,Sariyer,Engine solutions,Actuators & motion control,Monthly,23,Active,11,On-time,Dealer,H**** N*******
+C0408,Vehicles,Small,1.1,9,Trade Show,2,0.7,Izmir,Bornova,Vehicle controls & automation,Engine solutions,Yearly,314,Active,1,On-time,Sales Rep,E**** T*******
+C0409,Buildings,Medium,28.4,43,Content Marketing,6,1.0,Ankara,Cankaya,Wiring devices & connectivity,Lighting & controls,Monthly,6,Active,15,On-time,Dealer,A**** Y*******
+C0410,Space,Large,155.1,35,Email,11,0.8,Kocaeli,Gebze,Energy storage systems,Actuators & motion control,Quarterly,82,Active,6,Occasional delay,Dealer,G**** R*******
+C0411,Aerospace,Small,6.4,7,LinkedIn Ads,5,1.0,Eskisehir,Odunpazari,Actuators & motion control,Engine solutions,Monthly,8,Active,13,On-time,Online,F**** O*******
+C0412,Buildings,Small,2.2,16,Content Marketing,5,0.7,Eskisehir,Tepebasi,Wiring devices & connectivity,Conduit & cable management,Yearly,273,Pending,2,On-time,Online,F**** O*******
+C0413,Aerospace,Small,3.3,11,Email,2,0.9,Sakarya,Serdivan,Actuators & motion control,Electrical circuit protection,Monthly,21,Expired,14,Occasional delay,Dealer,B**** K*******
+C0414,Aerospace,Small,8.3,18,LinkedIn Ads,10,0.5,Izmir,Bornova,Engine solutions,Actuators & motion control,Yearly,353,Expired,2,Occasional delay,Online,B**** K*******
+C0415,Buildings,Small,2.1,29,Trade Show,9,0.7,Izmir,Konak,Lighting & controls,Conduit & cable management,Monthly,15,Active,12,On-time,Dealer,B**** K*******
+C0416,Space,Small,4.0,26,Webinar,5,1.0,Eskisehir,Tepebasi,Energy storage systems,Medium-voltage power systems,Yearly,294,Pending,1,On-time,Sales Rep,C**** D*******
+C0417,Oil & gas,Small,4.3,11,LinkedIn Ads,10,1.0,Konya,Meram,Fuel systems & emissions,Medium-voltage power systems,Monthly,13,Active,11,On-time,Online,H**** N*******
+C0418,Oil & gas,Small,5.3,10,Trade Show,10,0.5,Istanbul,Sariyer,Process safety & automation,Medium-voltage power systems,Monthly,8,Pending,10,On-time,Email,D**** S*******
+C0419,Data centres,Small,5.1,28,LinkedIn Ads,2,0.3,Izmir,Karsiyaka,Energy storage systems,"Server racks, enclosures",Monthly,7,Pending,10,On-time,Sales Rep,F**** O*******
+C0420,Healthcare,Small,1.5,28,Content Marketing,9,0.7,Bursa,Yildirim,Life support systems,Safety & emergency comms,Quarterly,89,Pending,6,On-time,Online,D**** S*******
+C0421,Residential,Small,3.5,23,Content Marketing,11,0.1,Antalya,Kepez,Conduit & cable management,Electronic components,Quarterly,81,Pending,3,Occasional delay,Dealer,D**** S*******
+C0422,Aerospace,Medium,15.5,41,LinkedIn Ads,2,0.7,Kayseri,Kocasinan,Actuators & motion control,Engine solutions,Monthly,16,Active,11,On-time,Dealer,G**** R*******
+C0423,Aerospace,Small,4.6,29,Webinar,8,0.7,Zonguldak,Kozlu,Electrical circuit protection,Actuators & motion control,Monthly,18,Active,15,On-time,Dealer,C**** D*******
+C0424,Residential,Small,2.2,22,Email,10,1.2,Ankara,Cankaya,Electronic components,Wiring devices & connectivity,Monthly,27,Active,12,On-time,Sales Rep,D**** S*******
+C0425,Aerospace,Small,1.8,28,SEM,11,1.2,Kayseri,Melikgazi,Electrical circuit protection,Engine solutions,Monthly,21,Pending,12,On-time,Sales Rep,C**** D*******
+C0426,"Mining, metals & minerals",Small,2.9,11,LinkedIn Ads,8,0.3,Zonguldak,Kozlu,Process safety & automation,Valves,Yearly,158,Active,1,On-time,Online,F**** O*******
+C0427,Data centres,Medium,34.2,16,Email,9,1.0,Eskisehir,Odunpazari,Low-voltage power systems,Energy storage systems,Quarterly,70,Expired,6,Late,Sales Rep,G**** R*******
+C0428,Healthcare,Small,6.8,9,Content Marketing,2,0.5,Istanbul,Sariyer,Safety & emergency comms,Electronic components,Quarterly,67,Active,3,Late,Dealer,F**** O*******
+C0429,Aerospace,Small,6.0,15,Content Marketing,9,0.1,Adana,Seyhan,Electrical circuit protection,Engine solutions,Monthly,14,Active,10,On-time,Sales Rep,F**** O*******
+C0430,Space,Medium,12.3,41,Content Marketing,13,0.6,Ankara,Mamak,Energy storage systems,Actuators & motion control,Monthly,17,Active,15,On-time,Sales Rep,C**** D*******
+C0431,Vehicles,Small,1.4,13,Webinar,8,0.3,Zonguldak,Eregli,Engine solutions,Transmissions,Quarterly,69,Expired,6,Occasional delay,Sales Rep,C**** D*******
+C0432,Healthcare,Small,9.2,25,Content Marketing,8,1.0,Adana,Seyhan,Safety & emergency comms,Electronic components,Yearly,328,Active,2,Occasional delay,Sales Rep,A**** Y*******
+C0433,Utilities,Medium,46.5,31,Webinar,11,1.0,Antalya,Konyaalti,Medium-voltage power systems,Low-voltage power systems,Monthly,29,Active,10,Occasional delay,Dealer,E**** T*******
+C0434,Food & beverage,Small,3.2,12,SEM,7,1.2,Bursa,Osmangazi,Pumps,Filtration solutions,Quarterly,93,Active,4,On-time,Dealer,A**** Y*******
+C0435,Oil & gas,Small,7.8,12,SEM,4,0.6,Adana,Seyhan,Process safety & automation,Medium-voltage power systems,Occasionally,417,Active,1,On-time,Sales Rep,D**** S*******
+C0436,Utilities,Medium,19.1,33,Email,7,1.2,Eskisehir,Odunpazari,Low-voltage power systems,Medium-voltage power systems,Quarterly,84,Active,4,On-time,Online,G**** R*******
+C0437,Data centres,Small,3.4,23,Webinar,2,0.6,Bursa,Nilufer,Energy storage systems,"Server racks, enclosures",Yearly,172,Active,2,Occasional delay,Online,C**** D*******
+C0438,Residential,Small,1.1,19,Content Marketing,11,0.3,Kocaeli,Gebze,Conduit & cable management,Electronic components,Yearly,153,Expired,1,On-time,Sales Rep,E**** T*******
+C0439,Space,Small,4.0,17,LinkedIn Ads,10,1.2,Zonguldak,Eregli,Energy storage systems,Actuators & motion control,Quarterly,86,Active,3,On-time,Online,B**** K*******
+C0440,Food & beverage,Medium,46.6,42,Webinar,2,0.7,Bursa,Yildirim,Valves,Pumps,Occasionally,200,Pending,0,On-time,Online,F**** O*******
+C0441,Oil & gas,Medium,13.2,28,LinkedIn Ads,6,0.9,Antalya,Muratpasa,Process safety & automation,Fuel systems & emissions,Yearly,182,Active,2,On-time,Online,E**** T*******
+C0442,Residential,Small,3.6,29,Webinar,10,0.6,Istanbul,Sariyer,Wiring devices & connectivity,Electronic components,Quarterly,62,Active,3,On-time,Email,A**** Y*******
+C0443,Food & beverage,Small,7.0,7,LinkedIn Ads,5,0.4,Eskisehir,Tepebasi,Filtration solutions,Valves,Yearly,288,Active,1,On-time,Email,H**** N*******
+C0444,Aerospace,Small,8.8,11,Webinar,4,0.7,Kayseri,Kocasinan,Electrical circuit protection,Engine solutions,Monthly,30,Active,14,On-time,Sales Rep,A**** Y*******
+C0445,Data centres,Small,4.2,11,Email,5,1.4,Istanbul,Atasehir,Low-voltage power systems,Energy storage systems,Monthly,7,Active,8,On-time,Online,C**** D*******
+C0446,Aerospace,Small,2.5,30,Email,11,0.5,Kocaeli,Korfez,Actuators & motion control,Engine solutions,Yearly,305,Active,1,On-time,Sales Rep,H**** N*******
+C0447,Residential,Small,2.7,28,SEM,11,0.4,Adana,Ceyhan,Wiring devices & connectivity,Conduit & cable management,Monthly,17,Active,10,On-time,Dealer,F**** O*******
+C0448,"Mining, metals & minerals",Small,6.6,12,Webinar,8,0.5,Sakarya,Arifiye,Valves,Process safety & automation,Monthly,23,Pending,8,On-time,Sales Rep,B**** K*******
+C0449,Vehicles,Small,4.6,14,LinkedIn Ads,9,0.9,Eskisehir,Odunpazari,Vehicle controls & automation,Transmissions,Quarterly,71,Pending,3,On-time,Dealer,D**** S*******
+C0450,Aerospace,Small,7.4,10,Trade Show,5,0.4,Izmir,Bornova,Electrical circuit protection,Actuators & motion control,Monthly,21,Active,11,On-time,Dealer,B**** K*******
+C0451,Healthcare,Small,8.4,26,Email,2,0.7,Ankara,Yenimahalle,Life support systems,Safety & emergency comms,Occasionally,355,Pending,2,Occasional delay,Sales Rep,E**** T*******
+C0452,Healthcare,Medium,28.3,30,Content Marketing,4,1.3,Istanbul,Beylikduzu,Life support systems,Electronic components,Monthly,23,Active,13,On-time,Email,F**** O*******
+C0453,Machine building,Medium,36.0,25,Webinar,10,1.4,Bursa,Nilufer,Hydraulic motors & generators,Clutches and brakes,Monthly,13,Active,14,On-time,Sales Rep,A**** Y*******
+C0454,Aerospace,Medium,42.5,42,Webinar,8,1.0,Sakarya,Serdivan,Actuators & motion control,Engine solutions,Monthly,25,Active,14,Occasional delay,Email,G**** R*******
+C0455,Aerospace,Small,8.1,11,LinkedIn Ads,2,0.9,Bursa,Nilufer,Engine solutions,Actuators & motion control,Monthly,14,Active,8,On-time,Dealer,C**** D*******
+C0456,Data centres,Medium,21.0,28,Trade Show,4,0.5,Konya,Selcuklu,Low-voltage power systems,"Server racks, enclosures",Monthly,5,Active,15,On-time,Sales Rep,H**** N*******
+C0457,Residential,Small,8.9,24,Trade Show,7,0.2,Bursa,Nilufer,Electronic components,Conduit & cable management,Quarterly,82,Active,5,On-time,Online,A**** Y*******
+C0458,Residential,Small,5.6,18,SEM,6,0.7,Zonguldak,Kozlu,Wiring devices & connectivity,Conduit & cable management,Monthly,16,Expired,10,On-time,Online,F**** O*******
+C0459,Food & beverage,Small,2.3,24,SEM,12,0.9,Izmir,Bornova,Valves,Filtration solutions,Quarterly,68,Pending,3,On-time,Sales Rep,H**** N*******
+C0460,Utilities,Small,5.0,29,Email,3,1.0,Istanbul,Umraniye,Utility & grid solutions,Medium-voltage power systems,Yearly,285,Active,1,Occasional delay,Sales Rep,C**** D*******
+C0461,Healthcare,Small,9.2,26,Webinar,10,0.6,Konya,Meram,Life support systems,Electronic components,Monthly,20,Active,11,On-time,Email,C**** D*******
+C0462,Oil & gas,Small,1.8,23,Content Marketing,10,0.4,Konya,Meram,Medium-voltage power systems,Process safety & automation,Yearly,188,Active,1,On-time,Sales Rep,C**** D*******
+C0463,Data centres,Small,3.9,21,Email,10,0.2,Kocaeli,Gebze,"Server racks, enclosures",Energy storage systems,Quarterly,95,Active,3,On-time,Sales Rep,E**** T*******
+C0464,Utilities,Medium,40.1,36,Trade Show,10,0.7,Kayseri,Kocasinan,Utility & grid solutions,Low-voltage power systems,Monthly,28,Pending,14,On-time,Sales Rep,A**** Y*******
+C0465,Healthcare,Small,8.8,14,Webinar,9,1.4,Eskisehir,Odunpazari,Life support systems,Safety & emergency comms,Quarterly,88,Active,3,On-time,Email,G**** R*******
+C0466,Oil & gas,Medium,30.0,20,Email,11,1.5,Sakarya,Arifiye,Fuel systems & emissions,Medium-voltage power systems,Monthly,7,Active,11,On-time,Dealer,E**** T*******
+C0467,Food & beverage,Small,7.4,7,Content Marketing,8,0.8,Bursa,Nilufer,Filtration solutions,Valves,Quarterly,90,Active,3,On-time,Sales Rep,F**** O*******
+C0468,Healthcare,Small,7.3,9,Content Marketing,4,0.6,Istanbul,Atasehir,Safety & emergency comms,Electronic components,Yearly,187,Active,2,Occasional delay,Dealer,D**** S*******
+C0469,Utilities,Small,8.3,7,SEM,4,0.6,Sakarya,Arifiye,Medium-voltage power systems,Low-voltage power systems,Monthly,28,Active,10,On-time,Sales Rep,D**** S*******
+C0470,Space,Small,2.4,22,Email,11,0.9,Kocaeli,Gebze,Medium-voltage power systems,Actuators & motion control,Yearly,219,Active,2,On-time,Sales Rep,G**** R*******
+C0471,Residential,Large,133.9,41,Webinar,7,0.4,Antalya,Kepez,Conduit & cable management,Wiring devices & connectivity,Monthly,14,Active,10,Occasional delay,Sales Rep,B**** K*******
+C0472,Oil & gas,Small,6.7,12,Webinar,7,1.1,Antalya,Muratpasa,Fuel systems & emissions,Medium-voltage power systems,Monthly,5,Active,11,Late,Sales Rep,D**** S*******
+C0473,"Mining, metals & minerals",Small,2.7,12,LinkedIn Ads,6,0.9,Ankara,Mamak,Valves,"Hose, tubing, fittings",Yearly,303,Active,1,On-time,Dealer,A**** Y*******
+C0474,Utilities,Small,9.5,28,Email,3,0.6,Zonguldak,Kozlu,Medium-voltage power systems,Low-voltage power systems,Quarterly,94,Expired,4,On-time,Sales Rep,D**** S*******
+C0475,Food & beverage,Small,2.9,27,Trade Show,7,0.5,Konya,Meram,Filtration solutions,Pumps,Monthly,17,Active,10,On-time,Online,H**** N*******
+C0476,Buildings,Small,1.1,13,SEM,6,1.3,Ankara,Etimesgut,Conduit & cable management,Lighting & controls,Quarterly,72,Active,6,On-time,Sales Rep,H**** N*******
+C0477,Oil & gas,Small,3.8,29,Email,8,1.3,Zonguldak,Kozlu,Medium-voltage power systems,Process safety & automation,Monthly,21,Pending,9,On-time,Sales Rep,F**** O*******
+C0478,Machine building,Small,5.1,19,Webinar,4,1.0,Kayseri,Kocasinan,Actuators & motion control,Hydraulic motors & generators,Monthly,20,Active,13,On-time,Online,D**** S*******
+C0479,Data centres,Medium,38.2,23,LinkedIn Ads,2,0.5,Sakarya,Arifiye,Low-voltage power systems,"Server racks, enclosures",Occasionally,267,Pending,0,On-time,Online,H**** N*******
+C0480,Data centres,Small,7.1,20,Trade Show,12,0.5,Bursa,Nilufer,Energy storage systems,"Server racks, enclosures",Quarterly,71,Active,5,On-time,Email,D**** S*******
+C0481,Buildings,Medium,40.9,40,Trade Show,13,0.4,Zonguldak,Kozlu,Conduit & cable management,Lighting & controls,Quarterly,88,Active,3,On-time,Sales Rep,B**** K*******
+C0482,Residential,Small,4.4,9,SEM,3,0.5,Bursa,Yildirim,Conduit & cable management,Electronic components,Monthly,19,Active,14,Occasional delay,Dealer,B**** K*******
+C0483,"Mining, metals & minerals",Small,1.3,27,Content Marketing,6,1.0,Antalya,Konyaalti,Valves,Process safety & automation,Monthly,25,Active,13,On-time,Email,A**** Y*******
+C0484,Healthcare,Small,3.4,25,SEM,9,0.9,Bursa,Nilufer,Electronic components,Life support systems,Monthly,7,Pending,12,Occasional delay,Dealer,F**** O*******
+C0485,Utilities,Small,2.1,12,Email,3,0.9,Eskisehir,Tepebasi,Utility & grid solutions,Medium-voltage power systems,Monthly,30,Active,15,On-time,Online,E**** T*******
+C0486,Utilities,Small,7.1,26,LinkedIn Ads,7,0.6,Kocaeli,Izmit,Utility & grid solutions,Low-voltage power systems,Quarterly,69,Pending,5,Occasional delay,Sales Rep,D**** S*******
+C0487,Buildings,Medium,19.1,39,LinkedIn Ads,4,0.6,Antalya,Kepez,Lighting & controls,Conduit & cable management,Yearly,237,Pending,1,On-time,Sales Rep,A**** Y*******
+C0488,Space,Medium,28.0,36,Content Marketing,12,0.7,Kocaeli,Gebze,Medium-voltage power systems,Energy storage systems,Monthly,29,Expired,15,On-time,Online,C**** D*******
+C0489,Food & beverage,Small,3.9,27,SEM,6,0.1,Istanbul,Beylikduzu,Valves,Pumps,Quarterly,93,Active,5,Occasional delay,Dealer,G**** R*******
+C0490,Space,Small,6.3,14,Email,10,0.7,Ankara,Mamak,Medium-voltage power systems,Energy storage systems,Yearly,185,Active,2,On-time,Online,H**** N*******
+C0491,Food & beverage,Small,9.8,18,Trade Show,2,1.1,Sakarya,Serdivan,Filtration solutions,Valves,Monthly,15,Expired,11,Late,Sales Rep,D**** S*******
+C0492,Healthcare,Small,2.1,25,Content Marketing,4,0.6,Ankara,Yenimahalle,Life support systems,Safety & emergency comms,Monthly,23,Active,15,Occasional delay,Email,E**** T*******
+C0493,Residential,Small,4.0,8,Content Marketing,4,1.5,Kocaeli,Gebze,Conduit & cable management,Wiring devices & connectivity,Quarterly,81,Active,3,On-time,Dealer,C**** D*******
+C0494,Space,Small,4.6,6,Webinar,9,1.1,Kayseri,Melikgazi,Medium-voltage power systems,Actuators & motion control,Monthly,23,Pending,9,On-time,Email,H**** N*******
+C0495,Data centres,Medium,25.4,38,LinkedIn Ads,10,0.6,Zonguldak,Eregli,"Server racks, enclosures",Low-voltage power systems,Monthly,23,Active,13,On-time,Online,B**** K*******
+C0496,Data centres,Small,6.7,12,Trade Show,9,0.0,Konya,Selcuklu,Energy storage systems,"Server racks, enclosures",Monthly,29,Active,10,Late,Sales Rep,A**** Y*******
+C0497,Space,Small,1.2,8,LinkedIn Ads,2,1.2,Adana,Seyhan,Medium-voltage power systems,Energy storage systems,Monthly,10,Active,10,Late,Sales Rep,E**** T*******
+C0498,Aerospace,Small,1.5,13,Trade Show,2,0.5,Bursa,Nilufer,Electrical circuit protection,Actuators & motion control,Quarterly,71,Pending,3,Occasional delay,Sales Rep,G**** R*******
+C0499,Aerospace,Small,6.2,29,Content Marketing,9,1.3,Antalya,Konyaalti,Actuators & motion control,Engine solutions,Yearly,339,Active,2,On-time,Sales Rep,H**** N*******
+C0500,Machine building,Small,4.2,22,Content Marketing,3,0.7,Eskisehir,Odunpazari,Actuators & motion control,Hydraulic motors & generators,Monthly,30,Active,15,Late,Dealer,H**** N*******
+C0501,Utilities,Medium,10.9,15,Content Marketing,6,1.3,Kocaeli,Izmit,Low-voltage power systems,Utility & grid solutions,Monthly,11,Active,12,On-time,Online,C**** D*******
+C0502,Residential,Small,2.6,11,Webinar,3,1.1,Izmir,Konak,Electronic components,Wiring devices & connectivity,Monthly,30,Active,9,On-time,Email,B**** K*******
+C0503,Vehicles,Medium,34.7,16,LinkedIn Ads,10,0.2,Antalya,Muratpasa,Transmissions,Vehicle controls & automation,Monthly,10,Active,10,On-time,Dealer,B**** K*******
+C0504,Space,Small,6.4,15,SEM,11,0.8,Sakarya,Arifiye,Actuators & motion control,Medium-voltage power systems,Quarterly,84,Active,4,On-time,Online,E**** T*******
+C0505,Oil & gas,Medium,44.6,37,Webinar,6,1.3,Bursa,Yildirim,Fuel systems & emissions,Process safety & automation,Monthly,25,Active,8,On-time,Sales Rep,H**** N*******
+C0506,Healthcare,Medium,11.8,41,Trade Show,12,0.7,Bursa,Osmangazi,Electronic components,Safety & emergency comms,Quarterly,76,Pending,6,On-time,Online,E**** T*******
+C0507,Residential,Large,178.1,41,Content Marketing,3,0.9,Istanbul,Umraniye,Conduit & cable management,Wiring devices & connectivity,Monthly,24,Active,14,Occasional delay,Dealer,F**** O*******
+C0508,Utilities,Small,6.2,16,SEM,8,0.8,Sakarya,Arifiye,Low-voltage power systems,Utility & grid solutions,Monthly,26,Pending,11,On-time,Dealer,F**** O*******
+C0509,Machine building,Large,164.5,39,SEM,9,0.6,Kocaeli,Izmit,Actuators & motion control,Hydraulic motors & generators,Yearly,274,Active,2,Occasional delay,Online,E**** T*******
+C0510,"Mining, metals & minerals",Small,5.7,14,SEM,11,1.2,Bursa,Yildirim,Process safety & automation,"Hose, tubing, fittings",Yearly,256,Pending,2,On-time,Dealer,D**** S*******
+C0511,Machine building,Small,3.8,8,Email,7,0.6,Adana,Seyhan,Clutches and brakes,Hydraulic motors & generators,Occasionally,385,Active,0,On-time,Dealer,G**** R*******
+C0512,Utilities,Small,6.9,15,Webinar,9,0.8,Istanbul,Kartal,Low-voltage power systems,Utility & grid solutions,Quarterly,83,Active,3,On-time,Email,H**** N*******
+C0513,Space,Small,9.6,13,Email,7,0.7,Kayseri,Melikgazi,Actuators & motion control,Medium-voltage power systems,Monthly,10,Active,14,On-time,Sales Rep,E**** T*******
+C0514,Space,Small,8.0,9,Content Marketing,10,0.2,Adana,Ceyhan,Energy storage systems,Actuators & motion control,Monthly,16,Active,12,On-time,Sales Rep,D**** S*******
+C0515,Aerospace,Small,9.4,10,Trade Show,2,0.6,Sakarya,Arifiye,Electrical circuit protection,Actuators & motion control,Monthly,26,Expired,15,On-time,Online,E**** T*******
+C0516,Vehicles,Medium,21.5,35,LinkedIn Ads,8,0.5,Antalya,Muratpasa,Engine solutions,Vehicle controls & automation,Occasionally,278,Pending,2,On-time,Sales Rep,E**** T*******
+C0517,"Mining, metals & minerals",Small,1.2,16,Email,8,0.7,Kayseri,Melikgazi,Process safety & automation,Valves,Quarterly,87,Active,3,Late,Online,A**** Y*******
+C0518,Oil & gas,Small,4.6,18,Content Marketing,12,0.5,Istanbul,Atasehir,Process safety & automation,Medium-voltage power systems,Monthly,14,Active,11,On-time,Sales Rep,G**** R*******
+C0519,Healthcare,Small,9.7,22,Trade Show,11,0.1,Konya,Meram,Electronic components,Safety & emergency comms,Monthly,26,Active,13,On-time,Online,E**** T*******
+C0520,Healthcare,Small,4.1,7,Email,5,0.8,Istanbul,Sariyer,Safety & emergency comms,Life support systems,Quarterly,82,Pending,4,On-time,Dealer,C**** D*******
+C0521,Food & beverage,Small,6.9,5,Email,7,1.4,Eskisehir,Odunpazari,Pumps,Filtration solutions,Quarterly,81,Active,5,On-time,Sales Rep,A**** Y*******
+C0522,Healthcare,Small,6.1,28,LinkedIn Ads,12,0.8,Antalya,Muratpasa,Life support systems,Electronic components,Occasionally,286,Expired,0,On-time,Online,H**** N*******
+C0523,Vehicles,Small,4.9,17,Webinar,4,1.0,Eskisehir,Tepebasi,Vehicle controls & automation,Engine solutions,Quarterly,85,Active,5,On-time,Dealer,A**** Y*******
+C0524,Buildings,Small,9.3,20,Content Marketing,4,1.0,Eskisehir,Odunpazari,Conduit & cable management,Lighting & controls,Quarterly,93,Active,4,On-time,Online,B**** K*******
+C0525,Buildings,Small,4.7,6,LinkedIn Ads,4,0.5,Zonguldak,Eregli,Lighting & controls,Wiring devices & connectivity,Yearly,177,Active,2,On-time,Sales Rep,G**** R*******
+C0526,Space,Small,2.3,15,SEM,12,1.0,Istanbul,Kartal,Medium-voltage power systems,Energy storage systems,Quarterly,63,Active,4,On-time,Sales Rep,D**** S*******
+C0527,Aerospace,Small,1.1,18,Content Marketing,9,1.5,Sakarya,Arifiye,Engine solutions,Electrical circuit protection,Yearly,251,Active,1,Occasional delay,Email,H**** N*******
+C0528,Utilities,Medium,42.2,35,LinkedIn Ads,4,0.5,Adana,Ceyhan,Utility & grid solutions,Low-voltage power systems,Quarterly,87,Expired,3,Occasional delay,Dealer,B**** K*******
+C0529,Aerospace,Large,176.5,30,LinkedIn Ads,13,0.4,Eskisehir,Odunpazari,Electrical circuit protection,Actuators & motion control,Quarterly,79,Active,6,On-time,Sales Rep,C**** D*******
+C0530,Vehicles,Small,3.5,11,Email,5,0.7,Bursa,Yildirim,Transmissions,Vehicle controls & automation,Quarterly,78,Pending,4,On-time,Online,D**** S*******
+C0531,Space,Small,4.5,23,Webinar,6,0.6,Bursa,Nilufer,Actuators & motion control,Energy storage systems,Quarterly,80,Active,3,On-time,Dealer,G**** R*******
+C0532,"Mining, metals & minerals",Small,1.3,18,Trade Show,10,1.1,Adana,Seyhan,"Hose, tubing, fittings",Valves,Monthly,14,Pending,13,On-time,Dealer,C**** D*******
+C0533,"Mining, metals & minerals",Small,7.6,7,Email,7,0.3,Bursa,Nilufer,"Hose, tubing, fittings",Valves,Quarterly,77,Active,3,Occasional delay,Dealer,F**** O*******
+C0534,Machine building,Small,8.6,15,Content Marketing,8,1.3,Zonguldak,Kozlu,Hydraulic motors & generators,Clutches and brakes,Monthly,16,Active,8,On-time,Online,G**** R*******
+C0535,Oil & gas,Large,77.8,33,SEM,7,0.9,Izmir,Karsiyaka,Medium-voltage power systems,Fuel systems & emissions,Quarterly,77,Active,5,On-time,Sales Rep,H**** N*******
+C0536,Aerospace,Small,3.7,19,Content Marketing,3,1.2,Antalya,Konyaalti,Actuators & motion control,Electrical circuit protection,Quarterly,91,Active,3,On-time,Dealer,A**** Y*******
+C0537,Vehicles,Small,10.0,16,Webinar,8,1.0,Kocaeli,Izmit,Vehicle controls & automation,Transmissions,Quarterly,80,Active,5,On-time,Dealer,B**** K*******
+C0538,Vehicles,Small,1.0,28,LinkedIn Ads,2,0.6,Eskisehir,Tepebasi,Transmissions,Vehicle controls & automation,Monthly,19,Active,15,On-time,Sales Rep,A**** Y*******
+C0539,Oil & gas,Small,4.6,9,Content Marketing,10,0.6,Istanbul,Atasehir,Fuel systems & emissions,Process safety & automation,Yearly,334,Expired,2,Occasional delay,Online,C**** D*******
+C0540,Oil & gas,Small,2.3,16,Webinar,11,0.8,Adana,Seyhan,Process safety & automation,Medium-voltage power systems,Quarterly,84,Pending,3,On-time,Dealer,H**** N*******
+C0541,Utilities,Small,8.5,9,Webinar,10,0.3,Ankara,Etimesgut,Low-voltage power systems,Medium-voltage power systems,Quarterly,67,Active,3,On-time,Online,D**** S*******
+C0542,Machine building,Medium,20.6,40,LinkedIn Ads,5,0.6,Istanbul,Atasehir,Actuators & motion control,Hydraulic motors & generators,Monthly,6,Pending,14,Occasional delay,Sales Rep,F**** O*******
+C0543,Buildings,Small,8.1,10,Trade Show,10,1.0,Konya,Selcuklu,Conduit & cable management,Lighting & controls,Monthly,26,Active,10,On-time,Dealer,F**** O*******
+C0544,Food & beverage,Small,7.2,21,Trade Show,12,1.0,Konya,Selcuklu,Valves,Filtration solutions,Yearly,223,Active,1,On-time,Online,C**** D*******
+C0545,Aerospace,Small,6.8,22,Content Marketing,6,0.8,Istanbul,Sariyer,Electrical circuit protection,Engine solutions,Yearly,219,Active,1,On-time,Sales Rep,E**** T*******
+C0546,Machine building,Medium,28.3,42,Webinar,12,1.1,Kocaeli,Gebze,Clutches and brakes,Hydraulic motors & generators,Quarterly,94,Active,5,Occasional delay,Sales Rep,D**** S*******
+C0547,Utilities,Small,6.1,8,LinkedIn Ads,5,0.5,Konya,Selcuklu,Utility & grid solutions,Medium-voltage power systems,Quarterly,75,Pending,4,Occasional delay,Sales Rep,H**** N*******
+C0548,Healthcare,Large,96.0,35,Webinar,13,1.3,Bursa,Nilufer,Life support systems,Safety & emergency comms,Quarterly,69,Active,6,On-time,Sales Rep,G**** R*******
+C0549,Healthcare,Medium,19.1,21,Trade Show,9,0.6,Adana,Ceyhan,Life support systems,Electronic components,Yearly,290,Active,2,On-time,Online,C**** D*******
+C0550,Utilities,Small,4.3,24,Email,10,1.3,Zonguldak,Eregli,Medium-voltage power systems,Low-voltage power systems,Quarterly,94,Active,3,Occasional delay,Dealer,F**** O*******
+C0551,Data centres,Small,4.9,7,Trade Show,10,1.1,Zonguldak,Eregli,"Server racks, enclosures",Low-voltage power systems,Monthly,28,Pending,13,On-time,Online,F**** O*******
+C0552,Aerospace,Medium,27.3,23,Content Marketing,8,0.8,Izmir,Karsiyaka,Engine solutions,Electrical circuit protection,Monthly,20,Active,15,Late,Email,D**** S*******
+C0553,Aerospace,Medium,48.4,37,LinkedIn Ads,9,1.5,Bursa,Nilufer,Engine solutions,Actuators & motion control,Yearly,246,Active,1,On-time,Dealer,B**** K*******
+C0554,Space,Large,131.6,34,Email,6,0.9,Ankara,Etimesgut,Actuators & motion control,Medium-voltage power systems,Yearly,319,Active,2,Occasional delay,Dealer,D**** S*******
+C0555,Space,Small,3.9,11,Webinar,4,0.4,Izmir,Bornova,Energy storage systems,Medium-voltage power systems,Monthly,15,Active,15,On-time,Sales Rep,E**** T*******
+C0556,Aerospace,Small,2.8,11,SEM,2,0.6,Konya,Selcuklu,Electrical circuit protection,Actuators & motion control,Monthly,30,Active,8,On-time,Email,E**** T*******
+C0557,Aerospace,Medium,46.2,43,Webinar,7,0.9,Bursa,Yildirim,Electrical circuit protection,Engine solutions,Quarterly,69,Pending,5,On-time,Online,F**** O*******
+C0558,Healthcare,Small,7.3,28,LinkedIn Ads,10,0.7,Istanbul,Atasehir,Electronic components,Safety & emergency comms,Monthly,23,Active,15,On-time,Dealer,F**** O*******
+C0559,Vehicles,Small,6.3,18,SEM,12,1.1,Sakarya,Arifiye,Transmissions,Vehicle controls & automation,Quarterly,62,Pending,5,On-time,Sales Rep,H**** N*******
+C0560,Machine building,Small,4.0,8,Webinar,4,0.7,Kocaeli,Gebze,Hydraulic motors & generators,Clutches and brakes,Monthly,18,Active,12,On-time,Sales Rep,D**** S*******
+C0561,Vehicles,Small,8.3,24,Webinar,5,1.0,Izmir,Cigli,Transmissions,Engine solutions,Quarterly,75,Active,3,On-time,Sales Rep,H**** N*******
+C0562,Buildings,Small,5.7,22,Email,5,0.0,Bursa,Osmangazi,Conduit & cable management,Lighting & controls,Monthly,10,Active,15,Late,Online,A**** Y*******
+C0563,Food & beverage,Small,6.5,17,Trade Show,3,0.3,Kocaeli,Gebze,Pumps,Filtration solutions,Quarterly,65,Active,4,On-time,Sales Rep,A**** Y*******
+C0564,Utilities,Small,1.6,9,Webinar,2,1.5,Zonguldak,Kozlu,Low-voltage power systems,Medium-voltage power systems,Monthly,9,Pending,13,On-time,Email,H**** N*******
+C0565,Oil & gas,Medium,47.9,22,LinkedIn Ads,6,0.4,Istanbul,Umraniye,Process safety & automation,Fuel systems & emissions,Monthly,18,Pending,13,On-time,Online,C**** D*******
+C0566,Residential,Small,7.5,9,SEM,5,0.7,Adana,Ceyhan,Electronic components,Wiring devices & connectivity,Yearly,286,Active,2,On-time,Dealer,H**** N*******
+C0567,Healthcare,Small,4.7,19,LinkedIn Ads,6,1.0,Sakarya,Serdivan,Safety & emergency comms,Life support systems,Yearly,326,Active,2,Occasional delay,Sales Rep,H**** N*******
+C0568,Buildings,Medium,41.7,38,Trade Show,13,1.0,Adana,Ceyhan,Wiring devices & connectivity,Lighting & controls,Monthly,15,Active,10,Occasional delay,Sales Rep,A**** Y*******
+C0569,Residential,Small,4.4,18,SEM,11,0.6,Antalya,Konyaalti,Conduit & cable management,Electronic components,Monthly,28,Active,13,Occasional delay,Dealer,D**** S*******
+C0570,Data centres,Small,3.6,19,Webinar,2,0.7,Antalya,Muratpasa,Low-voltage power systems,Energy storage systems,Quarterly,71,Pending,3,On-time,Sales Rep,G**** R*******
+C0571,Data centres,Medium,15.7,15,LinkedIn Ads,2,0.6,Antalya,Kepez,Low-voltage power systems,Energy storage systems,Yearly,320,Active,1,Late,Sales Rep,F**** O*******
+C0572,Vehicles,Small,7.4,9,Webinar,5,0.8,Sakarya,Arifiye,Transmissions,Vehicle controls & automation,Quarterly,73,Pending,6,Occasional delay,Sales Rep,H**** N*******
+C0573,Vehicles,Small,7.1,26,LinkedIn Ads,11,0.6,Bursa,Nilufer,Engine solutions,Transmissions,Yearly,158,Expired,2,Late,Dealer,G**** R*******
+C0574,Oil & gas,Small,2.5,13,SEM,2,1.5,Konya,Meram,Medium-voltage power systems,Fuel systems & emissions,Monthly,19,Active,10,On-time,Online,C**** D*******
+C0575,Aerospace,Small,4.9,18,Trade Show,7,0.9,Istanbul,Kartal,Electrical circuit protection,Actuators & motion control,Monthly,26,Active,12,On-time,Email,F**** O*******
+C0576,Machine building,Small,1.2,6,SEM,3,1.2,Istanbul,Sariyer,Actuators & motion control,Clutches and brakes,Monthly,24,Active,9,On-time,Sales Rep,D**** S*******
+C0577,Vehicles,Large,176.5,37,Content Marketing,13,0.6,Ankara,Yenimahalle,Engine solutions,Vehicle controls & automation,Occasionally,359,Active,0,On-time,Sales Rep,C**** D*******
+C0578,Residential,Small,6.3,10,Content Marketing,3,0.4,Sakarya,Arifiye,Electronic components,Conduit & cable management,Monthly,27,Active,13,Occasional delay,Sales Rep,A**** Y*******
+C0579,Buildings,Small,9.4,11,LinkedIn Ads,6,0.9,Bursa,Osmangazi,Wiring devices & connectivity,Conduit & cable management,Quarterly,80,Active,4,On-time,Dealer,B**** K*******
+C0580,Buildings,Medium,16.2,36,LinkedIn Ads,3,0.9,Istanbul,Kartal,Lighting & controls,Conduit & cable management,Monthly,25,Active,15,On-time,Sales Rep,B**** K*******
+C0581,Vehicles,Small,4.7,14,Webinar,3,0.3,Eskisehir,Tepebasi,Transmissions,Engine solutions,Monthly,28,Active,10,On-time,Online,E**** T*******
+C0582,"Mining, metals & minerals",Small,8.0,25,LinkedIn Ads,9,0.6,Istanbul,Atasehir,"Hose, tubing, fittings",Process safety & automation,Monthly,27,Expired,10,Occasional delay,Online,F**** O*******
+C0583,Residential,Medium,26.9,29,Trade Show,4,1.3,Kocaeli,Gebze,Electronic components,Wiring devices & connectivity,Monthly,17,Active,15,On-time,Sales Rep,C**** D*******
+C0584,Space,Small,9.4,5,Email,9,0.9,Eskisehir,Odunpazari,Actuators & motion control,Energy storage systems,Monthly,10,Active,9,Occasional delay,Dealer,G**** R*******
+C0585,Healthcare,Small,2.5,11,LinkedIn Ads,11,0.7,Konya,Meram,Life support systems,Safety & emergency comms,Yearly,280,Active,1,On-time,Sales Rep,D**** S*******
+C0586,Vehicles,Small,6.2,18,Webinar,6,0.9,Bursa,Nilufer,Engine solutions,Vehicle controls & automation,Yearly,307,Active,1,On-time,Dealer,A**** Y*******
+C0587,Food & beverage,Small,9.7,17,Email,11,0.6,Izmir,Bornova,Pumps,Filtration solutions,Monthly,18,Active,12,Late,Dealer,C**** D*******
+C0588,Oil & gas,Small,2.8,18,Webinar,7,0.7,Sakarya,Arifiye,Medium-voltage power systems,Fuel systems & emissions,Yearly,301,Active,1,On-time,Dealer,H**** N*******
+C0589,Buildings,Small,2.9,12,Webinar,11,1.1,Antalya,Kepez,Wiring devices & connectivity,Lighting & controls,Monthly,12,Active,8,On-time,Dealer,C**** D*******
+C0590,Vehicles,Small,8.5,16,Email,4,1.1,Adana,Seyhan,Engine solutions,Transmissions,Monthly,16,Active,14,On-time,Dealer,F**** O*******
+C0591,Residential,Large,108.3,44,Content Marketing,7,0.5,Istanbul,Sariyer,Conduit & cable management,Electronic components,Monthly,29,Expired,12,On-time,Email,A**** Y*******
+C0592,Utilities,Small,6.7,24,LinkedIn Ads,2,0.5,Kayseri,Kocasinan,Medium-voltage power systems,Low-voltage power systems,Monthly,28,Active,10,On-time,Sales Rep,D**** S*******
+C0593,Utilities,Small,9.2,6,LinkedIn Ads,5,1.2,Adana,Seyhan,Utility & grid solutions,Medium-voltage power systems,Monthly,29,Pending,8,On-time,Sales Rep,A**** Y*******
+C0594,Machine building,Medium,47.4,19,Email,9,1.3,Bursa,Nilufer,Actuators & motion control,Clutches and brakes,Quarterly,63,Pending,3,Occasional delay,Dealer,D**** S*******
+C0595,Residential,Small,8.5,11,Content Marketing,10,0.0,Bursa,Yildirim,Conduit & cable management,Electronic components,Quarterly,69,Active,3,On-time,Dealer,D**** S*******
+C0596,Space,Small,7.9,22,Email,6,0.6,Eskisehir,Odunpazari,Actuators & motion control,Medium-voltage power systems,Monthly,18,Pending,12,On-time,Online,H**** N*******
+C0597,Space,Small,8.4,22,Email,8,0.8,Zonguldak,Kozlu,Actuators & motion control,Medium-voltage power systems,Occasionally,424,Pending,2,Late,Online,B**** K*******
+C0598,"Mining, metals & minerals",Small,8.6,18,Webinar,8,1.5,Konya,Selcuklu,Valves,Process safety & automation,Quarterly,67,Expired,5,On-time,Sales Rep,B**** K*******
+C0599,Machine building,Small,6.4,7,Email,9,0.1,Ankara,Etimesgut,Hydraulic motors & generators,Clutches and brakes,Monthly,9,Active,15,On-time,Online,D**** S*******
+C0600,"Mining, metals & minerals",Small,2.8,30,Content Marketing,11,1.3,Konya,Meram,Process safety & automation,"Hose, tubing, fittings",Yearly,226,Active,1,On-time,Sales Rep,E**** T*******
+C0601,Machine building,Large,187.4,34,Email,7,0.7,Eskisehir,Odunpazari,Hydraulic motors & generators,Actuators & motion control,Monthly,16,Active,8,Late,Sales Rep,E**** T*******
+C0602,Oil & gas,Small,6.7,11,Email,10,1.4,Bursa,Osmangazi,Medium-voltage power systems,Process safety & automation,Monthly,22,Expired,14,On-time,Online,A**** Y*******
+C0603,"Mining, metals & minerals",Medium,37.1,17,Trade Show,9,0.7,Bursa,Nilufer,"Hose, tubing, fittings",Process safety & automation,Yearly,199,Active,2,Late,Dealer,B**** K*******
+C0604,Oil & gas,Small,7.7,24,Trade Show,3,0.5,Istanbul,Umraniye,Medium-voltage power systems,Fuel systems & emissions,Quarterly,61,Active,6,On-time,Online,G**** R*******
+C0605,Healthcare,Small,6.1,26,Content Marketing,3,1.2,Zonguldak,Kozlu,Safety & emergency comms,Life support systems,Monthly,24,Active,14,Late,Online,H**** N*******
+C0606,"Mining, metals & minerals",Small,3.9,17,Email,9,0.8,Konya,Meram,"Hose, tubing, fittings",Valves,Quarterly,91,Active,6,Late,Online,C**** D*******
+C0607,Residential,Large,111.6,43,Email,9,0.6,Kayseri,Kocasinan,Conduit & cable management,Electronic components,Monthly,10,Active,12,On-time,Sales Rep,H**** N*******
+C0608,Vehicles,Small,7.6,9,SEM,7,0.8,Konya,Selcuklu,Engine solutions,Vehicle controls & automation,Occasionally,437,Expired,0,Late,Sales Rep,E**** T*******
+C0609,Oil & gas,Small,9.9,5,SEM,9,0.7,Izmir,Karsiyaka,Fuel systems & emissions,Medium-voltage power systems,Yearly,226,Active,2,On-time,Dealer,D**** S*******
+C0610,Machine building,Small,3.9,11,SEM,7,0.8,Bursa,Osmangazi,Clutches and brakes,Actuators & motion control,Quarterly,94,Pending,5,Late,Sales Rep,F**** O*******
+C0611,Machine building,Small,5.7,21,LinkedIn Ads,11,1.1,Kocaeli,Izmit,Hydraulic motors & generators,Actuators & motion control,Monthly,21,Active,9,On-time,Dealer,G**** R*******
+C0612,Food & beverage,Small,6.3,23,Content Marketing,8,1.1,Ankara,Mamak,Filtration solutions,Pumps,Occasionally,369,Active,1,On-time,Dealer,C**** D*******
+C0613,Aerospace,Small,6.0,12,LinkedIn Ads,8,1.2,Kayseri,Kocasinan,Electrical circuit protection,Engine solutions,Occasionally,206,Active,1,Occasional delay,Online,G**** R*******
+C0614,Oil & gas,Medium,10.6,28,Email,8,1.1,Bursa,Osmangazi,Fuel systems & emissions,Process safety & automation,Monthly,8,Active,8,On-time,Dealer,H**** N*******
+C0615,Machine building,Medium,44.7,17,LinkedIn Ads,12,0.8,Antalya,Kepez,Clutches and brakes,Actuators & motion control,Monthly,25,Active,13,On-time,Dealer,H**** N*******
+C0616,Data centres,Medium,43.4,33,Webinar,12,0.9,Adana,Ceyhan,Energy storage systems,"Server racks, enclosures",Quarterly,74,Active,3,Occasional delay,Dealer,H**** N*******
+C0617,Residential,Small,4.8,27,SEM,9,0.2,Zonguldak,Eregli,Electronic components,Conduit & cable management,Monthly,11,Active,13,On-time,Online,D**** S*******
+C0618,Residential,Small,1.2,18,Trade Show,12,0.1,Bursa,Osmangazi,Conduit & cable management,Electronic components,Occasionally,334,Active,2,Occasional delay,Dealer,H**** N*******
+C0619,Healthcare,Large,161.2,37,Content Marketing,8,1.0,Zonguldak,Eregli,Electronic components,Safety & emergency comms,Yearly,211,Pending,1,On-time,Sales Rep,E**** T*******
+C0620,"Mining, metals & minerals",Small,3.1,27,LinkedIn Ads,10,1.1,Istanbul,Umraniye,Valves,"Hose, tubing, fittings",Quarterly,60,Active,6,On-time,Dealer,G**** R*******
+C0621,Machine building,Large,71.7,25,Content Marketing,11,0.8,Bursa,Yildirim,Actuators & motion control,Clutches and brakes,Monthly,13,Pending,11,On-time,Online,B**** K*******
+C0622,Aerospace,Medium,41.7,35,Webinar,7,0.3,Kayseri,Melikgazi,Engine solutions,Electrical circuit protection,Monthly,8,Active,12,On-time,Email,F**** O*******
+C0623,Healthcare,Small,3.8,16,Trade Show,11,1.5,Eskisehir,Tepebasi,Life support systems,Electronic components,Monthly,20,Expired,9,On-time,Online,A**** Y*******
+C0624,Residential,Medium,16.6,35,Webinar,12,0.7,Sakarya,Serdivan,Conduit & cable management,Electronic components,Quarterly,94,Pending,5,On-time,Sales Rep,G**** R*******
+C0625,Utilities,Medium,15.1,23,LinkedIn Ads,4,0.9,Eskisehir,Odunpazari,Utility & grid solutions,Medium-voltage power systems,Occasionally,188,Expired,0,On-time,Online,C**** D*******
+C0626,Vehicles,Small,8.1,16,Email,7,0.7,Eskisehir,Odunpazari,Engine solutions,Transmissions,Monthly,30,Active,8,On-time,Online,F**** O*******
+C0627,Oil & gas,Small,1.3,9,Content Marketing,5,0.5,Eskisehir,Odunpazari,Fuel systems & emissions,Medium-voltage power systems,Occasionally,236,Pending,1,Late,Online,F**** O*******
+C0628,Buildings,Small,2.8,12,Email,4,0.2,Antalya,Kepez,Wiring devices & connectivity,Conduit & cable management,Quarterly,63,Pending,5,Occasional delay,Email,H**** N*******
+C0629,Machine building,Small,4.1,13,Email,7,0.0,Izmir,Konak,Clutches and brakes,Hydraulic motors & generators,Quarterly,73,Active,4,Occasional delay,Online,A**** Y*******
+C0630,Space,Small,8.8,27,Trade Show,6,0.9,Sakarya,Serdivan,Medium-voltage power systems,Energy storage systems,Yearly,154,Active,1,On-time,Dealer,D**** S*******
+C0631,Data centres,Small,6.8,18,Content Marketing,10,0.7,Ankara,Yenimahalle,"Server racks, enclosures",Energy storage systems,Monthly,27,Active,11,On-time,Sales Rep,G**** R*******
+C0632,Aerospace,Small,9.4,26,Content Marketing,12,0.6,Kocaeli,Korfez,Electrical circuit protection,Engine solutions,Monthly,7,Pending,11,On-time,Sales Rep,E**** T*******
+C0633,"Mining, metals & minerals",Small,8.5,9,SEM,3,1.2,Kayseri,Melikgazi,"Hose, tubing, fittings",Process safety & automation,Quarterly,95,Pending,5,Late,Dealer,F**** O*******
+C0634,Oil & gas,Small,3.3,20,Webinar,3,1.1,Sakarya,Arifiye,Medium-voltage power systems,Process safety & automation,Monthly,11,Active,8,On-time,Sales Rep,F**** O*******
+C0635,Residential,Small,4.8,17,Webinar,4,0.4,Istanbul,Umraniye,Electronic components,Conduit & cable management,Quarterly,78,Pending,4,On-time,Sales Rep,D**** S*******
+C0636,Food & beverage,Medium,39.9,27,Email,12,0.1,Adana,Seyhan,Pumps,Valves,Yearly,353,Active,2,On-time,Sales Rep,A**** Y*******
+C0637,Utilities,Small,5.8,20,Email,5,1.2,Adana,Ceyhan,Low-voltage power systems,Medium-voltage power systems,Quarterly,75,Active,5,On-time,Dealer,G**** R*******
+C0638,"Mining, metals & minerals",Small,3.9,19,Content Marketing,9,0.6,Kocaeli,Korfez,Valves,"Hose, tubing, fittings",Yearly,352,Active,1,Occasional delay,Dealer,D**** S*******
+C0639,Healthcare,Small,6.2,26,Webinar,6,0.6,Konya,Selcuklu,Life support systems,Safety & emergency comms,Quarterly,71,Active,5,On-time,Sales Rep,B**** K*******
+C0640,Healthcare,Medium,21.9,28,Webinar,8,0.7,Kayseri,Melikgazi,Safety & emergency comms,Electronic components,Quarterly,71,Active,5,Occasional delay,Sales Rep,H**** N*******
+C0641,Oil & gas,Large,72.7,43,Email,7,1.4,Kayseri,Kocasinan,Fuel systems & emissions,Medium-voltage power systems,Monthly,8,Active,12,On-time,Dealer,D**** S*******
+C0642,Aerospace,Small,9.0,5,Content Marketing,2,1.2,Antalya,Kepez,Electrical circuit protection,Actuators & motion control,Monthly,19,Active,14,On-time,Dealer,B**** K*******
+C0643,Machine building,Small,4.0,10,Trade Show,11,1.0,Ankara,Yenimahalle,Hydraulic motors & generators,Actuators & motion control,Yearly,192,Expired,1,On-time,Sales Rep,G**** R*******
+C0644,Data centres,Small,4.1,15,Content Marketing,5,0.4,Ankara,Cankaya,Low-voltage power systems,"Server racks, enclosures",Quarterly,73,Active,5,On-time,Sales Rep,G**** R*******
+C0645,Machine building,Small,2.9,18,Trade Show,6,1.1,Konya,Selcuklu,Actuators & motion control,Hydraulic motors & generators,Yearly,180,Pending,1,On-time,Sales Rep,A**** Y*******
+C0646,Space,Small,1.7,27,Trade Show,12,1.0,Ankara,Yenimahalle,Energy storage systems,Medium-voltage power systems,Yearly,156,Active,2,Late,Sales Rep,B**** K*******
+C0647,Space,Medium,38.6,30,SEM,10,0.4,Kocaeli,Gebze,Medium-voltage power systems,Actuators & motion control,Quarterly,66,Active,6,Occasional delay,Sales Rep,G**** R*******
+C0648,"Mining, metals & minerals",Small,7.3,19,Email,12,1.1,Zonguldak,Eregli,"Hose, tubing, fittings",Process safety & automation,Quarterly,76,Active,6,On-time,Sales Rep,B**** K*******
+C0649,Space,Small,3.0,25,Content Marketing,8,0.5,Eskisehir,Odunpazari,Medium-voltage power systems,Energy storage systems,Quarterly,60,Expired,3,On-time,Dealer,G**** R*******
+C0650,Data centres,Small,2.0,19,LinkedIn Ads,10,1.3,Eskisehir,Odunpazari,Low-voltage power systems,"Server racks, enclosures",Monthly,18,Active,8,On-time,Sales Rep,F**** O*******
+C0651,Space,Small,9.0,22,Email,2,0.3,Antalya,Kepez,Actuators & motion control,Medium-voltage power systems,Yearly,192,Active,2,On-time,Online,C**** D*******
+C0652,Healthcare,Small,6.5,6,SEM,7,1.3,Sakarya,Serdivan,Electronic components,Life support systems,Yearly,318,Active,1,On-time,Dealer,B**** K*******
+C0653,Aerospace,Medium,11.2,30,Webinar,9,0.5,Sakarya,Arifiye,Electrical circuit protection,Actuators & motion control,Quarterly,65,Active,4,Late,Dealer,E**** T*******
+C0654,Vehicles,Medium,20.8,39,Content Marketing,11,1.1,Ankara,Mamak,Vehicle controls & automation,Transmissions,Quarterly,68,Active,5,On-time,Dealer,A**** Y*******
+C0655,Space,Small,8.1,13,Trade Show,11,0.5,Zonguldak,Eregli,Actuators & motion control,Medium-voltage power systems,Yearly,262,Active,2,Occasional delay,Sales Rep,B**** K*******
+C0656,"Mining, metals & minerals",Small,3.6,14,Trade Show,11,0.2,Konya,Selcuklu,"Hose, tubing, fittings",Process safety & automation,Monthly,9,Expired,13,On-time,Sales Rep,E**** T*******
+C0657,Food & beverage,Small,9.6,8,Content Marketing,10,0.3,Antalya,Konyaalti,Valves,Filtration solutions,Monthly,25,Active,9,Late,Dealer,F**** O*******
+C0658,Food & beverage,Small,4.6,25,Webinar,5,0.8,Zonguldak,Kozlu,Filtration solutions,Pumps,Yearly,279,Active,1,On-time,Sales Rep,E**** T*******
+C0659,Healthcare,Small,6.0,23,Webinar,3,0.4,Adana,Ceyhan,Safety & emergency comms,Electronic components,Quarterly,77,Active,5,On-time,Online,B**** K*******
+C0660,Aerospace,Large,164.2,46,SEM,7,0.8,Bursa,Osmangazi,Engine solutions,Electrical circuit protection,Monthly,7,Active,11,On-time,Dealer,C**** D*******
+C0661,Food & beverage,Small,7.6,11,SEM,7,1.5,Konya,Selcuklu,Filtration solutions,Pumps,Quarterly,77,Expired,5,Occasional delay,Dealer,B**** K*******
+C0662,Food & beverage,Small,3.7,9,Trade Show,8,0.2,Kayseri,Melikgazi,Valves,Filtration solutions,Quarterly,67,Pending,3,Occasional delay,Sales Rep,B**** K*******
+C0663,Vehicles,Small,3.5,23,Content Marketing,5,1.0,Eskisehir,Tepebasi,Vehicle controls & automation,Engine solutions,Quarterly,95,Active,3,On-time,Dealer,H**** N*******
+C0664,Buildings,Medium,17.9,16,Webinar,10,0.6,Kayseri,Melikgazi,Wiring devices & connectivity,Lighting & controls,Monthly,21,Active,9,On-time,Email,G**** R*******
+C0665,Vehicles,Small,5.9,10,Email,6,1.0,Bursa,Nilufer,Transmissions,Engine solutions,Monthly,23,Active,12,On-time,Online,H**** N*******
+C0666,Machine building,Small,2.8,15,Content Marketing,11,1.4,Adana,Seyhan,Actuators & motion control,Hydraulic motors & generators,Yearly,201,Active,2,On-time,Dealer,A**** Y*******
+C0667,Vehicles,Small,3.7,10,Email,10,1.2,Kayseri,Kocasinan,Transmissions,Vehicle controls & automation,Yearly,254,Active,1,Late,Dealer,C**** D*******
+C0668,Utilities,Small,2.2,20,LinkedIn Ads,12,1.2,Zonguldak,Kozlu,Low-voltage power systems,Utility & grid solutions,Quarterly,77,Active,3,On-time,Online,A**** Y*******
+C0669,Space,Medium,30.9,42,LinkedIn Ads,8,0.0,Ankara,Mamak,Actuators & motion control,Medium-voltage power systems,Monthly,29,Pending,8,On-time,Sales Rep,G**** R*******
+C0670,Space,Medium,42.0,33,Content Marketing,13,0.4,Kayseri,Kocasinan,Energy storage systems,Actuators & motion control,Quarterly,93,Pending,5,On-time,Sales Rep,G**** R*******
+C0671,Aerospace,Medium,15.3,28,Trade Show,3,1.1,Istanbul,Beylikduzu,Engine solutions,Electrical circuit protection,Yearly,171,Active,1,On-time,Sales Rep,E**** T*******
+C0672,Buildings,Small,3.4,28,Webinar,5,1.1,Ankara,Mamak,Lighting & controls,Conduit & cable management,Quarterly,66,Active,4,On-time,Sales Rep,G**** R*******
+C0673,Residential,Small,5.0,17,Email,8,0.7,Izmir,Karsiyaka,Wiring devices & connectivity,Conduit & cable management,Quarterly,67,Pending,3,Late,Sales Rep,D**** S*******
+C0674,Residential,Large,104.6,26,LinkedIn Ads,2,0.1,Kayseri,Kocasinan,Electronic components,Wiring devices & connectivity,Yearly,344,Active,1,On-time,Online,A**** Y*******
+C0675,Oil & gas,Medium,18.2,34,Webinar,6,0.7,Eskisehir,Odunpazari,Fuel systems & emissions,Process safety & automation,Yearly,235,Active,2,On-time,Dealer,F**** O*******
+C0676,Healthcare,Small,9.1,22,Content Marketing,2,1.2,Antalya,Konyaalti,Safety & emergency comms,Life support systems,Quarterly,93,Active,3,Occasional delay,Online,E**** T*******
+C0677,Buildings,Small,6.6,9,Content Marketing,2,0.8,Sakarya,Arifiye,Lighting & controls,Wiring devices & connectivity,Yearly,317,Active,2,On-time,Sales Rep,H**** N*******
+C0678,Space,Medium,38.7,36,Content Marketing,12,0.5,Kocaeli,Gebze,Actuators & motion control,Medium-voltage power systems,Monthly,18,Active,10,On-time,Dealer,B**** K*******
+C0679,Space,Small,6.8,20,Trade Show,9,0.7,Bursa,Osmangazi,Energy storage systems,Actuators & motion control,Monthly,22,Expired,15,On-time,Sales Rep,F**** O*******
+C0680,Buildings,Medium,46.6,22,Webinar,6,0.6,Sakarya,Serdivan,Conduit & cable management,Wiring devices & connectivity,Monthly,27,Pending,12,On-time,Sales Rep,H**** N*******
+C0681,Oil & gas,Large,100.0,37,Content Marketing,9,0.5,Adana,Ceyhan,Process safety & automation,Fuel systems & emissions,Monthly,27,Active,14,On-time,Dealer,E**** T*******
+C0682,Data centres,Small,5.2,17,Webinar,4,0.4,Antalya,Muratpasa,"Server racks, enclosures",Energy storage systems,Monthly,23,Active,11,Occasional delay,Dealer,E**** T*******
+C0683,Machine building,Small,9.7,30,Webinar,6,0.8,Konya,Meram,Clutches and brakes,Hydraulic motors & generators,Monthly,23,Active,15,On-time,Sales Rep,G**** R*******
+C0684,Utilities,Small,6.7,27,Content Marketing,8,0.7,Zonguldak,Kozlu,Medium-voltage power systems,Utility & grid solutions,Yearly,268,Active,1,Occasional delay,Online,F**** O*******
+C0685,Food & beverage,Medium,35.3,17,LinkedIn Ads,5,1.0,Antalya,Kepez,Valves,Pumps,Quarterly,77,Active,5,On-time,Online,G**** R*******
+C0686,Aerospace,Small,2.0,6,Webinar,5,1.4,Konya,Meram,Actuators & motion control,Engine solutions,Yearly,340,Active,2,On-time,Dealer,H**** N*******
+C0687,Oil & gas,Medium,39.2,19,LinkedIn Ads,2,0.3,Antalya,Muratpasa,Medium-voltage power systems,Fuel systems & emissions,Yearly,183,Active,1,On-time,Online,F**** O*******
+C0688,Aerospace,Small,9.0,23,LinkedIn Ads,12,1.0,Ankara,Yenimahalle,Electrical circuit protection,Engine solutions,Quarterly,75,Pending,4,On-time,Online,C**** D*******
+C0689,Utilities,Large,80.3,35,Email,5,1.0,Adana,Seyhan,Utility & grid solutions,Medium-voltage power systems,Monthly,19,Expired,10,Occasional delay,Dealer,G**** R*******
+C0690,Food & beverage,Medium,24.9,37,Email,6,0.3,Istanbul,Kartal,Valves,Pumps,Monthly,20,Active,13,On-time,Sales Rep,D**** S*******
+C0691,Data centres,Small,3.1,10,LinkedIn Ads,7,0.4,Adana,Ceyhan,Low-voltage power systems,"Server racks, enclosures",Monthly,8,Expired,13,On-time,Sales Rep,D**** S*******
+C0692,Machine building,Small,2.1,23,Email,8,1.1,Adana,Seyhan,Hydraulic motors & generators,Actuators & motion control,Yearly,347,Pending,1,On-time,Sales Rep,F**** O*******
+C0693,Residential,Small,2.1,15,Email,9,1.1,Izmir,Cigli,Wiring devices & connectivity,Conduit & cable management,Monthly,7,Pending,14,On-time,Sales Rep,F**** O*******
+C0694,"Mining, metals & minerals",Small,6.3,22,Content Marketing,5,1.4,Konya,Selcuklu,Process safety & automation,"Hose, tubing, fittings",Monthly,21,Active,8,Occasional delay,Sales Rep,H**** N*******
+C0695,Utilities,Small,3.7,29,SEM,8,0.7,Ankara,Cankaya,Utility & grid solutions,Medium-voltage power systems,Monthly,27,Active,14,On-time,Dealer,H**** N*******
+C0696,Buildings,Small,2.3,19,Content Marketing,11,0.8,Istanbul,Atasehir,Wiring devices & connectivity,Conduit & cable management,Monthly,27,Active,9,Occasional delay,Sales Rep,C**** D*******
+C0697,Vehicles,Medium,17.3,37,Content Marketing,2,0.2,Antalya,Konyaalti,Engine solutions,Vehicle controls & automation,Quarterly,63,Active,5,On-time,Dealer,D**** S*******
+C0698,Healthcare,Small,9.7,25,Webinar,4,1.3,Istanbul,Kartal,Safety & emergency comms,Electronic components,Monthly,25,Expired,8,On-time,Dealer,G**** R*******
+C0699,Space,Medium,16.4,25,LinkedIn Ads,3,0.7,Bursa,Nilufer,Energy storage systems,Actuators & motion control,Quarterly,66,Pending,6,Late,Sales Rep,G**** R*******
+C0700,Buildings,Medium,24.7,23,Email,2,1.2,Sakarya,Serdivan,Conduit & cable management,Lighting & controls,Monthly,12,Active,12,On-time,Online,D**** S*******
+C0701,Food & beverage,Medium,23.6,18,Content Marketing,2,1.1,Antalya,Konyaalti,Filtration solutions,Valves,Monthly,30,Active,8,Occasional delay,Online,D**** S*******
+C0702,"Mining, metals & minerals",Small,3.0,13,Trade Show,10,0.3,Konya,Selcuklu,Valves,"Hose, tubing, fittings",Monthly,26,Pending,13,On-time,Sales Rep,D**** S*******
+C0703,Healthcare,Medium,30.8,26,Webinar,4,0.2,Izmir,Karsiyaka,Electronic components,Safety & emergency comms,Quarterly,85,Active,5,Occasional delay,Dealer,G**** R*******
+C0704,Food & beverage,Small,5.8,29,Trade Show,5,1.0,Bursa,Yildirim,Pumps,Filtration solutions,Quarterly,89,Active,5,Late,Sales Rep,A**** Y*******
+C0705,Buildings,Medium,45.7,43,Webinar,6,0.9,Eskisehir,Tepebasi,Lighting & controls,Conduit & cable management,Yearly,309,Active,1,Late,Sales Rep,G**** R*******
+C0706,"Mining, metals & minerals",Small,3.5,7,Trade Show,11,0.9,Zonguldak,Eregli,"Hose, tubing, fittings",Valves,Quarterly,95,Active,6,Late,Email,G**** R*******
+C0707,Aerospace,Small,8.7,22,Email,9,0.7,Kayseri,Kocasinan,Actuators & motion control,Electrical circuit protection,Monthly,19,Active,14,On-time,Sales Rep,C**** D*******
+C0708,Data centres,Small,1.7,9,Email,11,1.2,Kayseri,Melikgazi,Low-voltage power systems,Energy storage systems,Yearly,209,Active,2,Occasional delay,Email,F**** O*******
+C0709,Space,Small,7.3,29,Trade Show,10,0.3,Kocaeli,Korfez,Energy storage systems,Actuators & motion control,Monthly,7,Active,9,On-time,Online,G**** R*******
+C0710,Food & beverage,Small,8.3,8,Webinar,11,0.2,Konya,Selcuklu,Filtration solutions,Pumps,Quarterly,71,Expired,6,On-time,Sales Rep,G**** R*******
+C0711,"Mining, metals & minerals",Medium,13.6,30,Webinar,3,1.3,Adana,Ceyhan,Valves,Process safety & automation,Monthly,6,Active,11,On-time,Dealer,C**** D*******
+C0712,Aerospace,Small,2.2,18,LinkedIn Ads,4,0.2,Bursa,Nilufer,Actuators & motion control,Engine solutions,Monthly,25,Active,14,Occasional delay,Dealer,A**** Y*******
+C0713,Buildings,Small,4.7,22,Trade Show,3,0.8,Sakarya,Arifiye,Lighting & controls,Wiring devices & connectivity,Quarterly,78,Pending,6,On-time,Sales Rep,B**** K*******
+C0714,"Mining, metals & minerals",Small,5.8,26,Email,2,1.1,Ankara,Etimesgut,Valves,"Hose, tubing, fittings",Yearly,283,Active,2,On-time,Sales Rep,E**** T*******
+C0715,Oil & gas,Small,6.7,11,Email,6,0.7,Bursa,Osmangazi,Process safety & automation,Medium-voltage power systems,Yearly,257,Active,1,On-time,Online,D**** S*******
+C0716,Oil & gas,Medium,39.6,22,Email,2,0.9,Bursa,Nilufer,Medium-voltage power systems,Process safety & automation,Quarterly,62,Pending,3,On-time,Dealer,B**** K*******
+C0717,Aerospace,Small,4.3,14,Trade Show,4,1.0,Izmir,Karsiyaka,Actuators & motion control,Electrical circuit protection,Occasionally,410,Active,1,On-time,Sales Rep,B**** K*******
+C0718,Residential,Small,7.8,13,Content Marketing,8,0.5,Zonguldak,Kozlu,Conduit & cable management,Wiring devices & connectivity,Yearly,196,Active,2,On-time,Online,G**** R*******
+C0719,Buildings,Small,10.0,26,Trade Show,2,0.6,Adana,Seyhan,Wiring devices & connectivity,Lighting & controls,Quarterly,76,Active,4,On-time,Sales Rep,C**** D*******
+C0720,Machine building,Small,9.8,12,LinkedIn Ads,5,1.0,Ankara,Cankaya,Actuators & motion control,Hydraulic motors & generators,Quarterly,73,Pending,6,On-time,Dealer,A**** Y*******
+C0721,Aerospace,Medium,15.2,16,Webinar,11,0.8,Antalya,Kepez,Actuators & motion control,Engine solutions,Quarterly,84,Expired,5,Occasional delay,Sales Rep,A**** Y*******
+C0722,Food & beverage,Small,3.0,9,Email,2,0.8,Bursa,Osmangazi,Pumps,Valves,Quarterly,93,Active,5,On-time,Sales Rep,G**** R*******
+C0723,Healthcare,Small,1.6,27,SEM,11,0.5,Eskisehir,Tepebasi,Life support systems,Electronic components,Occasionally,255,Active,1,On-time,Sales Rep,E**** T*******
+C0724,Vehicles,Medium,34.6,18,Content Marketing,8,0.8,Ankara,Etimesgut,Vehicle controls & automation,Transmissions,Yearly,236,Active,1,Late,Sales Rep,B**** K*******
+C0725,Oil & gas,Medium,33.7,37,Trade Show,12,1.0,Eskisehir,Tepebasi,Fuel systems & emissions,Medium-voltage power systems,Monthly,18,Active,9,On-time,Sales Rep,E**** T*******
+C0726,Food & beverage,Medium,23.4,31,LinkedIn Ads,12,0.6,Izmir,Bornova,Pumps,Filtration solutions,Yearly,217,Active,2,Late,Dealer,B**** K*******
+C0727,Healthcare,Small,6.3,27,Content Marketing,9,1.1,Istanbul,Kartal,Electronic components,Life support systems,Monthly,29,Pending,11,On-time,Sales Rep,A**** Y*******
+C0728,Healthcare,Small,2.3,5,Trade Show,8,0.5,Kocaeli,Korfez,Electronic components,Safety & emergency comms,Monthly,11,Expired,11,On-time,Sales Rep,H**** N*******
+C0729,Machine building,Large,60.7,48,Email,13,0.6,Antalya,Muratpasa,Hydraulic motors & generators,Clutches and brakes,Yearly,344,Expired,2,On-time,Online,E**** T*******
+C0730,Utilities,Medium,42.8,41,Email,8,0.9,Kayseri,Melikgazi,Utility & grid solutions,Low-voltage power systems,Monthly,18,Active,13,On-time,Online,E**** T*******
+C0731,Data centres,Small,1.2,14,Email,9,0.9,Kayseri,Kocasinan,Energy storage systems,Low-voltage power systems,Quarterly,71,Pending,5,On-time,Sales Rep,H**** N*******
+C0732,Utilities,Small,7.5,7,Email,11,1.4,Antalya,Konyaalti,Medium-voltage power systems,Utility & grid solutions,Monthly,22,Active,10,Occasional delay,Online,G**** R*******
+C0733,Vehicles,Small,2.1,19,LinkedIn Ads,4,1.0,Ankara,Yenimahalle,Engine solutions,Transmissions,Monthly,22,Pending,15,On-time,Dealer,G**** R*******
+C0734,"Mining, metals & minerals",Large,116.6,39,Email,9,0.9,Kocaeli,Izmit,Valves,"Hose, tubing, fittings",Quarterly,76,Active,5,On-time,Online,D**** S*******

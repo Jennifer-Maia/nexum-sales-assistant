@@ -1,0 +1,33 @@
+.databricks/
+build/
+dist/
+__pycache__/
+*.egg-info
+.venv/
+scratch/**
+!scratch/README.md
+**/explorations/**
+**/!explorations/README.md
+# Dados locais
+# Remova esta regra se decidir versionar os CSVs no GitHub
+# fixtures/*.csv
+
+# Segredos e configurações locais
+.env
+.env.*
+!.env.example
+
+# Claude Code / configurações locais
+.claude/settings.local.json
+
+# Databricks local state
+.databricks/
+
+# Python
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

@@ -1,0 +1,46 @@
+# This is a Declarative Automation Bundle definition for b2b_sales_intelligence.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: b2b_sales_intelligence
+  uuid: a29232ab-d4f8-48e2-b832-550f9e1b57e3
+
+include:
+  - resources/*.yml
+
+artifacts:
+  python_artifact:
+    type: whl
+    build: uv build --wheel
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+variables:
+  catalog:
+    description: The catalog to use
+  schema:
+    description: The schema to use
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-b7482523-0863.cloud.databricks.com
+    variables:
+      catalog: workspace
+      schema: dev
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-b7482523-0863.cloud.databricks.com
+      # We explicitly deploy to /Workspace/Users/jen_maia@hotmail.com to make sure we only have a single copy.
+      root_path: /Workspace/Users/jen_maia@hotmail.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: workspace
+      schema: prod
+    permissions:
+      - user_name: jen_maia@hotmail.com
+        level: CAN_MANAGE
