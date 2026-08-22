@@ -394,7 +394,7 @@ O projeto será considerado funcional quando:
 
 ## Status atual
 
-**Em desenvolvimento — etapa de preparação do projeto.**
+**Etapa 00 (setup) concluída — Bronze, Silver e Gold serão implementadas nas próximas etapas.**
 
 Concluído:
 
@@ -404,16 +404,18 @@ Concluído:
 - dataset adicionado à pasta `fixtures`;
 - estrutura inicial de documentação criada;
 - PRD em preparação;
-- prompts de implementação em preparação.
+- prompts de implementação em preparação;
+- exemplos de táxi do template removidos;
+- job ajustado para executar somente a pipeline ETL;
+- estrutura do bundle preparada para as próximas etapas.
 
 Próximas etapas:
 
-1. finalizar a documentação do projeto;
-2. remover os exemplos de táxi do template;
-3. preparar o setup B2B;
-4. implementar a camada Bronze;
-5. validar a ingestão;
-6. implementar Silver e Gold.
+1. implementar a camada Bronze (ingestão dos CSVs de `fixtures/`);
+2. validar a ingestão;
+3. implementar Silver e Gold;
+4. implementar o score de prioridade e as recomendações;
+5. executar a validação final.
 
 ---
 

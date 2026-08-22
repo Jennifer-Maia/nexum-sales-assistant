@@ -1,20 +1,19 @@
-# b2b_sales_intelligence
+# b2b_sales_intelligence_etl
 
-This folder defines all source code for the b2b_sales_intelligence pipeline:
+Esta pasta define o código-fonte da pipeline B2B Sales Intelligence:
 
-- `explorations/`: Ad-hoc notebooks used to explore the data processed by this pipeline.
-- `transformations/`: All dataset definitions and transformations.
-- `utilities/` (optional): Utility functions and Python modules used in this pipeline.
-- `data_sources/` (optional): View definitions describing the source data for this pipeline.
+- `explorations/`: Notebooks ad-hoc usados para explorar os dados processados pela pipeline.
+- `transformations/`: Todas as definições de datasets e transformações (Bronze, Silver e Gold).
+- `utilities/` (opcional): Funções utilitárias e módulos Python usados na pipeline.
+- `data_sources/` (opcional): Definições de views que descrevem os dados de origem.
 
 ## Getting Started
 
-To get started, go to the `transformations` folder -- most of the relevant source code lives there:
+As transformações Bronze, Silver e Gold serão adicionadas em `transformations/` nas próximas etapas do projeto (etapas 01 a 03 dos prompts).
 
-* By convention, every dataset under `transformations` is in a separate file.
-* Take a look at the sample called "sample_trips_b2b_sales_intelligence.py" to get familiar with the syntax.
-  Read more about the syntax at https://docs.databricks.com/dlt/python-ref.html.
-* If you're using the workspace UI, use `Run file` to run and preview a single transformation.
-* If you're using the CLI, use `databricks bundle run b2b_sales_intelligence_etl --refresh sample_trips_b2b_sales_intelligence` to run a single transformation.
+* Por convenção, cada dataset em `transformations` fica em um arquivo separado.
+* Mais sobre a sintaxe em https://docs.databricks.com/dlt/python-ref.html.
+* No workspace, use `Run file` para executar e visualizar uma transformação isolada.
+* Pela CLI, use `databricks bundle run b2b_sales_intelligence_etl --refresh <nome_da_transformacao>` para rodar uma transformação isolada.
 
-For more tutorials and reference material, see https://docs.databricks.com/dlt.
+Para tutoriais e material de referência, veja https://docs.databricks.com/dlt.

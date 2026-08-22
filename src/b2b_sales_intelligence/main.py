@@ -1,6 +1,5 @@
 import argparse
 from databricks.sdk.runtime import spark
-from b2b_sales_intelligence import taxis
 
 
 def main():
@@ -16,8 +15,7 @@ def main():
     spark.sql(f"USE CATALOG {args.catalog}")
     spark.sql(f"USE SCHEMA {args.schema}")
 
-    # Example: just find all taxis from a sample catalog
-    taxis.find_all_taxis().show(5)
+    # A lógica de negócio (Bronze, Silver e Gold) será adicionada nas próximas etapas.
 
 
 if __name__ == "__main__":

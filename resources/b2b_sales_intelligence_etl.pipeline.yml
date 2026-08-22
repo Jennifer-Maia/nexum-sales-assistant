@@ -1,4 +1,10 @@
-# The main pipeline for b2b_sales_intelligence
+# Pipeline principal do B2B Sales Intelligence.
+#
+# As transformações serão adicionadas em src/b2b_sales_intelligence_etl/transformations/
+# nas próximas etapas, sem lógica de negócio nesta etapa 00:
+#   - 01-bronze: ingestão dos CSVs de fixtures/ (bronze_companies, bronze_employees)
+#   - 02-silver: limpeza, tipagem, deduplicação e relacionamento
+#   - 03-gold:   oportunidades comerciais e contatos recomendados
 
 resources:
   pipelines:

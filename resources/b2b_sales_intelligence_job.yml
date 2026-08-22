@@ -1,0 +1,17 @@
+# Job principal do B2B Sales Intelligence: apenas dispara a pipeline ETL.
+
+resources:
+  jobs:
+    b2b_sales_intelligence_job:
+      name: b2b_sales_intelligence_job
+
+      trigger:
+        # Roda o job diariamente; no target dev (mode: development) o gatilho fica pausado.
+        periodic:
+          interval: 1
+          unit: DAYS
+
+      tasks:
+        - task_key: refresh_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.b2b_sales_intelligence_etl.id}
