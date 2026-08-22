@@ -9,7 +9,7 @@ Esta pasta define o código-fonte da pipeline B2B Sales Intelligence:
 
 ## Getting Started
 
-As transformações Bronze, Silver e Gold serão adicionadas em `transformations/` nas próximas etapas do projeto (etapas 01 a 03 dos prompts).
+A camada Bronze já está implementada (etapa 01) em `transformations/bronze_companies.py` e `transformations/bronze_employees.py`. Silver e Gold serão adicionadas nas próximas etapas.
 
 * Por convenção, cada dataset em `transformations` fica em um arquivo separado.
 * Mais sobre a sintaxe em https://docs.databricks.com/dlt/python-ref.html.

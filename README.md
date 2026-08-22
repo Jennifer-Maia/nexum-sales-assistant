@@ -99,7 +99,7 @@ Análises comerciais
 
 Responsável pela ingestão dos arquivos de origem sem perda dos dados originais.
 
-Tabelas previstas:
+Tabelas implementadas (etapa 01):
 
 ```text
 bronze_companies
@@ -113,6 +113,21 @@ _ingestion_timestamp
 _source_file
 _source_system
 ```
+
+As colunas de origem são preservadas como `STRING` na Bronze (leitura sem inferência de schema); a tipagem e a padronização ficam para a Silver. Não há deduplicação, limpeza de HTML ou regras de negócio nesta camada. As tabelas Bronze usam Column Mapping do Delta (`delta.columnMapping.mode: name`), necessário para preservar os nomes originais das colunas que contêm espaços, parênteses e `%`.
+
+#### Disponibilização dos arquivos (volume gerenciado)
+
+Os CSVs de `fixtures/` são publicados em um volume gerenciado do Unity Catalog (`raw_data`), declarado no bundle em `resources/raw_data.volume.yml` e criado pelo deploy. O upload é feito uma única vez pela CLI, após o deploy:
+
+```bash
+databricks fs cp fixtures/companies_clean.csv \
+  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
+databricks fs cp fixtures/employees_clean.csv \
+  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
+```
+
+A pipeline lê o caminho a partir do parâmetro `source_base_path` declarado em `resources/b2b_sales_intelligence_etl.pipeline.yml`, resolvido pelo bundle como `${resources.volumes.raw_data.volume_path}` — nenhum caminho de catalog/schema é fixado no código.
 
 ### Camada Silver
 
@@ -394,7 +409,7 @@ O projeto será considerado funcional quando:
 
 ## Status atual
 
-**Etapa 00 (setup) concluída — Bronze, Silver e Gold serão implementadas nas próximas etapas.**
+**Etapas 00 (setup) e 01 (Bronze) concluídas no código — Silver, Gold e score serão implementadas nas próximas etapas.**
 
 Concluído:
 
@@ -407,12 +422,14 @@ Concluído:
 - prompts de implementação em preparação;
 - exemplos de táxi do template removidos;
 - job ajustado para executar somente a pipeline ETL;
-- estrutura do bundle preparada para as próximas etapas.
+- estrutura do bundle preparada para as próximas etapas;
+- camada Bronze implementada (`bronze_companies` e `bronze_employees`);
+- volume gerenciado `raw_data` declarado no bundle (criado no deploy).
 
 Próximas etapas:
 
-1. implementar a camada Bronze (ingestão dos CSVs de `fixtures/`);
-2. validar a ingestão;
+1. publicar o bundle no target `dev` e subir os CSVs para o volume `raw_data`;
+2. executar a pipeline e validar a ingestão (734 empresas e 5.234 funcionários);
 3. implementar Silver e Gold;
 4. implementar o score de prioridade e as recomendações;
 5. executar a validação final.

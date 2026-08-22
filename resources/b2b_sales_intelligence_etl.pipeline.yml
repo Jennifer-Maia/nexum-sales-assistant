@@ -1,8 +1,8 @@
 # Pipeline principal do B2B Sales Intelligence.
 #
-# As transformações serão adicionadas em src/b2b_sales_intelligence_etl/transformations/
-# nas próximas etapas, sem lógica de negócio nesta etapa 00:
-#   - 01-bronze: ingestão dos CSVs de fixtures/ (bronze_companies, bronze_employees)
+# Etapas:
+#   - 01-bronze (implementada): ingestão dos CSVs de fixtures/ via volume
+#     gerenciado raw_data (bronze_companies, bronze_employees)
 #   - 02-silver: limpeza, tipagem, deduplicação e relacionamento
 #   - 03-gold:   oportunidades comerciais e contatos recomendados
 
@@ -14,6 +14,12 @@ resources:
       schema: ${var.schema}
       serverless: true
       root_path: "../src/b2b_sales_intelligence_etl"
+
+      configuration:
+        # Caminho do volume gerenciado com os CSVs de fixtures/.
+        # Resolvido pelo bundle a partir do recurso resources.volumes.raw_data
+        # (catalog/schema nunca fixados no código).
+        source_base_path: ${resources.volumes.raw_data.volume_path}
 
       libraries:
         - glob:

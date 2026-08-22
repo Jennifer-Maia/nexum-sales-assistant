@@ -1,0 +1,18 @@
+# Volume gerenciado para os dados de entrada do B2B Sales Intelligence.
+#
+# Os CSVs de fixtures/ são copiados para este volume uma única vez, após o deploy:
+#   databricks fs cp fixtures/companies_clean.csv \
+#     dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
+#   databricks fs cp fixtures/employees_clean.csv \
+#     dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
+#
+# O caminho real do volume é referenciado na pipeline via
+# ${resources.volumes.raw_data.volume_path}.
+
+resources:
+  volumes:
+    raw_data:
+      catalog_name: ${var.catalog}
+      schema_name: ${var.schema}
+      name: raw_data
+      volume_type: MANAGED
