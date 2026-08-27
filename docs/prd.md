@@ -381,12 +381,13 @@ Vendedor / aprovador humano
 
 ### Dados já existentes
 
-- empresas;
-- funcionários;
-- contatos;
-- atributos de contexto comercial.
+- empresas.
 
-Esses dados serão tratados como contexto de CRM.
+As empresas serão tratadas como clientes B2B previamente cadastrados.
+A entidade canônica de clientes será `silver_companies`.
+
+Contatos individuais, compradores, funcionários e decisores não fazem
+parte do escopo do MVP.
 
 ### Dados a criar
 

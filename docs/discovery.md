@@ -160,11 +160,16 @@ que não possui dados suficientes e encaminhar para revisão humana.
 
 ## Dados existentes
 
-A base atual de empresas e funcionários será mantida como contexto
-de CRM e poderá ser utilizada em uma evolução do projeto.
+A base atual de empresas será mantida como contexto de CRM.
 
-Ela não é suficiente para representar o catálogo, o estoque e os pedidos
-do novo produto.
+As empresas serão utilizadas como clientes B2B previamente cadastrados,
+com referência canônica em `silver_companies`.
+
+Contatos individuais, compradores, funcionários e decisores não fazem
+parte do escopo do MVP.
+
+A base existente não é suficiente para representar o catálogo, o estoque,
+as cotações e as demais etapas da jornada comercial do novo produto.
 
 ## Dados adicionais necessários
 
