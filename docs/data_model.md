@@ -35,12 +35,13 @@ nas camadas Bronze, Silver e Gold.
 
 A base atual contém dados de:
 
-- empresas;
-- funcionários;
-- contatos;
-- atributos de contexto comercial.
+- empresas.
 
-Esses dados serão tratados como contexto de CRM.
+As empresas serão tratadas como clientes B2B previamente cadastrados.
+A entidade canônica de clientes será `silver_companies`.
+
+O cadastro de contatos individuais, compradores ou funcionários não faz
+parte do escopo do MVP.
 
 ### 3.2 Dados novos
 
@@ -90,7 +91,6 @@ Responsável por:
 Datasets previstos:
 
 - `bronze_companies`;
-- `bronze_employees`;
 - `bronze_products`;
 - `bronze_inventory`;
 - `bronze_quotes`;
@@ -115,7 +115,6 @@ Responsável por:
 Datasets previstos:
 
 - `silver_companies`;
-- `silver_employees`;
 - `silver_products`;
 - `silver_inventory`;
 - `silver_quotes`;
@@ -422,21 +421,18 @@ error
 A tabela `quotes.customer_id` deverá referenciar:
 
 ```text
-silver_silver_companies.company_id
+silver_companies.company_id
 ```
 
 O MVP trabalhará com clientes B2B previamente cadastrados na base de
 empresas.
 
-A tabela de funcionários poderá ser utilizada futuramente para:
+Uma entidade de contatos individuais (compradores, aprovadores ou
+decisores dentro da empresa cliente) não faz parte do escopo do MVP.
 
-- identificar compradores;
-- recomendar contatos;
-- associar aprovadores da empresa cliente;
-- enriquecer o contexto comercial.
-
-Essa funcionalidade não é obrigatória para a primeira implementação
-do assistente.
+Caso essa necessidade surja no futuro, ela deverá ser modelada como uma
+nova entidade e registrada em um ADR específico, e não reaproveitada de
+um modelo anterior.
 
 ## 15. Chaves e integridade
 
