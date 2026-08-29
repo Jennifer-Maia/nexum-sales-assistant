@@ -1,233 +1,264 @@
-# B2B Sales Intelligence
+# Nexum Sales Assistant
 
-Pipeline analítica de dados para priorização comercial B2B, identificação de oportunidades de recompra e recomendação de contatos decisores.
+Assistente de vendas B2B que transforma uma necessidade descrita em
+linguagem natural em recomendação de produto e cotação preliminar,
+executado sobre Databricks e Declarative Automation Bundles.
 
-> Projeto de portfólio desenvolvido com Databricks Declarative Automation Bundles (DABs), arquitetura medalhão e execução automatizada por CLI.
+> Projeto de demonstração com dados sintéticos, aprovação humana
+> obrigatória e pagamento exclusivamente simulado.
 
 ---
-![Imagem do projeto](src/image_gen_output.png)
+
 ## Visão geral
 
-Equipes comerciais B2B normalmente possuem muitas empresas, contratos e contatos, mas recursos limitados para realizar abordagens personalizadas.
+O **Nexum Sales Assistant** é o assistente de vendas da **Nexum
+Industrial**, empresa fictícia que fornece equipamentos e soluções para
+manutenção, operação e monitoramento industrial.
 
-O **B2B Sales Intelligence** transforma dados de empresas e funcionários em informações acionáveis para responder perguntas como:
+Vendedores B2B gastam tempo significativo traduzindo a necessidade do
+cliente em produtos adequados, consultando especificações técnicas,
+disponibilidade, preço e prazo. O assistente reduz essa fricção:
 
-- Quais empresas devem ser priorizadas pelo time comercial?
-- Quais clientes apresentam maior potencial de recompra?
-- Quais empresas estão sem contato recente?
-- Quem são os melhores contatos para uma abordagem comercial?
-- Quais fatores justificam a prioridade de cada empresa?
+- interpreta a necessidade descrita pelo cliente;
+- faz perguntas de esclarecimento quando faltam informações;
+- consulta um catálogo estruturado de produtos;
+- verifica a disponibilidade de estoque;
+- monta uma cotação preliminar;
+- encaminha a cotação para aprovação humana;
+- simula o pagamento após a aprovação;
+- gera um documento simulado, sem validade fiscal.
 
-A solução será construída em camadas **Bronze, Silver e Gold**, com regras de negócio explicáveis e rastreabilidade dos dados de origem.
-
----
-
-## Objetivo do projeto
-
-Construir um MVP de engenharia e análise de dados que:
-
-1. ingira dados de empresas e funcionários;
-2. preserve os dados originais em tabelas Bronze;
-3. limpe, padronize e relacione os dados na camada Silver;
-4. gere oportunidades comerciais na camada Gold;
-5. recomende contatos comerciais relevantes;
-6. calcule um score de prioridade explicável;
-7. disponibilize os resultados para análises e consumo futuro.
+Todos os dados comerciais (produtos, preços, estoque e prazos) vêm de
+tabelas estruturadas. O modelo de linguagem não pode inventá-los.
 
 ---
 
-## Dados utilizados
-
-O projeto utiliza um dataset sintético de CRM e marketing B2B.
-
-Arquivos principais:
+## Princípio central
 
 ```text
-fixtures/
-├── companies_clean.csv
-└── employees_clean.csv
+LLM interpreta.
+Código valida.
+Código consulta.
+Código calcula.
+Código controla estados.
+Humano aprova ações comerciais sensíveis.
 ```
 
-Arquivos previstos para etapas futuras de qualidade:
+O LLM conduz a conversa, extrai requisitos e explica resultados. As
+ferramentas determinísticas consultam os dados, aplicam as regras e
+controlam as transições. A aprovação humana é obrigatória antes do
+pagamento simulado.
+
+---
+
+## Fluxo principal
 
 ```text
-companies_noisy.csv
-employees_noisy.csv
-employees_with_company_sample.csv
+search_products
+        ↓
+check_inventory
+        ↓
+create_quote
+        ↓
+request_human_approval
+        ↓
+simulate_payment
+        ↓
+generate_document
 ```
 
-### Entidades principais
+### Ferramentas do MVP
 
-| Entidade | Arquivo | Chave |
+| Ferramenta | Responsabilidade | Fonte de dados |
 |---|---|---|
-| Empresas | `companies_clean.csv` | `Company_ID` |
-| Funcionários | `employees_clean.csv` | `Employee_ID` |
-| Relacionamento empresa-contato | Ambos | `Company_ID` |
+| `search_products` | Buscar produtos ativos e compatíveis com os requisitos extraídos da conversa | `gold_product_catalog` |
+| `check_inventory` | Informar se a quantidade disponível atende à quantidade solicitada, sem alterar o estoque | `gold_product_availability` |
+| `create_quote` | Validar cliente e produtos, congelar preços e criar a cotação em estado `draft` | `silver_companies`, Golds de catálogo e disponibilidade |
+| `request_human_approval` | Solicitar aprovação humana e registrar a decisão (`approved` ou `rejected`) | `quotes`, `approvals` |
+| `simulate_payment` | Registrar um pagamento exclusivamente simulado, somente após aprovação válida | `quotes`, `approvals`, `payments` |
+| `generate_document` | Gerar documento simulado sem validade fiscal, somente após pagamento simulado bem-sucedido | `quotes`, `quote_items`, `products`, `payments`, `silver_companies` |
 
-O relacionamento entre empresas e funcionários é realizado por:
-
-```text
-employees_clean.Company_ID = companies_clean.Company_ID
-```
-
-Os dados são sintéticos e não representam clientes reais.
+Cada ferramenta possui um contrato formal em `docs/specs/`, incluindo
+entradas, saídas, códigos de erro, regras de negócio, auditoria e
+critérios de aceite.
 
 ---
 
-## Arquitetura
+## Máquina de estados de `quotes`
+
+A entidade comercial principal do MVP é `quotes`. Não existe uma
+entidade `orders`.
+
+Estados permitidos:
 
 ```text
-CSV files
-   │
-   ▼
-Bronze
-Dados brutos com rastreabilidade
-   │
-   ▼
-Silver
-Dados limpos, tipados e relacionados
-   │
-   ▼
-Gold
-Oportunidades e contatos recomendados
-   │
-   ▼
-Análises comerciais
+draft
+pending_approval
+approved
+rejected
+paid
+completed
 ```
 
-### Camada Bronze
+Transições permitidas:
 
-Responsável pela ingestão dos arquivos de origem sem perda dos dados originais.
+```text
+draft → pending_approval
+pending_approval → approved
+pending_approval → rejected
+approved → paid
+paid → completed
+```
 
-Tabelas implementadas (etapa 01):
+Transições inválidas devem ser bloqueadas pelo código, não apenas
+descritas na resposta textual do agente.
+
+---
+
+## Domínio do MVP
+
+O MVP atende inicialmente três categorias de necessidade:
+
+```text
+temperature
+pressure
+vibration
+```
+
+O catálogo é pequeno, controlado e sintético, com produtos que cobrem
+casos positivos e negativos (compatível, incompatível, inativo, com ou
+sem estoque). O objetivo é demonstrar a jornada completa com qualidade
+de engenharia de dados, não representar um catálogo industrial real.
+
+---
+
+## Arquitetura de dados
+
+Os dados são organizados nas camadas Bronze, Silver e Gold, conforme
+`docs/data_model.md`.
+
+```text
+Bronze
+dados de origem preservados, com metadados de ingestão
+        ↓
+Silver
+dados padronizados, tipados e validados
+        ↓
+Gold
+modelos preparados para consumo pelas ferramentas
+```
+
+### Bronze
+
+Ingere os arquivos de origem sem aplicar regras de negócio.
+Datasets previstos:
 
 ```text
 bronze_companies
-bronze_employees
+bronze_products
+bronze_inventory
+bronze_quotes
+bronze_quote_items
+bronze_approvals
+bronze_payments
+bronze_documents
+bronze_conversation_events
 ```
 
-Colunas técnicas adicionadas:
+### Silver
 
-```text
-_ingestion_timestamp
-_source_file
-_source_system
-```
+Padroniza nomes, converte tipos, trata valores inválidos e valida
+chaves. A fonte canônica de clientes do MVP é `silver_companies`
+(`quotes.customer_id` referencia `silver_companies.company_id`).
 
-As colunas de origem são preservadas como `STRING` na Bronze (leitura sem inferência de schema); a tipagem e a padronização ficam para a Silver. Não há deduplicação, limpeza de HTML ou regras de negócio nesta camada. As tabelas Bronze usam Column Mapping do Delta (`delta.columnMapping.mode: name`), necessário para preservar os nomes originais das colunas que contêm espaços, parênteses e `%`.
-
-#### Disponibilização dos arquivos (volume gerenciado)
-
-Os CSVs de `fixtures/` são publicados em um volume gerenciado do Unity Catalog (`raw_data`), declarado no bundle em `resources/raw_data.volume.yml` e criado pelo deploy. O upload é feito uma única vez pela CLI, após o deploy:
-
-```bash
-databricks fs cp fixtures/companies_clean.csv \
-  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
-databricks fs cp fixtures/employees_clean.csv \
-  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
-```
-
-A pipeline lê o caminho a partir do parâmetro `source_base_path` declarado em `resources/b2b_sales_intelligence_etl.pipeline.yml`, resolvido pelo bundle como `${resources.volumes.raw_data.volume_path}` — nenhum caminho de catalog/schema é fixado no código.
-
-### Camada Silver
-
-Responsável pela limpeza e padronização dos dados.
-
-Processos previstos:
-
-- padronização dos nomes das colunas;
-- conversão de tipos numéricos;
-- conversão de datas;
-- tratamento de entidades HTML, como `&`;
-- remoção de duplicidades;
-- validação das chaves;
-- validação do relacionamento entre empresas e funcionários;
-- criação da visão consolidada de empresas e contatos.
-
-Tabelas previstas:
+Datasets previstos:
 
 ```text
 silver_companies
-silver_employees
-silver_company_contacts
+silver_products
+silver_inventory
+silver_quotes
+silver_quote_items
+silver_approvals
+silver_payments
+silver_documents
+silver_conversation_events
 ```
 
-### Camada Gold
+### Gold
 
-Responsável por transformar os dados tratados em produtos analíticos para o negócio.
-
-Tabelas previstas:
+Modelos prontos para consumo pelas ferramentas:
 
 ```text
-gold_company_opportunities
-gold_recommended_contacts
+gold_product_catalog
+gold_product_availability
+gold_quote_summary
+gold_conversation_audit
 ```
 
-#### `gold_company_opportunities`
-
-Deverá apresentar, por empresa:
-
-- informações cadastrais;
-- status do contrato;
-- frequência de compra;
-- recência da última compra;
-- volume de compras;
-- indicadores de marketing;
-- existência de decisores;
-- score de prioridade;
-- nível de prioridade;
-- recomendação de ação comercial.
-
-#### `gold_recommended_contacts`
-
-Deverá apresentar os contatos mais relevantes para abordagem comercial, considerando fatores como:
-
-- empresa relacionada;
-- papel ou cargo;
-- classificação como decisor;
-- influência;
-- completude dos dados;
-- prioridade da empresa.
+As ferramentas não devem consultar arquivos CSV diretamente quando
+existir uma camada estruturada apropriada.
 
 ---
 
-## Score de prioridade
+## Entidades principais
 
-O MVP utilizará um score heurístico, transparente e explicável.
+```text
+companies
+products
+inventory
+quotes
+quote_items
+approvals
+payments
+documents
+conversation_events
+```
 
-O score poderá considerar:
+Principais relacionamentos:
 
-- frequência de compra;
-- dias desde a última compra;
-- volume de compras no último ano;
-- status do contrato;
-- leads gerados;
-- taxa de conversão;
-- existência de decisores;
-- influência dos contatos;
-- necessidade de follow-up.
+```text
+products.product_id
+    ├── inventory.product_id
+    └── quote_items.product_id
 
-Os pesos e as regras serão documentados no projeto e validados com base na distribuição real dos dados.
+silver_companies.company_id
+    └── quotes.customer_id
 
-> O MVP não utilizará machine learning. A prioridade será calculada por regras de negócio reproduzíveis.
+quotes.quote_id
+    ├── quote_items.quote_id
+    ├── approvals.quote_id
+    ├── payments.quote_id
+    └── documents.quote_id
+```
 
 ---
 
-## Tecnologias
+## Regras de segurança e negócio
 
-- Databricks Free Edition;
-- Databricks Declarative Automation Bundles;
-- Databricks CLI;
-- Python;
-- PySpark;
-- Delta Lake;
-- Lakeflow Declarative Pipelines;
-- Serverless Compute;
-- Git e GitHub;
-- Claude Code / Databricks AI Dev Kit;
-- `pytest`;
-- `ruff`;
-- `uv`.
+- não há pagamento real nem integração com instituições financeiras;
+- não há documento com validade fiscal;
+- todo pagamento é registrado com `simulated = true`;
+- todo documento é registrado com `has_fiscal_value = false`;
+- os dados são sintéticos e identificados como dados de demonstração;
+- a consulta de estoque não altera as quantidades disponíveis;
+- a aprovação humana é obrigatória antes do pagamento simulado;
+- o agente não pode aprovar uma cotação em seu próprio nome.
+
+---
+
+## Documentação de referência
+
+A fonte de verdade do produto está em `docs/`:
+
+```text
+docs/discovery.md          # Descoberta do problema e escopo
+docs/prd.md                # Requisitos do produto
+docs/data_model.md         # Modelo lógico de dados
+docs/agent_harness.md      # Uso de agentes no desenvolvimento
+docs/specs/                # Contratos das ferramentas do MVP
+docs/adrs/                 # Decisões arquiteturais registradas
+```
 
 ---
 
@@ -236,93 +267,18 @@ Os pesos e as regras serão documentados no projeto e validados com base na dist
 ```text
 b2b_sales_intelligence/
 ├── .claude/                         # Configurações locais do agente
-├── .llm/
-│   └── prd.md                       # Requisitos do produto
-├── fixtures/                        # Dados de entrada e arquivos de teste
-│   ├── companies_clean.csv
-│   └── employees_clean.csv
-├── prompts/                         # Prompts versionados de implementação
-│   ├── README.md
-│   ├── 00-setup.md
-│   ├── 01-bronze.md
-│   ├── 02-silver.md
-│   ├── 03-gold.md
-│   ├── 04-scoring.md
-│   └── 05-validation.md
+├── docs/                            # Fonte de verdade do produto
+├── fixtures/                        # Dados sintéticos de entrada
+├── prompts/                         # Prompts de implementação
 ├── resources/                       # Recursos Databricks declarados em YAML
 ├── src/                             # Código executado no Databricks
 ├── tests/                           # Testes automatizados
-├── AGENTS.md                        # Instruções gerais para agentes de IA
-├── CLAUDE.md                        # Instruções específicas para o Claude
+├── AGENTS.md                        # Instruções para agentes de IA
+├── CLAUDE.md                        # Instruções específicas do Claude
 ├── databricks.yml                   # Configuração principal do bundle
 ├── pyproject.toml                   # Configuração do projeto Python
-├── .gitignore
 └── README.md
 ```
-
----
-
-## Metodologia de desenvolvimento com IA
-
-O projeto utiliza uma abordagem orientada por documentação e prompts versionados.
-
-Antes de alterar o código, o agente deve consultar:
-
-```text
-.llm/prd.md
-AGENTS.md
-CLAUDE.md
-prompts/<etapa-atual>.md
-```
-
-A implementação será realizada em etapas:
-
-| Etapa | Entrega |
-|---|---|
-| `00-setup` | Preparação do bundle e remoção dos exemplos do template |
-| `01-bronze` | Ingestão dos arquivos de empresas e funcionários |
-| `02-silver` | Limpeza, tipagem, deduplicação e relacionamento |
-| `03-gold` | Tabelas analíticas de oportunidades e contatos |
-| `04-scoring` | Score de prioridade e recomendações comerciais |
-| `05-validation` | Testes de qualidade, contagens e validação final |
-
-Cada etapa deverá:
-
-1. explicar o plano de implementação;
-2. listar os arquivos que serão alterados;
-3. executar somente o escopo aprovado;
-4. validar o resultado;
-5. documentar as decisões;
-6. gerar um commit próprio.
-
----
-
-## Ambiente Databricks
-
-O bundle utiliza o catálogo:
-
-```text
-workspace
-```
-
-Os targets configurados são:
-
-```text
-dev
-prod
-```
-
-Durante o desenvolvimento, os recursos serão publicados no target `dev`.
-
-Comandos principais:
-
-```bash
-databricks bundle validate --profile grid_intelligence
-databricks bundle deploy --profile grid_intelligence --target dev
-databricks bundle run --profile grid_intelligence --target dev
-```
-
-O target de produção só deverá ser utilizado após a validação completa do MVP.
 
 ---
 
@@ -331,15 +287,11 @@ O target de produção só deverá ser utilizado após a validação completa do
 ### Pré-requisitos
 
 - Git;
-- Python compatível com o projeto;
-- Databricks CLI;
-- `uv`;
-- acesso ao workspace Databricks;
-- Claude Code ou agente compatível com o Databricks AI Dev Kit.
+- Python compatível com o projeto (ver `.python-version`);
+- Databricks CLI autenticada;
+- `uv`.
 
 ### Instalar dependências
-
-Na raiz do projeto:
 
 ```bash
 uv sync --dev
@@ -351,7 +303,7 @@ uv sync --dev
 uv run pytest
 ```
 
-### Verificar estilo do código
+### Verificar estilo
 
 ```bash
 uv run ruff check .
@@ -360,79 +312,30 @@ uv run ruff check .
 ### Validar o bundle
 
 ```bash
-databricks bundle validate --profile grid_intelligence
+databricks bundle validate --profile <perfil>
 ```
 
----
-
-## Deploy
-
-### Desenvolvimento
+### Deploy no target `dev`
 
 ```bash
-databricks bundle deploy \
-  --profile grid_intelligence \
-  --target dev
+databricks bundle deploy --target dev --profile <perfil>
+databricks bundle run --target dev --profile <perfil>
 ```
 
-### Produção
-
-O deploy em produção será realizado somente após a validação do MVP:
-
-```bash
-databricks bundle deploy \
-  --profile grid_intelligence \
-  --target prod
-```
+Os targets configurados são `dev` e `prod`, com catálogo `workspace`.
+O target `prod` só deverá ser utilizado após a validação completa do
+MVP.
 
 ---
 
-## Critérios de aceite
+## Estado atual
 
-O projeto será considerado funcional quando:
+Este repositório está em migração para o Nexum Sales Assistant. A
+documentação em `docs/` define o escopo ativo do MVP; a implementação
+das ferramentas seguirá os contratos das SPECs em `docs/specs/`.
 
-- o bundle passar no `databricks bundle validate`;
-- os arquivos de empresas e funcionários forem ingeridos;
-- as tabelas Bronze forem criadas;
-- os tipos de dados forem padronizados;
-- as duplicidades forem tratadas;
-- o relacionamento entre empresas e funcionários for validado;
-- as tabelas Silver forem criadas;
-- as tabelas Gold forem criadas;
-- o score de prioridade for calculado;
-- os contatos recomendados forem identificados;
-- os testes de qualidade forem executados;
-- o pipeline puder ser reproduzido por CLI;
-- a documentação estiver atualizada.
-
----
-
-## Status atual
-
-**Etapas 00 (setup) e 01 (Bronze) concluídas no código — Silver, Gold e score serão implementadas nas próximas etapas.**
-
-Concluído:
-
-- bundle Databricks criado;
-- autenticação da CLI configurada;
-- target `dev` validado;
-- dataset adicionado à pasta `fixtures`;
-- estrutura inicial de documentação criada;
-- PRD em preparação;
-- prompts de implementação em preparação;
-- exemplos de táxi do template removidos;
-- job ajustado para executar somente a pipeline ETL;
-- estrutura do bundle preparada para as próximas etapas;
-- camada Bronze implementada (`bronze_companies` e `bronze_employees`);
-- volume gerenciado `raw_data` declarado no bundle (criado no deploy).
-
-Próximas etapas:
-
-1. publicar o bundle no target `dev` e subir os CSVs para o volume `raw_data`;
-2. executar a pipeline e validar a ingestão (734 empresas e 5.234 funcionários);
-3. implementar Silver e Gold;
-4. implementar o score de prioridade e as recomendações;
-5. executar a validação final.
+As etapas de dados serão implementadas seguindo a arquitetura
+Bronze → Silver → Gold descrita em `docs/data_model.md`.
 
 ---
 
@@ -440,4 +343,5 @@ Próximas etapas:
 
 Este projeto é destinado a fins educacionais e de portfólio.
 
-Os dados utilizados são sintéticos. A licença e a referência original do dataset devem ser mantidas conforme as condições de distribuição da fonte utilizada.
+Os dados utilizados são sintéticos e não representam empresas,
+produtos ou transações reais.
