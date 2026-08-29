@@ -1,7 +1,7 @@
-# This is a Declarative Automation Bundle definition for b2b_sales_intelligence.
+# This is a Declarative Automation Bundle definition for nexum_sales_assistant.
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 bundle:
-  name: b2b_sales_intelligence
+  name: nexum_sales_assistant
   uuid: a29232ab-d4f8-48e2-b832-550f9e1b57e3
 
 include:

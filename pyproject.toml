@@ -1,5 +1,5 @@
 [project]
-name = "b2b_sales_intelligence"
+name = "nexum_sales_assistant"
 version = "0.0.1"
 authors = [{ name = "jen_maia@hotmail.com" }]
 requires-python = ">=3.10,<3.13"
@@ -21,7 +21,7 @@ dev = [
 ]
 
 [project.scripts]
-main = "b2b_sales_intelligence.main:main"
+main = "nexum_sales_assistant.main:main"
 
 [build-system]
 requires = ["hatchling"]
