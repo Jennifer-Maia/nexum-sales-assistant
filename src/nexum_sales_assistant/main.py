@@ -1,21 +1,26 @@
+"""Entry point do bundle Databricks do Nexum Sales Assistant.
+
+Define o catalog e o schema de execução a partir dos argumentos
+repassados pelo bundle (`${var.catalog}` e `${var.schema}`), sem
+fixar nomes no código.
+"""
+
 import argparse
+
 from databricks.sdk.runtime import spark
 
 
 def main():
-    # Process command-line arguments
     parser = argparse.ArgumentParser(
-        description="Databricks job with catalog and schema parameters",
+        description="Nexum Sales Assistant job",
     )
     parser.add_argument("--catalog", required=True)
     parser.add_argument("--schema", required=True)
     args = parser.parse_args()
 
-    # Set the default catalog and schema
+    # Define o catalog e schema padrão do ambiente de execução.
     spark.sql(f"USE CATALOG {args.catalog}")
     spark.sql(f"USE SCHEMA {args.schema}")
-
-    # A lógica de negócio (Bronze, Silver e Gold) será adicionada nas próximas etapas.
 
 
 if __name__ == "__main__":
