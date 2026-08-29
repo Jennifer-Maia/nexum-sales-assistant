@@ -34,9 +34,11 @@ disponíveis.
 
 ## Dados sintéticos
 
-Antes da ingestão, criar os dados sintéticos conforme
+Os dados sintéticos já existem em `fixtures/` (`companies.csv`,
+`products.csv` e `inventory.csv`). Antes da ingestão, validá-los contra
 `docs/data_model.md` §17 e
-`docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`:
+`docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md` e completá-los se algum
+caso obrigatório estiver ausente:
 
 - catálogo pequeno cobrindo as categorias `temperature`, `pressure` e
   `vibration`;
@@ -54,12 +56,19 @@ registros reais (`docs/agent_harness.md` §14).
 
 ## Dados de entrada
 
-Os arquivos de origem devem ficar em `fixtures/` e ser publicados no
-volume gerenciado `raw_data` do bundle, reutilizando o padrão já
-existente em `resources/raw_data.volume.yml`.
+Arquivos de origem (já existentes):
+
+```text
+fixtures/companies.csv
+fixtures/products.csv
+fixtures/inventory.csv
+```
+
+Eles devem ser publicados no volume gerenciado `raw_data` do bundle,
+reutilizando o padrão já existente em `resources/raw_data.volume.yml`.
 
 Não fixar nomes de catalog ou schema no código. Não modificar os
-arquivos de origem após a geração.
+arquivos de origem sem aprovação.
 
 ## Tabelas de saída
 
@@ -117,8 +126,8 @@ Não adicionar:
 O agente pode propor alterações ou criações nos seguintes locais:
 
 - `resources/*.yml`;
-- `src/b2b_sales_intelligence_etl/`;
-- `fixtures/` (novos dados sintéticos);
+- `src/nexum_sales_assistant_etl/`;
+- `fixtures/` (dados sintéticos);
 - `tests/`;
 - `README.md`;
 - `pyproject.toml`, somente se uma dependência for realmente necessária.

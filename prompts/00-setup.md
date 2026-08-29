@@ -29,10 +29,12 @@ Antes de alterar qualquer arquivo, leia:
 
 ## Contexto
 
-O repositório está em migração. A documentação em `docs/` já define o
-Nexum Sales Assistant; `README.md`, `CLAUDE.md` e `AGENTS.md` já foram
-migrados. O código em `src/` e os recursos em `resources/` ainda
-refletem o produto anterior e devem ser substituídos.
+O repositório já passou pela migração estrutural: a documentação em
+`docs/` define o Nexum Sales Assistant; `README.md`, `CLAUDE.md` e
+`AGENTS.md` foram migrados; o pacote `src/nexum_sales_assistant/`
+(ferramentas) e a pipeline `src/nexum_sales_assistant_etl/` (Bronze)
+foram criados; os recursos em `resources/` foram renomeados. Esta etapa
+é de verificação e alinhamento final da estrutura.
 
 O fluxo do Nexum é:
 
@@ -52,30 +54,25 @@ generate_document
 
 ## Arquivos que podem ser removidos
 
-Apresentar a lista completa antes de remover, com justificativa e
-confirmação de que cada item pertence ao produto anterior
-(`AGENTS.md` §8). Candidatos:
+Os pacotes legados e as fixtures antigas já foram removidos na
+migração. O único artefato legado restante conhecido é:
 
-- as transformações legadas da Bronze do produto anterior em
-  `src/b2b_sales_intelligence_etl/transformations/`;
-- os CSVs legados em `fixtures/` (não versionados, conforme
-  `.gitignore`; serão substituídos pelos dados sintéticos do Nexum na
-  etapa 01);
-- `src/image_gen_output.png`, se não for referenciado por nenhum
-  documento ativo;
-- demais artefatos legados identificados durante a análise, com
-  aprovação explícita para cada um.
+- `src/image_gen_output.png` (imagem do produto anterior), se não for
+  referenciado por nenhum documento ativo.
+
+Quaisquer outros candidatos identificados durante a análise devem ser
+listados antes da remoção, com justificativa e confirmação de que
+pertencem ao produto anterior (`AGENTS.md` §8), aguardando aprovação
+explícita.
 
 Antes de remover qualquer arquivo, verificar que ele não é referenciado
 por outro recurso necessário.
 
 ## Arquivos que podem ser alterados
 
-- `resources/*.yml`, para remover referências legadas;
-- `src/b2b_sales_intelligence/main.py`, para alinhar o entry point ao
-  Nexum;
-- `src/b2b_sales_intelligence_etl/README.md`, para descrever a nova
-  organização;
+- `resources/*.yml`, se houver referência restante a ser alinhada;
+- `src/nexum_sales_assistant/main.py`, somente se o entry point
+  precisar de ajuste;
 - `README.md`, somente se a estrutura descrita mudar;
 - `pyproject.toml`, somente se uma dependência for realmente necessária.
 
@@ -107,9 +104,10 @@ Preservar:
 Não renomear o bundle nem os targets nesta etapa, salvo aprovação
 explícita com lista de impactos.
 
-Remover as referências às transformações legadas. Se a pipeline não
-puder ficar válida sem uma transformação, explicar o problema antes de
-criar um arquivo temporário.
+Verificar se a pipeline e o job não possuem referências restantes ao
+produto anterior. Se a pipeline não puder ficar válida sem uma
+transformação, explicar o problema antes de criar um arquivo
+temporário.
 
 O job não deve executar automaticamente durante esta etapa. Não
 habilitar notificações, schedules ou triggers adicionais.
@@ -124,7 +122,7 @@ Não criar os dados sintéticos do Nexum nesta etapa; eles pertencem à
 etapa 01 (`01-bronze.md`), conforme `docs/data_model.md` §17 e
 `docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`.
 
-Não modificar os CSVs legados antes da aprovação de remoção.
+Não modificar os arquivos de `fixtures/` sem aprovação.
 
 ## Documentação
 
