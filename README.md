@@ -171,30 +171,46 @@ Padroniza nomes, converte tipos, trata valores inválidos e valida
 chaves. A fonte canônica de clientes do MVP é `silver_companies`
 (`quotes.customer_id` referencia `silver_companies.company_id`).
 
-Datasets previstos:
+Datasets implementados (etapa 02-silver, em
+`src/nexum_sales_assistant_etl/transformations/`):
 
 ```text
-silver_companies
-silver_products
-silver_inventory
-silver_quotes
-silver_quote_items
-silver_approvals
-silver_payments
-silver_documents
-silver_conversation_events
+silver_companies   ← bronze_companies  (fonte canônica de clientes)
+silver_products    ← bronze_products   (regras de qualidade do ADR-005)
+silver_inventory   ← bronze_inventory  (referencia silver_products)
 ```
+
+Registros inválidos são sinalizados na coluna técnica
+`_quality_status` (`valid` ou `invalid:<regra>[;<regra>]`) e nunca são
+corrigidos silenciosamente (ADR-005). As colunas técnicas de origem
+(`_ingestion_timestamp`, `_source_file`, `_source_system`) são
+preservadas para rastreabilidade Bronze → Silver.
+
+As entidades transacionais (`quotes`, `quote_items`, `approvals`,
+`payments`, `documents`, `conversation_events`) são criadas em tempo de
+execução pelas ferramentas e não possuem Bronze de origem; por isso
+não existem datasets `silver_*` correspondentes nesta etapa
+(prompts/01-bronze.md).
 
 ### Gold
 
-Modelos prontos para consumo pelas ferramentas:
+Modelos prontos para consumo pelas ferramentas, implementados na
+etapa 03-gold (derivados exclusivamente das camadas tratadas, nunca de
+CSV consultado diretamente):
 
 ```text
-gold_product_catalog
-gold_product_availability
-gold_quote_summary
-gold_conversation_audit
+gold_product_catalog        ← silver_products (somente registros válidos)
+gold_product_availability   ← silver_products + silver_inventory
+                              (is_available = available_quantity > 0)
+gold_quote_summary          ← quotes + quote_items + approvals
+                              (tabelas runtime das ferramentas) +
+                              silver_companies (cliente canônico)
+gold_conversation_audit     ← conversation_events, agregado por sessão
 ```
+
+`gold_quote_summary` e `gold_conversation_audit` materializam vazias com
+o schema documentado enquanto as tabelas transacionais ainda não
+existirem no catálogo (nenhum dado é inventado).
 
 As ferramentas não devem consultar arquivos CSV diretamente quando
 existir uma camada estruturada apropriada.
@@ -265,7 +281,7 @@ docs/adrs/                 # Decisões arquiteturais registradas
 ## Estrutura do projeto
 
 ```text
-b2b_sales_intelligence/
+nexum_sales_assistant/
 ├── .claude/                         # Configurações locais do agente
 ├── docs/                            # Fonte de verdade do produto
 ├── fixtures/                        # Dados sintéticos de entrada
@@ -330,12 +346,20 @@ MVP.
 
 ## Estado atual
 
-Este repositório está em migração para o Nexum Sales Assistant. A
-documentação em `docs/` define o escopo ativo do MVP; a implementação
-das ferramentas seguirá os contratos das SPECs em `docs/specs/`.
+O repositório implementa o escopo ativo do MVP (Nexum Sales Assistant):
 
-As etapas de dados serão implementadas seguindo a arquitetura
-Bronze → Silver → Gold descrita em `docs/data_model.md`.
+- ingestão Bronze dos dados sintéticos (`bronze_companies`,
+  `bronze_products`, `bronze_inventory`);
+- camada Silver tratada e validada (`silver_companies`,
+  `silver_products`, `silver_inventory`);
+- camada Gold de consumo (`gold_product_catalog`,
+  `gold_product_availability`, `gold_quote_summary`,
+  `gold_conversation_audit`);
+- as seis ferramentas do MVP com contratos em `docs/specs/`.
+
+A documentação em `docs/` define o escopo ativo; as etapas de dados
+seguem a arquitetura Bronze → Silver → Gold descrita em
+`docs/data_model.md`.
 
 ---
 
