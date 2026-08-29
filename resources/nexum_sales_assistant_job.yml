@@ -1,9 +1,9 @@
-# Job principal do B2B Sales Intelligence: apenas dispara a pipeline ETL.
+# Job principal do Nexum Sales Assistant: apenas dispara a pipeline ETL.
 
 resources:
   jobs:
-    b2b_sales_intelligence_job:
-      name: b2b_sales_intelligence_job
+    nexum_sales_assistant_job:
+      name: nexum_sales_assistant_job
 
       trigger:
         # Roda o job diariamente; no target dev (mode: development) o gatilho fica pausado.
@@ -14,4 +14,4 @@ resources:
       tasks:
         - task_key: refresh_pipeline
           pipeline_task:
-            pipeline_id: ${resources.pipelines.b2b_sales_intelligence_etl.id}
+            pipeline_id: ${resources.pipelines.nexum_sales_assistant_etl.id}
