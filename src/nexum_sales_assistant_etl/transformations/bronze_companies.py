@@ -2,7 +2,7 @@ from pyspark import pipelines as dp
 from pyspark.sql.functions import current_timestamp, lit
 
 
-# Camada Bronze — ingestão bruta de fixtures/companies_clean.csv
+# Camada Bronze — ingestão bruta de fixtures/companies.csv
 # (docs/data_model.md §5.1).
 #
 # A base de empresas existente é mantida como contexto de clientes B2B
@@ -23,7 +23,7 @@ from pyspark.sql.functions import current_timestamp, lit
 
 
 @dp.materialized_view(
-    comment="Bronze: ingestão bruta de fixtures/companies_clean.csv",
+    comment="Bronze: ingestão bruta de fixtures/companies.csv",
     table_properties={
         "delta.columnMapping.mode": "name",
         "delta.minReaderVersion": "2",
@@ -36,8 +36,8 @@ def bronze_companies():
         spark.read.format("csv")
         .option("header", "true")
         .option("inferSchema", "false")
-        .load(f"{base_path}/companies_clean.csv")
+        .load(f"{base_path}/companies.csv")
         .withColumn("_ingestion_timestamp", current_timestamp())
-        .withColumn("_source_file", lit("companies_clean.csv"))
+        .withColumn("_source_file", lit("companies.csv"))
         .withColumn("_source_system", lit("fixtures"))
     )

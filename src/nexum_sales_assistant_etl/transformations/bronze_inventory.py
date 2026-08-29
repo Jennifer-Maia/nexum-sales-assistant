@@ -2,7 +2,7 @@ from pyspark import pipelines as dp
 from pyspark.sql.functions import current_timestamp, lit
 
 
-# Camada Bronze — ingestão bruta de fixtures/inventory_clean.csv
+# Camada Bronze — ingestão bruta de fixtures/inventory.csv
 # (docs/data_model.md §5.1).
 #
 # Estoque sintético do depósito padrão WH-MAIN, com casos de estoque
@@ -23,7 +23,7 @@ from pyspark.sql.functions import current_timestamp, lit
 
 
 @dp.materialized_view(
-    comment="Bronze: ingestão bruta de fixtures/inventory_clean.csv",
+    comment="Bronze: ingestão bruta de fixtures/inventory.csv",
 )
 def bronze_inventory():
     base_path = spark.conf.get("source_base_path")
@@ -31,8 +31,8 @@ def bronze_inventory():
         spark.read.format("csv")
         .option("header", "true")
         .option("inferSchema", "false")
-        .load(f"{base_path}/inventory_clean.csv")
+        .load(f"{base_path}/inventory.csv")
         .withColumn("_ingestion_timestamp", current_timestamp())
-        .withColumn("_source_file", lit("inventory_clean.csv"))
+        .withColumn("_source_file", lit("inventory.csv"))
         .withColumn("_source_system", lit("fixtures"))
     )

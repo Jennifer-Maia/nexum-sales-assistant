@@ -2,7 +2,7 @@ from pyspark import pipelines as dp
 from pyspark.sql.functions import current_timestamp, lit
 
 
-# Camada Bronze — ingestão bruta de fixtures/products_clean.csv
+# Camada Bronze — ingestão bruta de fixtures/products.csv
 # (docs/data_model.md §5.1).
 #
 # Catálogo sintético pequeno e controlado conforme
@@ -22,7 +22,7 @@ from pyspark.sql.functions import current_timestamp, lit
 
 
 @dp.materialized_view(
-    comment="Bronze: ingestão bruta de fixtures/products_clean.csv",
+    comment="Bronze: ingestão bruta de fixtures/products.csv",
 )
 def bronze_products():
     base_path = spark.conf.get("source_base_path")
@@ -30,8 +30,8 @@ def bronze_products():
         spark.read.format("csv")
         .option("header", "true")
         .option("inferSchema", "false")
-        .load(f"{base_path}/products_clean.csv")
+        .load(f"{base_path}/products.csv")
         .withColumn("_ingestion_timestamp", current_timestamp())
-        .withColumn("_source_file", lit("products_clean.csv"))
+        .withColumn("_source_file", lit("products.csv"))
         .withColumn("_source_system", lit("fixtures"))
     )
