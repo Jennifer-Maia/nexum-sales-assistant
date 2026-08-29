@@ -88,10 +88,21 @@ def pytest_configure(config: pytest.Config):
         # Initialize Spark session eagerly, so it is available even when
         # SparkSession.builder.getOrCreate() is used. For DB Connect 15+,
         # we validate version compatibility with the remote cluster.
-        if hasattr(DatabricksSession.builder, "validateSession"):
-            DatabricksSession.builder.validateSession().getOrCreate()
-        else:
-            DatabricksSession.builder.getOrCreate()
+        #
+        # Os testes unitários das ferramentas do Nexum usam um Spark fake
+        # em memória (fixture `fake_spark`) e não dependem do Databricks;
+        # falhas de conexão aqui viram aviso, não erro de sessão.
+        try:
+            if hasattr(DatabricksSession.builder, "validateSession"):
+                DatabricksSession.builder.validateSession().getOrCreate()
+            else:
+                DatabricksSession.builder.getOrCreate()
+        except Exception as exc:
+            print(
+                f"⚠️ Databricks session not initialized: {exc.__class__.__name__}. "
+                "Unit tests using the in-memory fake Spark will still run.",
+                file=sys.stderr,
+            )
 
 
 # ---------------------------------------------------------------------------
