@@ -15,6 +15,16 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
+def _existing_tables():
+    """Nomes das tabelas do catalog/schema atuais da pipeline.
+
+    `spark.catalog.tableExists` não é permitido no runtime DLT
+    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
+    e não fixa nomes de catalog/schema no código.
+    """
+    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
+
+
 # Camada Gold — gold_quote_summary (docs/data_model.md §16; ADR-002).
 #
 # Visão resumida das cotações, uma linha por quote_id. Combina:
@@ -117,19 +127,20 @@ def build_rows(quotes, items, approvals, companies):
 )
 def gold_quote_summary():
     companies = [r.asDict() for r in spark.read.table("silver_companies").collect()]
+    existing_tables = _existing_tables()
     quotes = (
         [r.asDict() for r in spark.read.table("quotes").collect()]
-        if spark.catalog.tableExists("quotes")
+        if "quotes" in existing_tables
         else []
     )
     items = (
         [r.asDict() for r in spark.read.table("quote_items").collect()]
-        if spark.catalog.tableExists("quote_items")
+        if "quote_items" in existing_tables
         else []
     )
     approvals = (
         [r.asDict() for r in spark.read.table("approvals").collect()]
-        if spark.catalog.tableExists("approvals")
+        if "approvals" in existing_tables
         else []
     )
     return spark.createDataFrame(build_rows(quotes, items, approvals, companies), schema=SCHEMA)

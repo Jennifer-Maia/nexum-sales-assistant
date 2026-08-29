@@ -15,6 +15,16 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
+def _existing_tables():
+    """Nomes das tabelas do catalog/schema atuais da pipeline.
+
+    `spark.catalog.tableExists` não é permitido no runtime DLT
+    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
+    e não fixa nomes de catalog/schema no código.
+    """
+    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
+
+
 # Camada Gold — gold_conversation_audit (docs/data_model.md §16).
 #
 # Visão de auditoria da conversa e das ferramentas, uma linha por
@@ -94,7 +104,7 @@ def build_rows(events):
 def gold_conversation_audit():
     events = (
         [r.asDict() for r in spark.read.table("conversation_events").collect()]
-        if spark.catalog.tableExists("conversation_events")
+        if "conversation_events" in _existing_tables()
         else []
     )
     return spark.createDataFrame(build_rows(events), schema=SCHEMA)
