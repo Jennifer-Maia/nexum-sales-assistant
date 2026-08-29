@@ -1,3 +1,8 @@
+import math
+from decimal import Decimal
+
+import pandas as pd
+
 try:
     from pyspark import pipelines as dp
 except ImportError:  # fora do runtime DLT (ex.: testes unitários locais)
@@ -29,12 +34,12 @@ def _materialized_view(**kwargs):
 # search_products (docs/specs/search_products.md §5.1).
 #
 # Consumida por: search_products, check_inventory e create_quote
-# (ADR-005). A lógica vive em função pura testável em memória, com o
-# dataset declarativo como cola fina (mesma decisão de
-# silver_companies.py).
+# (ADR-005). A lógica vive em função pura testável em memória, aplicada
+# via `mapInPandas` com `coalesce(1)` (mesma decisão documentada em
+# silver_companies.py), preservando a linhagem no DLT.
 
 # Colunas de saída conforme docs/data_model.md §16.
-CATALOG_COLUMNS = (
+CATALOG_COLUMNS = [
     "product_id",
     "sku",
     "product_name",
@@ -49,7 +54,7 @@ CATALOG_COLUMNS = (
     "currency",
     "lead_time_days",
     "active",
-)
+]
 
 SCHEMA = (
     "product_id STRING, sku STRING, product_name STRING, category STRING, "
@@ -74,9 +79,40 @@ def build_rows(products):
     ]
 
 
+def _to_python(value):
+    """Converte valores vindos do pandas para tipos Python limpos."""
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
+def _to_pandas_value(value):
+    """Converte valores Python para tipos suportados pelo pandas/Arrow."""
+    if isinstance(value, Decimal):
+        return float(value)
+    return value
+
+
+def _catalog_pandas(iterator):
+    """Aplica `build_rows` por partição (mapInPandas)."""
+    for pdf in iterator:
+        records = [
+            {key: _to_python(value) for key, value in row.items()}
+            for row in pdf.to_dict("records")
+        ]
+        catalog = build_rows(records)
+        clean = [
+            {key: _to_pandas_value(value) for key, value in row.items()}
+            for row in catalog
+        ]
+        yield pd.DataFrame(clean, columns=CATALOG_COLUMNS)
+
+
 @_materialized_view(
     comment="Gold: catálogo de produtos válidos para consumo das ferramentas (ADR-005)",
 )
 def gold_product_catalog():
-    rows = [r.asDict() for r in spark.read.table("silver_products").collect()]
-    return spark.createDataFrame(build_rows(rows), schema=SCHEMA)
+    products = spark.read.table("silver_products").coalesce(1)
+    return products.mapInPandas(_catalog_pandas, schema=SCHEMA)

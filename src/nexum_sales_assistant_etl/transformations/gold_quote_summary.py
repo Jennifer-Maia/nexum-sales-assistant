@@ -1,3 +1,6 @@
+from pyspark.sql import Window
+from pyspark.sql.functions import col, count, lit, row_number, sum as spark_sum
+
 try:
     from pyspark import pipelines as dp
 except ImportError:  # fora do runtime DLT (ex.: testes unitários locais)
@@ -15,16 +18,6 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
-def _existing_tables():
-    """Nomes das tabelas do catalog/schema atuais da pipeline.
-
-    `spark.catalog.tableExists` não é permitido no runtime DLT
-    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
-    e não fixa nomes de catalog/schema no código.
-    """
-    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
-
-
 # Camada Gold — gold_quote_summary (docs/data_model.md §16; ADR-002).
 #
 # Visão resumida das cotações, uma linha por quote_id. Combina:
@@ -35,7 +28,8 @@ def _existing_tables():
 #     MVP, pois essas entidades são criadas em tempo de execução
 #     (prompts/01-bronze.md);
 #   - `approvals`: registra solicitação/resolução da aprovação
-#     (docs/data_model.md §10; ADR-003) — fonte do `approval_status`;
+#     (docs/data_model.md §10; ADR-003) — fonte do `approval_status`
+#     (resolução mais recente por created_at);
 #   - `silver_companies`: fonte canônica de clientes (ADR-002) — fornece
 #     `customer_name`; a chave canônica permanece
 #     `silver_companies.company_id`, exposta como `customer_id`.
@@ -49,8 +43,10 @@ def _existing_tables():
 # Comportamento sem dados: enquanto as tabelas transacionais ainda não
 # existirem no catálogo (nenhuma cotação criada), a Gold materializa
 # vazia com o schema documentado; nenhuma linha é inventada.
-# `approval_status` é o status da resolução mais recente registrada em
-# `approvals` para a cotação (por created_at).
+#
+# Decisão de implementação: agregações e joins em Spark (linhagem
+# preservada no DLT); `build_rows` permanece como referência testável
+# em memória do mesmo contrato.
 
 SCHEMA = (
     "quote_id STRING, customer_id STRING, customer_name STRING, status STRING, "
@@ -59,9 +55,25 @@ SCHEMA = (
     "item_count INT, total_quantity INT, approval_status STRING"
 )
 
+OUTPUT_COLUMNS = [
+    "quote_id",
+    "customer_id",
+    "customer_name",
+    "status",
+    "total_amount",
+    "currency",
+    "created_at",
+    "approved_at",
+    "approved_by",
+    "payment_status",
+    "item_count",
+    "total_quantity",
+    "approval_status",
+]
+
 
 def build_rows(quotes, items, approvals, companies):
-    """Monta o resumo de cotações a partir das camadas/runtimes de origem.
+    """Referência testável do resumo de cotações.
 
     Entrada: listas de dicts de quotes, quote_items, approvals (tabelas
     runtime das ferramentas) e silver_companies.
@@ -79,10 +91,10 @@ def build_rows(quotes, items, approvals, companies):
         quote_id = item.get("quote_id")
         if quote_id is None:
             continue
-        count, total_quantity = items_by_quote.get(quote_id, (0, 0))
+        count_items, total_quantity = items_by_quote.get(quote_id, (0, 0))
         quantity = item.get("quantity")
         total_quantity += quantity if quantity is not None else 0
-        items_by_quote[quote_id] = (count + 1, total_quantity)
+        items_by_quote[quote_id] = (count_items + 1, total_quantity)
 
     # Status da resolução mais recente por cotação (por created_at).
     latest_approval = {}
@@ -122,25 +134,60 @@ def build_rows(quotes, items, approvals, companies):
     return rows
 
 
+def _existing_tables():
+    """Nomes das tabelas do catalog/schema atuais da pipeline.
+
+    `spark.catalog.tableExists` não é permitido no runtime DLT
+    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
+    e não fixa nomes de catalog/schema no código.
+    """
+    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
+
+
 @_materialized_view(
     comment="Gold: resumo de cotações com itens, aprovação e cliente canônico (ADR-002)",
 )
 def gold_quote_summary():
-    companies = [r.asDict() for r in spark.read.table("silver_companies").collect()]
     existing_tables = _existing_tables()
-    quotes = (
-        [r.asDict() for r in spark.read.table("quotes").collect()]
-        if "quotes" in existing_tables
-        else []
+    if "quotes" not in existing_tables:
+        return spark.createDataFrame([], schema=SCHEMA)
+
+    quotes = spark.read.table("quotes")
+
+    # Quantidade de itens e quantidade total de produtos por cotação.
+    if "quote_items" in existing_tables:
+        items_agg = (
+            spark.read.table("quote_items")
+            .groupBy("quote_id")
+            .agg(
+                count("quote_item_id").cast("int").alias("item_count"),
+                spark_sum("quantity").cast("int").alias("total_quantity"),
+            )
+        )
+        result = quotes.join(items_agg, "quote_id", "left")
+    else:
+        result = quotes.withColumn("item_count", lit(0)).withColumn("total_quantity", lit(0))
+
+    # Status da resolução mais recente por cotação (ADRs 002/003).
+    if "approvals" in existing_tables:
+        window = Window.partitionBy("quote_id").orderBy(col("created_at").desc())
+        approvals_latest = (
+            spark.read.table("approvals")
+            .withColumn("_rn", row_number().over(window))
+            .filter(col("_rn") == 1)
+            .select(col("quote_id"), col("status").alias("approval_status"))
+        )
+        result = result.join(approvals_latest, "quote_id", "left")
+    else:
+        result = result.withColumn("approval_status", lit(None).cast("string"))
+
+    # Nome do cliente pela fonte canônica (ADR-002); a chave continua
+    # sendo silver_companies.company_id (customer_id na cotação).
+    companies = (
+        spark.read.table("silver_companies")
+        .filter(col("_quality_status") == "valid")
+        .select(col("company_id"), col("company_name").alias("customer_name"))
     )
-    items = (
-        [r.asDict() for r in spark.read.table("quote_items").collect()]
-        if "quote_items" in existing_tables
-        else []
-    )
-    approvals = (
-        [r.asDict() for r in spark.read.table("approvals").collect()]
-        if "approvals" in existing_tables
-        else []
-    )
-    return spark.createDataFrame(build_rows(quotes, items, approvals, companies), schema=SCHEMA)
+    result = result.join(companies, result["customer_id"] == companies["company_id"], "left")
+
+    return result.select(*OUTPUT_COLUMNS).orderBy("quote_id")

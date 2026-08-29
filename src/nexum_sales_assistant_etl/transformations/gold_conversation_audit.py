@@ -1,3 +1,7 @@
+import math
+
+import pandas as pd
+
 try:
     from pyspark import pipelines as dp
 except ImportError:  # fora do runtime DLT (ex.: testes unitários locais)
@@ -13,16 +17,6 @@ def _materialized_view(**kwargs):
     if dp is None:
         return lambda fn: fn
     return dp.materialized_view(**kwargs)
-
-
-def _existing_tables():
-    """Nomes das tabelas do catalog/schema atuais da pipeline.
-
-    `spark.catalog.tableExists` não é permitido no runtime DLT
-    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
-    e não fixa nomes de catalog/schema no código.
-    """
-    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
 
 
 # Camada Gold — gold_conversation_audit (docs/data_model.md §16).
@@ -50,6 +44,10 @@ def _existing_tables():
 # não entram na agregação (nada é inventado). Comportamento sem dados:
 # enquanto `conversation_events` não existir no catálogo, a Gold
 # materializa vazia com o schema documentado.
+#
+# Decisão de implementação: `build_rows` (função pura testável) aplicada
+# via `mapInPandas` com `coalesce(1)` — mesma decisão documentada em
+# silver_companies.py.
 
 # event_type (docs/data_model.md §13) → coluna da Gold (docs/data_model.md §16).
 EVENT_TYPE_MAPPING = {
@@ -65,6 +63,21 @@ EVENT_TYPE_MAPPING = {
     "handoff_to_human": "handoffs_to_human",
     "error": "errors",
 }
+
+COLUMNS = [
+    "session_id",
+    "message_count",
+    "question_count",
+    "products_consulted",
+    "recommendations_created",
+    "quotes_created",
+    "approvals_requested",
+    "approvals_resolved",
+    "payments_simulated",
+    "documents_generated",
+    "handoffs_to_human",
+    "errors",
+]
 
 SCHEMA = (
     "session_id STRING, message_count INT, question_count INT, products_consulted INT, "
@@ -98,13 +111,40 @@ def build_rows(events):
     return rows
 
 
+def _existing_tables():
+    """Nomes das tabelas do catalog/schema atuais da pipeline.
+
+    `spark.catalog.tableExists` não é permitido no runtime DLT
+    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
+    e não fixa nomes de catalog/schema no código.
+    """
+    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
+
+
+def _to_python(value):
+    """Converte valores vindos do pandas para tipos Python limpos."""
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
+def _audit_pandas(iterator):
+    """Aplica `build_rows` por partição (mapInPandas)."""
+    for pdf in iterator:
+        records = [
+            {key: _to_python(value) for key, value in row.items()}
+            for row in pdf.to_dict("records")
+        ]
+        yield pd.DataFrame(build_rows(records), columns=COLUMNS)
+
+
 @_materialized_view(
     comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §16)",
 )
 def gold_conversation_audit():
-    events = (
-        [r.asDict() for r in spark.read.table("conversation_events").collect()]
-        if "conversation_events" in _existing_tables()
-        else []
-    )
-    return spark.createDataFrame(build_rows(events), schema=SCHEMA)
+    if "conversation_events" not in _existing_tables():
+        return spark.createDataFrame([], schema=SCHEMA)
+    events = spark.read.table("conversation_events").coalesce(1)
+    return events.mapInPandas(_audit_pandas, schema=SCHEMA)

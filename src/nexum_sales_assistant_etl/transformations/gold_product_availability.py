@@ -1,3 +1,9 @@
+import math
+from datetime import datetime
+
+import pandas as pd
+from pyspark.sql.functions import col
+
 try:
     from pyspark import pipelines as dp
 except ImportError:  # fora do runtime DLT (ex.: testes unitários locais)
@@ -28,17 +34,34 @@ def _materialized_view(**kwargs):
 #   - is_available: indica se existe quantidade disponível
 #     (available_quantity > 0), sem considerar reserva física no MVP.
 #
-# A combinação é um inner join lógico: produtos sem registro de estoque
-# ficam ausentes da Gold, permitindo que check_inventory retorne
+# A combinação é um inner join: produtos sem registro de estoque ficam
+# ausentes da Gold, permitindo que check_inventory retorne
 # `inventory_not_found` (docs/specs/check_inventory.md §11). A decisão
 # available_quantity >= quantity_requested continua na ferramenta
 # (docs/specs/check_inventory.md §6).
 #
-# Consumida por: check_inventory e create_quote (ADR-005). Lógica pura
-# testável em memória; dataset declarativo como cola fina.
+# Consumida por: check_inventory e create_quote (ADR-005). Decisão de
+# implementação: filtro de válidos e inner join em Spark (linhagem
+# preservada no DLT); a projeção das linhas usa a função pura
+# `_availability_row` via mapInPandas — a mesma usada pela referência
+# testável `build_rows`.
 
 # Campos principais de products na Gold (docs/data_model.md §16).
 PRODUCT_COLUMNS = ("product_id", "sku", "product_name", "category", "measurement_unit", "active")
+
+COLUMNS = [
+    "product_id",
+    "sku",
+    "product_name",
+    "category",
+    "measurement_unit",
+    "active",
+    "warehouse_id",
+    "available_quantity",
+    "reserved_quantity",
+    "inventory_updated_at",
+    "is_available",
+]
 
 SCHEMA = (
     "product_id STRING, sku STRING, product_name STRING, category STRING, "
@@ -48,8 +71,24 @@ SCHEMA = (
 )
 
 
+def _availability_row(row):
+    """Projeta uma linha combinada (produto + estoque) para o schema da Gold.
+
+    `is_available` indica existência de quantidade disponível
+    (docs/data_model.md §16), sem reserva física no MVP.
+    """
+    return {
+        **{column: row[column] for column in PRODUCT_COLUMNS},
+        "warehouse_id": row["warehouse_id"],
+        "available_quantity": row["available_quantity"],
+        "reserved_quantity": row["reserved_quantity"],
+        "inventory_updated_at": row["updated_at"],
+        "is_available": row["available_quantity"] > 0,
+    }
+
+
 def build_rows(products, inventory):
-    """Combina produtos e estoque válidos; is_available = quantidade > 0.
+    """Referência testável da combinação produto + estoque válidos.
 
     Entrada: listas de dicts nos schemas de silver_products e
     silver_inventory.
@@ -70,23 +109,55 @@ def build_rows(products, inventory):
             # Estoque sem produto válido na Silver não chega à Gold
             # (integridade referencial — ADR-005).
             continue
-        rows.append(
-            {
-                **{column: product[column] for column in PRODUCT_COLUMNS},
-                "warehouse_id": inv["warehouse_id"],
-                "available_quantity": inv["available_quantity"],
-                "reserved_quantity": inv["reserved_quantity"],
-                "inventory_updated_at": inv["updated_at"],
-                "is_available": inv["available_quantity"] > 0,
-            }
-        )
+        rows.append(_availability_row({**inv, **product}))
     return rows
+
+
+def _to_python(value):
+    """Converte valores vindos do pandas para tipos Python limpos."""
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
+def _to_pandas_value(value):
+    """Converte valores Python para tipos suportados pelo pandas/Arrow."""
+    if isinstance(value, datetime):
+        return pd.Timestamp(value)
+    return value
+
+
+def _availability_pandas(iterator):
+    """Aplica `_availability_row` por partição (mapInPandas)."""
+    for pdf in iterator:
+        rows = [
+            {key: _to_python(value) for key, value in row.items()}
+            for row in pdf.to_dict("records")
+        ]
+        transformed = [_availability_row(row) for row in rows]
+        clean = [
+            {key: _to_pandas_value(value) for key, value in row.items()}
+            for row in transformed
+        ]
+        yield pd.DataFrame(clean, columns=COLUMNS)
 
 
 @_materialized_view(
     comment="Gold: disponibilidade combinando catálogo e estoque válidos (docs/data_model.md §16)",
 )
 def gold_product_availability():
-    products = [r.asDict() for r in spark.read.table("silver_products").collect()]
-    inventory = [r.asDict() for r in spark.read.table("silver_inventory").collect()]
-    return spark.createDataFrame(build_rows(products, inventory), schema=SCHEMA)
+    products = (
+        spark.read.table("silver_products")
+        .filter(col("_quality_status") == "valid")
+        .select(*PRODUCT_COLUMNS)
+        .coalesce(1)
+    )
+    inventory = (
+        spark.read.table("silver_inventory")
+        .filter(col("_quality_status") == "valid")
+        .coalesce(1)
+    )
+    joined = inventory.join(products, "product_id", "inner")
+    return joined.mapInPandas(_availability_pandas, schema=SCHEMA)

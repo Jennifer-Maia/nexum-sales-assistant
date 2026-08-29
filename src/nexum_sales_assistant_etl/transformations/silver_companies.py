@@ -1,3 +1,7 @@
+import math
+
+import pandas as pd
+
 try:
     from pyspark import pipelines as dp
 except ImportError:  # fora do runtime DLT (ex.: testes unitários locais)
@@ -34,11 +38,24 @@ def _materialized_view(**kwargs):
 #     _source_file, _source_system) para rastreabilidade Bronze → Silver.
 #
 # Decisão de implementação: a lógica de tratamento vive em funções puras
-# testáveis em memória (ADRs 004/005); o dataset declarativo é cola fina
-# que lê a Bronze, aplica a transformação e materializa com schema
-# explícito (o volume é pequeno e controlado — ADR-005).
+# testáveis em memória (ADRs 004/005). O dataset declarativo aplica a
+# transformação via `mapInPandas` sobre a leitura da Bronze, preservando
+# a linhagem no DLT (a Silver só materializa depois da Bronze) e usando
+# `coalesce(1)` — o catálogo é pequeno e controlado (ADR-005) e as
+# regras entre linhas (unicidade) precisam do conjunto completo.
 
-# Schema final da Silver (snake_case; nomes conforme a origem).
+# Colunas na ordem do schema final (snake_case; nomes conforme a origem).
+COLUMNS = [
+    "company_id",
+    "company_name",
+    "industry",
+    "region",
+    "_quality_status",
+    "_ingestion_timestamp",
+    "_source_file",
+    "_source_system",
+]
+
 SCHEMA = (
     "company_id STRING, company_name STRING, industry STRING, region STRING, "
     "_quality_status STRING, "
@@ -92,9 +109,28 @@ def _transform_row(row, counts):
     }
 
 
+def _to_python(value):
+    """Converte valores vindos do pandas para tipos Python limpos."""
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
+def _transform_pandas(iterator):
+    """Aplica `transform_rows` por partição (mapInPandas)."""
+    for pdf in iterator:
+        records = [
+            {key: _to_python(value) for key, value in row.items()}
+            for row in pdf.to_dict("records")
+        ]
+        yield pd.DataFrame(transform_rows(records), columns=COLUMNS)
+
+
 @_materialized_view(
     comment="Silver: empresas tratadas e validadas — fonte canônica de clientes (ADR-002)",
 )
 def silver_companies():
-    rows = [r.asDict() for r in spark.read.table("bronze_companies").collect()]
-    return spark.createDataFrame(transform_rows(rows), schema=SCHEMA)
+    bronze = spark.read.table("bronze_companies").coalesce(1)
+    return bronze.mapInPandas(_transform_pandas, schema=SCHEMA)

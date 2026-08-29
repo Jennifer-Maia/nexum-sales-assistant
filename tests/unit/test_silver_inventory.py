@@ -1,8 +1,8 @@
 """Testes da camada Silver — silver_inventory (ADR-005; prompts/02-silver.md).
 
-Cobrem schema, tipagem, quantidades não negativas, integridade
-referencial com silver_products, unicidade de chaves, timestamps válidos
-e preservação da origem, com dados em memória (sem Spark externo).
+Cobrem schema, tipagem, quantidades não negativas, unicidade de chaves,
+timestamps válidos, preservação da origem e integridade referencial
+(via `apply_fk`), com dados em memória (sem Spark externo).
 """
 
 import datetime
@@ -38,9 +38,8 @@ def _raw_row(
     return row
 
 
-def _one(product_ids=None, **overrides):
-    product_ids = {"PRD-TEMP-001"} if product_ids is None else product_ids
-    return si.transform_rows([_raw_row(**overrides)], product_ids)[0]
+def _one(**overrides):
+    return si.transform_rows([_raw_row(**overrides)])[0]
 
 
 class TestSchema:
@@ -94,27 +93,35 @@ class TestQuantities:
 
 
 class TestReferentialIntegrity:
+    # No DLT, o left join com silver_products adiciona o marcador
+    # `_fk_product_id` (nulo quando o produto não existe); `apply_fk`
+    # sinaliza e remove o marcador (ADR-005: nenhum produto é inventado).
     def test_product_id_must_exist(self):
-        # product_id inexistente em silver_products: sinalizado, e nenhum
-        # produto é inventado para corrigir o estoque (ADR-005).
-        row = _one(product_ids={"PRD-OUTRO"}, product_id="PRD-INEXISTENTE")
-        assert "product_not_found" in row["_quality_status"]
+        row = _one(product_id="PRD-INEXISTENTE")
+        flagged = si.apply_fk([{**row, "_fk_product_id": None}])
+        assert "product_not_found" in flagged[0]["_quality_status"]
+        assert "_fk_product_id" not in flagged[0]
 
     def test_existing_product_not_flagged(self):
-        row = _one(product_ids={"PRD-TEMP-001", "PRD-TEMP-002"}, product_id="PRD-TEMP-002")
-        assert "product_not_found" not in row["_quality_status"]
+        row = _one()
+        flagged = si.apply_fk([{**row, "_fk_product_id": "PRD-TEMP-001"}])
+        assert flagged[0]["_quality_status"] == "valid"
+
+    def test_fk_does_not_change_already_invalid(self):
+        row = _one(available_quantity="-1")
+        flagged = si.apply_fk([{**row, "_fk_product_id": None}])
+        assert "available_quantity_negative" in flagged[0]["_quality_status"]
+        assert "product_not_found" not in flagged[0]["_quality_status"]
 
 
 class TestUniqueness:
     def test_duplicate_inventory_id_flagged(self):
-        rows = si.transform_rows([_raw_row(), _raw_row()], {"PRD-TEMP-001"})
+        rows = si.transform_rows([_raw_row(), _raw_row()])
         assert all("duplicate_inventory_id" in r["_quality_status"] for r in rows)
 
     def test_duplicate_product_warehouse_flagged(self):
         # Ausência de duplicidade de produto e depósito (ADR-005).
-        rows = si.transform_rows(
-            [_raw_row("INV-1"), _raw_row("INV-2")], {"PRD-TEMP-001"}
-        )
+        rows = si.transform_rows([_raw_row("INV-1"), _raw_row("INV-2")])
         assert all("duplicate_product_warehouse" in r["_quality_status"] for r in rows)
 
 

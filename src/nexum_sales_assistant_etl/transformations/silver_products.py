@@ -1,4 +1,7 @@
+import math
 from decimal import Decimal, InvalidOperation
+
+import pandas as pd
 
 try:
     from pyspark import pipelines as dp
@@ -42,9 +45,10 @@ def _materialized_view(**kwargs):
 # (temperature: C; pressure: bar, psi; vibration: mm/s).
 #
 # Valores monetários e de faixa usam DECIMAL(10,2)
-# (docs/data_model.md §6). A decisão de manter a lógica em funções
-# puras testáveis em memória e o dataset declarativo como cola fina é a
-# mesma documentada em silver_companies.py.
+# (docs/data_model.md §6). Decisão de implementação: lógica pura
+# testável em memória aplicada via `mapInPandas` sobre a Bronze com
+# `coalesce(1)` (catálogo pequeno — ADR-005), preservando a linhagem
+# no DLT (mesma decisão documentada em silver_companies.py).
 
 ALLOWED_CATEGORIES = {"temperature", "pressure", "vibration"}
 
@@ -67,7 +71,29 @@ REQUIRED_STRINGS = (
     "currency",
 )
 
-# Schema final da Silver (snake_case; tipos conforme docs/data_model.md §6).
+# Colunas na ordem do schema final (snake_case; tipos conforme
+# docs/data_model.md §6).
+COLUMNS = [
+    "product_id",
+    "sku",
+    "product_name",
+    "category",
+    "description",
+    "use_cases",
+    "technical_specs",
+    "measurement_unit",
+    "min_operating_value",
+    "max_operating_value",
+    "price",
+    "currency",
+    "lead_time_days",
+    "active",
+    "_quality_status",
+    "_ingestion_timestamp",
+    "_source_file",
+    "_source_system",
+]
+
 SCHEMA = (
     "product_id STRING, sku STRING, product_name STRING, category STRING, "
     "description STRING, use_cases STRING, technical_specs STRING, "
@@ -142,7 +168,6 @@ def _transform_row(row, product_id_counts, sku_counts):
     category = _clean(row.get("category"))
     measurement_unit = _clean(row.get("measurement_unit"))
     currency = _clean(row.get("currency"))
-    technical_specs = _clean(row.get("technical_specs"))
 
     for field in REQUIRED_STRINGS:
         if _clean(row.get(field)) is None:
@@ -161,9 +186,9 @@ def _transform_row(row, product_id_counts, sku_counts):
 
     min_operating_value = _to_decimal(row.get("min_operating_value"))
     max_operating_value = _to_decimal(row.get("max_operating_value"))
-    if row.get("min_operating_value") not in (None, "") and min_operating_value is None:
+    if _clean(row.get("min_operating_value")) is not None and min_operating_value is None:
         problems.append("min_operating_value_invalid")
-    if row.get("max_operating_value") not in (None, "") and max_operating_value is None:
+    if _clean(row.get("max_operating_value")) is not None and max_operating_value is None:
         problems.append("max_operating_value_invalid")
     if min_operating_value is not None and max_operating_value is not None:
         if min_operating_value > max_operating_value:
@@ -205,7 +230,7 @@ def _transform_row(row, product_id_counts, sku_counts):
         "category": category,
         "description": _clean(row.get("description")),
         "use_cases": _clean(row.get("use_cases")),
-        "technical_specs": technical_specs,
+        "technical_specs": _clean(row.get("technical_specs")),
         "measurement_unit": measurement_unit,
         "min_operating_value": min_operating_value,
         "max_operating_value": max_operating_value,
@@ -220,9 +245,40 @@ def _transform_row(row, product_id_counts, sku_counts):
     }
 
 
+def _to_python(value):
+    """Converte valores vindos do pandas para tipos Python limpos."""
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+
+def _to_pandas_value(value):
+    """Converte valores Python para tipos suportados pelo pandas/Arrow."""
+    if isinstance(value, Decimal):
+        return float(value)
+    return value
+
+
+def _transform_pandas(iterator):
+    """Aplica `transform_rows` por partição (mapInPandas)."""
+    for pdf in iterator:
+        records = [
+            {key: _to_python(value) for key, value in row.items()}
+            for row in pdf.to_dict("records")
+        ]
+        transformed = transform_rows(records)
+        clean = [
+            {key: _to_pandas_value(value) for key, value in row.items()}
+            for row in transformed
+        ]
+        yield pd.DataFrame(clean, columns=COLUMNS)
+
+
 @_materialized_view(
     comment="Silver: produtos tipados e validados conforme ADR-005",
 )
 def silver_products():
-    rows = [r.asDict() for r in spark.read.table("bronze_products").collect()]
-    return spark.createDataFrame(transform_rows(rows), schema=SCHEMA)
+    bronze = spark.read.table("bronze_products").coalesce(1)
+    return bronze.mapInPandas(_transform_pandas, schema=SCHEMA)
