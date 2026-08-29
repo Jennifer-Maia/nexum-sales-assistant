@@ -1,42 +1,163 @@
 # CLAUDE.md
 
-Project guidance for AI agents lives in AGENTS.md.
-Claude Code loads it via the import below.
+As instruções específicas para agentes estão em `AGENTS.md`.
 
 @AGENTS.md
-# Instruções para o Claude
 
-## Contexto
+Leia também, conforme a tarefa:
 
-Este é um projeto de portfólio de engenharia de dados chamado B2B Sales Intelligence, executado em Databricks Free Edition por meio de Declarative Automation Bundles.
+- `docs/discovery.md`;
+- `docs/prd.md`;
+- `docs/data_model.md`;
+- a SPEC correspondente em `docs/specs/`;
+- os ADRs relevantes em `docs/adrs/`.
+
+## Identidade do projeto
+
+Este é o projeto **Nexum Sales Assistant**, um MVP de assistente de
+vendas B2B executado sobre Databricks e Declarative Automation Bundles.
+
+O fluxo principal é:
+
+```text
+busca de produto
+    ↓
+consulta de estoque
+    ↓
+criação de cotação
+    ↓
+aprovação humana
+    ↓
+pagamento simulado
+    ↓
+documento simulado
+```
+
+O projeto antigo de B2B Sales Intelligence, baseado em score, churn,
+funcionários, contatos recomendados, dashboard e Genie Agent, não faz
+parte do escopo ativo deste branch.
 
 ## Regras obrigatórias
 
-1. Leia `.llm/prd.md` antes de alterar o projeto.
-2. Leia o prompt da etapa atual antes de executar mudanças.
-3. Não executar etapas futuras sem aprovação.
-4. Não usar Supabase, JDBC externo, Fivetran ou cloud externa.
-5. Não inventar colunas que não existem na fonte sem documentar a derivação.
-6. Não substituir um score heurístico por machine learning.
-7. Preservar rastreabilidade da origem.
-8. Não remover arquivos fora do escopo da etapa atual.
-9. Usar nomes em snake_case nas tabelas finais.
-10. Validar o bundle depois das alterações.
-11. Criar testes para regras críticas.
-12. Informar os arquivos alterados ao final de cada etapa.
+1. Leia a documentação aplicável antes de alterar arquivos.
+2. Use `docs/prd.md` e `docs/discovery.md` para o contexto do produto.
+3. Use `docs/data_model.md` para entidades, campos e relacionamentos.
+4. Use as SPECs como contrato das ferramentas.
+5. Use os ADRs como registro das decisões arquiteturais.
+6. Não executar etapas futuras sem aprovação quando a mudança afetar
+   regras de negócio, estados, dados comerciais ou infraestrutura.
+7. Não inventar produtos, clientes, preços, estoque, prazos, aprovações,
+   pagamentos ou documentos.
+8. Não substituir regras determinísticas por texto gerado pelo LLM.
+9. Não remover a aprovação humana antes do pagamento simulado.
+10. Não tratar dados sintéticos como dados reais.
+11. Não processar pagamentos reais.
+12. Não gerar documentos com validade fiscal.
+13. Não criar uma entidade `orders` no MVP.
+14. Usar `quotes` como entidade comercial principal.
+15. Usar `silver_companies` como fonte canônica de clientes.
+16. Manter rastreabilidade entre origem, transformação, ferramenta e
+    auditoria.
+17. Usar nomes em `snake_case` nas tabelas e campos finais.
+18. Criar ou atualizar testes para regras críticas.
+19. Validar o bundle e os arquivos afetados após as alterações.
+20. Informar os arquivos alterados e as validações executadas ao final.
 
-## Processo de execução
+## Separação entre LLM e código
 
-Antes de modificar arquivos:
+O princípio obrigatório é:
 
-- explicar o plano;
-- listar arquivos a criar, alterar e remover;
-- identificar riscos;
-- aguardar aprovação quando a tarefa solicitar revisão.
+```text
+LLM interpreta.
+Código valida.
+Código consulta.
+Código calcula.
+Código controla estados.
+Humano aprova ações comerciais sensíveis.
+```
 
-Depois de modificar arquivos:
+O LLM pode interpretar mensagens, extrair requisitos, chamar ferramentas
+e explicar resultados.
 
-- executar validações locais possíveis;
-- verificar referências quebradas;
-- informar comandos executados;
-- resumir o resultado.
+O LLM não pode decidir sozinho:
+
+- qual produto existe;
+- qual preço deve ser aplicado;
+- quanto estoque está disponível;
+- se uma cotação foi aprovada;
+- se um pagamento ocorreu;
+- se um documento possui validade;
+- se uma transição de estado é permitida.
+
+## Ferramentas do MVP
+
+As ferramentas previstas são:
+
+```text
+search_products
+check_inventory
+create_quote
+request_human_approval
+simulate_payment
+generate_document
+```
+
+Toda implementação deverá seguir a SPEC correspondente em
+`docs/specs/`.
+
+## Máquina de estados
+
+Os estados permitidos para `quotes` são:
+
+```text
+draft
+pending_approval
+approved
+rejected
+paid
+completed
+```
+
+Transições inválidas devem ser bloqueadas pelo código, não apenas
+descritas na resposta textual do agente.
+
+## Processo antes de alterar arquivos
+
+Antes de modificar qualquer arquivo:
+
+1. identificar a documentação aplicável;
+2. explicar o plano;
+3. listar arquivos a criar, alterar ou remover;
+4. apontar riscos e dependências;
+5. definir validações e testes;
+6. solicitar revisão quando a mudança afetar regras sensíveis.
+
+Não fazer alterações destrutivas sem autorização explícita.
+
+## Processo depois de alterar arquivos
+
+Executar, conforme aplicável:
+
+```bash
+git diff --check
+git diff
+```
+
+Também verificar:
+
+- referências quebradas;
+- schemas;
+- imports;
+- testes;
+- critérios de aceite;
+- transições de estado;
+- qualidade dos dados;
+- configuração do bundle.
+
+Informar ao final:
+
+- arquivos alterados;
+- arquivos removidos;
+- comandos executados;
+- resultado das validações;
+- pendências conhecidas.
