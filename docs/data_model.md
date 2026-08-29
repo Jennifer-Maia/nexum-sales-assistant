@@ -559,3 +559,16 @@ As seguintes decisões serão detalhadas nas SPECs e ADRs:
 - estratégia de persistência das atualizações;
 - formato do documento simulado;
 - política de expiração da cotação.
+
+Decisões registradas durante a implementação do scaffold:
+
+- lista de aprovadores da demonstração: implementada como constante
+  placeholder (`APPROVERS = {"vendor-001"}`), aguardando a lista
+  documentada nos dados sintéticos da etapa 01-bronze —
+  `src/nexum_sales_assistant/tools/request_human_approval.py:18`;
+- local de armazenamento do documento simulado: a ferramenta
+  `generate_document` monta o conteúdo completo (HTML/TXT) e registra
+  `content_reference` como caminho previsto, sem gravação física do
+  arquivo, aguardando a definição do local de armazenamento —
+  `src/nexum_sales_assistant/tools/generate_document.py:8`
+  (comentário no fluxo de execução em `:318`).
