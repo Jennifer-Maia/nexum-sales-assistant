@@ -154,7 +154,7 @@ def run(inputs):
             return result
 
     # Disponibilidade — SPEC §7 (mesma lógica de check_inventory).
-    inventory_status = _check_inventory(session_id, items)
+    inventory_status = _check_inventory(session_id, inputs["items"])
     if inventory_status is not None:
         _record_event(session_id, "quote_created", None, _content(inventory_status))
         return inventory_status

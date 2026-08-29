@@ -107,11 +107,11 @@ def run(inputs):
 
     # Aprovação humana obrigatória — SPEC §7 (ADR-004).
     if quote.get("status") != "approved":
-        result = _approval_required()
+        result = _approval_required(quote_id)
         _record_event(session_id, "payment_simulated", quote_id, _content(result))
         return result
     if not quote.get("approved_by") or not quote.get("approved_at"):
-        result = _approval_required()
+        result = _approval_required(quote_id)
         _record_event(session_id, "payment_simulated", quote_id, _content(result))
         return result
     try:
@@ -122,7 +122,7 @@ def run(inputs):
     except Exception as exc:
         return _fail_data(f"approvals is not available: {exc}", session_id, quote_id)
     if not approval_rows:
-        result = _approval_required()
+        result = _approval_required(quote_id)
         _record_event(session_id, "payment_simulated", quote_id, _content(result))
         return result
 
@@ -257,10 +257,11 @@ def _validate(inputs):
     return None
 
 
-def _approval_required():
+def _approval_required(quote_id):
     return {
         "payment_status": "approval_required",
         "error_code": "QUOTE_NOT_APPROVED",
+        "quote_id": quote_id,
         "message": "A human-approved quote is required before payment simulation",
     }
 
