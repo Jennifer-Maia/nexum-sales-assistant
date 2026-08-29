@@ -54,16 +54,13 @@ generate_document
 
 ## Arquivos que podem ser removidos
 
-Os pacotes legados e as fixtures antigas já foram removidos na
-migração. O único artefato legado restante conhecido é:
+A migração já removeu os pacotes legados, as fixtures antigas e a
+imagem do produto anterior. Não há artefatos legados conhecidos
+restantes.
 
-- `src/image_gen_output.png` (imagem do produto anterior), se não for
-  referenciado por nenhum documento ativo.
-
-Quaisquer outros candidatos identificados durante a análise devem ser
-listados antes da remoção, com justificativa e confirmação de que
-pertencem ao produto anterior (`AGENTS.md` §8), aguardando aprovação
-explícita.
+Quaisquer candidatos identificados durante a análise devem ser listados
+antes da remoção, com justificativa e confirmação de que pertencem ao
+produto anterior (`AGENTS.md` §8), aguardando aprovação explícita.
 
 Antes de remover qualquer arquivo, verificar que ele não é referenciado
 por outro recurso necessário.
