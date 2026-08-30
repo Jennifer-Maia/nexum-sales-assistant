@@ -1,459 +1,307 @@
 # Nexum Sales Assistant
 
-Assistente de vendas B2B que transforma uma necessidade descrita em
-linguagem natural em recomendação de produto e cotação preliminar,
-executado sobre Databricks e Declarative Automation Bundles.
+Assistente de vendas B2B com agente de IA que transforma uma
+necessidade descrita em linguagem natural em recomendação de produto,
+cotação aprovada por humano, pagamento simulado e documento simulado —
+executado sobre Databricks (Delta, Declarative Automation Bundles e
+Foundation Model API).
 
-> Projeto de demonstração com dados sintéticos, aprovação humana
+> Projeto de portfólio com dados sintéticos, aprovação humana
 > obrigatória e pagamento exclusivamente simulado.
 
 ---
 
-## Visão geral
+## 1. Objetivo
 
 O **Nexum Sales Assistant** é o assistente de vendas da **Nexum
-Industrial**, empresa fictícia que fornece equipamentos e soluções para
-manutenção, operação e monitoramento industrial.
+Industrial**, empresa fictícia de equipamentos para manutenção,
+operação e monitoramento industrial. Ele demonstra ponta a ponta a
+engenharia de um assistente comercial com IA: engenharia de dados
+(Bronze → Silver → Gold), ferramentas determinísticas, agente com LLM
+real, aprovação humana, auditoria completa e métricas operacionais.
 
-Vendedores B2B gastam tempo significativo traduzindo a necessidade do
-cliente em produtos adequados, consultando especificações técnicas,
-disponibilidade, preço e prazo. O assistente reduz essa fricção:
+## 2. Problema de negócio
 
-- interpreta a necessidade descrita pelo cliente;
-- faz perguntas de esclarecimento quando faltam informações;
-- consulta um catálogo estruturado de produtos;
-- verifica a disponibilidade de estoque;
-- monta uma cotação preliminar;
-- encaminha a cotação para aprovação humana;
-- simula o pagamento após a aprovação;
-- gera um documento simulado, sem validade fiscal.
+Vendedores B2B gastam tempo traduzindo a necessidade do cliente em
+produtos adequados, consultando especificações, disponibilidade, preço
+e prazo. O assistente reduz essa fricção: o LLM **interpreta** a
+conversa, e o código **valida, consulta, calcula e controla estados** —
+o modelo nunca inventa dados comerciais.
 
-Todos os dados comerciais (produtos, preços, estoque e prazos) vêm de
-tabelas estruturadas. O modelo de linguagem não pode inventá-los.
+## 3. Funcionalidades
 
----
+- busca determinística de produtos por categoria, faixa e unidade;
+- consulta de estoque somente-leitura (com sinalização de dado
+  desatualizado);
+- criação de cotação com congelamento de preço;
+- aprovação humana obrigatória antes do pagamento simulado;
+- pagamento exclusivamente simulado (sem dinheiro real);
+- documento simulado sem validade fiscal, financeira ou contábil;
+- auditoria completa da conversa e das ferramentas;
+- agente de IA conversacional com LLM real e tool calling controlado;
+- chat local (Streamlit) e job de demonstração;
+- dashboard Lakeview de funil, operação, qualidade, custo e
+  atualização dos dados.
 
-## Princípio central
-
-```text
-LLM interpreta.
-Código valida.
-Código consulta.
-Código calcula.
-Código controla estados.
-Humano aprova ações comerciais sensíveis.
-```
-
-O LLM conduz a conversa, extrai requisitos e explica resultados. As
-ferramentas determinísticas consultam os dados, aplicam as regras e
-controlam as transições. A aprovação humana é obrigatória antes do
-pagamento simulado.
-
----
-
-## Fluxo principal
+## 4. Arquitetura de dados — Bronze → Silver → Gold
 
 ```text
-search_products
+fixtures/CSV (dados sintéticos)
         ↓
-check_inventory
+Bronze   dados de origem preservados + metadados de ingestão
         ↓
-create_quote
+Silver   dados padronizados, tipados e validados (_quality_status)
         ↓
-request_human_approval
-        ↓
-simulate_payment
-        ↓
-generate_document
+Gold     modelos de consumo das ferramentas e do dashboard
 ```
 
-### Ferramentas do MVP
+Datasets implementados:
+
+```text
+bronze_companies · bronze_products · bronze_inventory
+silver_companies (fonte canônica de clientes — ADR-002)
+silver_products · silver_inventory
+gold_product_catalog        ← search_products
+gold_product_availability   ← check_inventory
+gold_quote_summary          ← visão de cotações (ADR-002)
+gold_conversation_audit     ← auditoria por sessão
+gold_agent_operations       ← operação do agente (ADR-008)
+gold_data_freshness         ← atualização dos dados (ADR-008)
+```
+
+Registros inválidos são sinalizados em `_quality_status` e nunca
+corrigidos silenciosamente (ADR-005). As entidades transacionais
+(`quotes`, `quote_items`, `approvals`, `payments`, `documents`,
+`conversation_events`, `agent_events`) são criadas em tempo de execução
+pelas ferramentas e pelo agente; o dashboard lê **somente Gold**
+(ADR-008).
+
+## 5. Agente com LLM
+
+O agente (`src/nexum_sales_assistant/agent/`) usa a **Foundation Model
+API** do Databricks (pay-per-token; endpoint configurável via
+`model_endpoint` do bundle, padrão
+`databricks-meta-llama-3-3-70b-instruct`). O loop de tool calling é
+próprio e determinístico (ADR-006):
+
+- o LLM só pode solicitar as **seis ferramentas aprovadas**;
+- ferramenta fora do catálogo → bloqueada e registrada
+  (`tool_selection_blocked`);
+- ações sensíveis (cotação, aprovação, pagamento, documento) exigem
+  **confirmação explícita** do cliente (gate determinístico);
+- prompt injection e pedidos de segredos → recusa registrada
+  (`refusal`);
+- cada turno registra latência, tokens, modelo, status e erro em
+  `agent_events` (custo permanece 0/NULL — a API não retorna custo;
+  nenhum valor é inventado — ADR-007);
+- o histórico de cada turno é reconstruído da trilha de auditoria
+  (`conversation_events`) — a conversa é retomável pelo `session_id`.
+
+## 6. As seis ferramentas
 
 | Ferramenta | Responsabilidade | Fonte de dados |
 |---|---|---|
-| `search_products` | Buscar produtos ativos e compatíveis com os requisitos extraídos da conversa | `gold_product_catalog` |
-| `check_inventory` | Informar se a quantidade disponível atende à quantidade solicitada, sem alterar o estoque | `gold_product_availability` |
-| `create_quote` | Validar cliente e produtos, congelar preços e criar a cotação em estado `draft` | `silver_companies`, Golds de catálogo e disponibilidade |
-| `request_human_approval` | Solicitar aprovação humana e registrar a decisão (`approved` ou `rejected`) | `quotes`, `approvals` |
-| `simulate_payment` | Registrar um pagamento exclusivamente simulado, somente após aprovação válida | `quotes`, `approvals`, `payments` |
-| `generate_document` | Gerar documento simulado sem validade fiscal, somente após pagamento simulado bem-sucedido | `quotes`, `quote_items`, `products`, `payments`, `silver_companies` |
+| `search_products` | Buscar produtos ativos e compatíveis | `gold_product_catalog` |
+| `check_inventory` | Disponibilidade sem alterar o estoque | `gold_product_availability` |
+| `create_quote` | Cotação em `draft` com preços congelados | `silver_companies` + Golds |
+| `request_human_approval` | Solicitar/registrar aprovação humana | `quotes`, `approvals` |
+| `simulate_payment` | Pagamento exclusivamente simulado | `quotes`, `approvals`, `payments` |
+| `generate_document` | Documento simulado sem validade fiscal | `quotes`, `quote_items`, `payments`, `silver_companies` |
 
-Cada ferramenta possui um contrato formal em `docs/specs/`, incluindo
-entradas, saídas, códigos de erro, regras de negócio, auditoria e
-critérios de aceite.
+Contratos formais em `docs/specs/` (entradas, saídas, erros, auditoria,
+critérios de aceite).
 
----
+## 7. Aprovação humana
 
-## Máquina de estados de `quotes`
-
-A entidade comercial principal do MVP é `quotes`. Não existe uma
-entidade `orders`.
-
-Estados permitidos:
+Obrigatória antes do pagamento simulado (ADR-004). O agente solicita e
+repassa a decisão de um aprovador autorizado (demo: `vendor-001`);
+nunca decide `approved`/`rejected` por conta própria. Transições
+inválidas da máquina de estados de `quotes` são bloqueadas pelo código:
 
 ```text
-draft
-pending_approval
-approved
-rejected
-paid
-completed
+draft → pending_approval → approved → paid → completed
+                       ↘ rejected
 ```
 
-Transições permitidas:
+## 8. Interface Streamlit (chat local)
 
-```text
-draft → pending_approval
-pending_approval → approved
-pending_approval → rejected
-approved → paid
-paid → completed
-```
-
-Transições inválidas devem ser bloqueadas pelo código, não apenas
-descritas na resposta textual do agente.
-
----
-
-## Domínio do MVP
-
-O MVP atende inicialmente três categorias de necessidade:
-
-```text
-temperature
-pressure
-vibration
-```
-
-O catálogo é pequeno, controlado e sintético, com produtos que cobrem
-casos positivos e negativos (compatível, incompatível, inativo, com ou
-sem estoque). O objetivo é demonstrar a jornada completa com qualidade
-de engenharia de dados, não representar um catálogo industrial real.
-
----
-
-## Arquitetura de dados
-
-Os dados são organizados nas camadas Bronze, Silver e Gold, conforme
-`docs/data_model.md`.
-
-```text
-Bronze
-dados de origem preservados, com metadados de ingestão
-        ↓
-Silver
-dados padronizados, tipados e validados
-        ↓
-Gold
-modelos preparados para consumo pelas ferramentas
-```
-
-### Bronze
-
-Ingere os arquivos de origem sem aplicar regras de negócio.
-Datasets previstos:
-
-```text
-bronze_companies
-bronze_products
-bronze_inventory
-bronze_quotes
-bronze_quote_items
-bronze_approvals
-bronze_payments
-bronze_documents
-bronze_conversation_events
-```
-
-### Silver
-
-Padroniza nomes, converte tipos, trata valores inválidos e valida
-chaves. A fonte canônica de clientes do MVP é `silver_companies`
-(`quotes.customer_id` referencia `silver_companies.company_id`).
-
-Datasets implementados (etapa 02-silver, em
-`src/nexum_sales_assistant_etl/transformations/`):
-
-```text
-silver_companies   ← bronze_companies  (fonte canônica de clientes)
-silver_products    ← bronze_products   (regras de qualidade do ADR-005)
-silver_inventory   ← bronze_inventory  (referencia silver_products)
-```
-
-Registros inválidos são sinalizados na coluna técnica
-`_quality_status` (`valid` ou `invalid:<regra>[;<regra>]`) e nunca são
-corrigidos silenciosamente (ADR-005). As colunas técnicas de origem
-(`_ingestion_timestamp`, `_source_file`, `_source_system`) são
-preservadas para rastreabilidade Bronze → Silver.
-
-As entidades transacionais (`quotes`, `quote_items`, `approvals`,
-`payments`, `documents`, `conversation_events`) são criadas em tempo de
-execução pelas ferramentas e não possuem Bronze de origem; por isso
-não existem datasets `silver_*` correspondentes nesta etapa
-(prompts/01-bronze.md).
-
-### Gold
-
-Modelos prontos para consumo pelas ferramentas, implementados na
-etapa 03-gold (derivados exclusivamente das camadas tratadas, nunca de
-CSV consultado diretamente):
-
-```text
-gold_product_catalog        ← silver_products (somente registros válidos)
-gold_product_availability   ← silver_products + silver_inventory
-                              (is_available = available_quantity > 0)
-gold_quote_summary          ← quotes + quote_items + approvals
-                              (tabelas runtime das ferramentas) +
-                              silver_companies (cliente canônico)
-gold_conversation_audit     ← conversation_events, agregado por sessão
-```
-
-`gold_quote_summary` e `gold_conversation_audit` materializam vazias com
-o schema documentado enquanto as tabelas transacionais ainda não
-existirem no catálogo (nenhum dado é inventado).
-
-As ferramentas não devem consultar arquivos CSV diretamente quando
-existir uma camada estruturada apropriada.
-
----
-
-## Entidades principais
-
-```text
-companies
-products
-inventory
-quotes
-quote_items
-approvals
-payments
-documents
-conversation_events
-```
-
-Principais relacionamentos:
-
-```text
-products.product_id
-    ├── inventory.product_id
-    └── quote_items.product_id
-
-silver_companies.company_id
-    └── quotes.customer_id
-
-quotes.quote_id
-    ├── quote_items.quote_id
-    ├── approvals.quote_id
-    ├── payments.quote_id
-    └── documents.quote_id
-```
-
----
-
-## Regras de segurança e negócio
-
-- não há pagamento real nem integração com instituições financeiras;
-- não há documento com validade fiscal;
-- todo pagamento é registrado com `simulated = true`;
-- todo documento é registrado com `has_fiscal_value = false`;
-- os dados são sintéticos e identificados como dados de demonstração;
-- a consulta de estoque não altera as quantidades disponíveis;
-- a aprovação humana é obrigatória antes do pagamento simulado;
-- o agente não pode aprovar uma cotação em seu próprio nome.
-
----
-
-## Documentação de referência
-
-A fonte de verdade do produto está em `docs/`:
-
-```text
-docs/discovery.md          # Descoberta do problema e escopo
-docs/prd.md                # Requisitos do produto
-docs/data_model.md         # Modelo lógico de dados
-docs/agent_harness.md      # Uso de agentes no desenvolvimento
-docs/specs/                # Contratos das ferramentas do MVP
-docs/adrs/                 # Decisões arquiteturais registradas
-```
-
----
-
-## Estrutura do projeto
-
-```text
-nexum_sales_assistant/
-├── .claude/                         # Configurações locais do agente
-├── docs/                            # Fonte de verdade do produto
-├── fixtures/                        # Dados sintéticos de entrada
-├── prompts/                         # Prompts de implementação
-├── resources/                       # Recursos Databricks declarados em YAML
-├── src/                             # Código executado no Databricks
-├── tests/                           # Testes automatizados
-├── AGENTS.md                        # Instruções para agentes de IA
-├── CLAUDE.md                        # Instruções específicas do Claude
-├── databricks.yml                   # Configuração principal do bundle
-├── pyproject.toml                   # Configuração do projeto Python
-└── README.md
-```
-
----
-
-## Chat local (demonstração do agente)
-
-Interface de chat simples (Streamlit) que reusa o agente de IA, as seis
-ferramentas e as mesmas tabelas do Databricks (o dashboard Lakeview
-continua funcionando sem alteração). A conexão usa **Databricks
-Connect** com compute **serverless** do workspace — nenhum token ou
-segredo fica em arquivo; a autenticação vem do perfil do Databricks CLI.
-
-### Arquitetura local
+Chat local em `app/chat.py` que reusa o agente e as ferramentas,
+gravando nas mesmas tabelas do Databricks (o dashboard funciona sem
+alteração). Conexão via **Databricks Connect** com compute
+**serverless**; recupera automaticamente de sessões expiradas por
+inatividade.
 
 ```text
 Chat Streamlit (app/chat.py)
         ↓
 Databricks Connect (sessão Spark serverless)
         ↓
-Agente (src/nexum_sales_assistant/agent/)
-        ↓
-Seis ferramentas determinísticas
+Agente (LLM real) → seis ferramentas determinísticas
         ↓
 Tabelas em workspace.dev (runtime + Bronze/Silver/Gold)
         ↓
 Dashboard Lakeview (Nexum Sales Metrics)
 ```
 
-### Instalar dependências
+## 9. Dashboard Lakeview
+
+`Nexum Sales Metrics` (deployado pelo bundle) com páginas de funil de
+vendas, operação do agente, qualidade e segurança, custo e atualização
+dos dados. Todas as queries leem exclusivamente tabelas Gold
+(ADR-008); sem dados operacionais, mostra zero — nenhum valor fictício.
+
+## 10. Instruções de configuração
+
+Pré-requisitos: Git, Python 3.12, `uv`, Databricks CLI autenticada com
+o perfil `jornada` (workspace de demonstração).
 
 ```bash
 uv sync --dev
 ```
 
-### Configurar a conexão (sem expor segredos)
+Variáveis de ambiente (PowerShell):
 
-Use o perfil já configurado no Databricks CLI (`jornada`) e as variáveis
-de ambiente do projeto:
-
-```bash
-# PowerShell
+```powershell
 $env:DATABRICKS_CONFIG_PROFILE = "jornada"
 $env:NEXUM_CATALOG = "workspace"
 $env:NEXUM_SCHEMA = "dev"
-
-# Git Bash
-export DATABRICKS_CONFIG_PROFILE=jornada
-export NEXUM_CATALOG=workspace
-export NEXUM_SCHEMA=dev
 ```
 
-O endpoint do modelo já tem padrão documentado (`model_endpoint` do
-bundle); para trocar, defina `NEXUM_MODEL_ENDPOINT`.
+(Git Bash: `export DATABRICKS_CONFIG_PROFILE=jornada` etc.) A
+autenticação vem do perfil do Databricks CLI — nenhum token ou segredo
+fica em arquivo do repositório.
 
-### Rodar o chat
+## 11. Execução do pipeline
+
+```bash
+databricks bundle validate -t dev --profile jornada
+databricks bundle deploy -t dev --profile jornada
+databricks bundle run nexum_sales_assistant_job -t dev --profile jornada
+```
+
+O job orquestrador executa `bootstrap_runtime` (garante as tabelas
+runtime) e `refresh_pipeline` (Bronze → Silver → Gold), com trigger
+diário pausado no dev.
+
+## 12. Execução do chat
 
 ```bash
 uv run streamlit run app/chat.py
 ```
 
-Abra a URL exibida no navegador. Cada execução do app usa uma sessão
-nova (`SES-CHAT-XXXXXX`), exibida na barra lateral.
+Cada execução do app usa uma sessão nova (`SES-CHAT-*`, exibida na
+barra lateral). Alternativa sem interface: o job de demonstração
+executa a jornada completa com LLM real:
 
-### Roteiro sugerido de demonstração
+```bash
+databricks bundle run nexum_sales_assistant_agent_job -t dev --profile jornada
+```
+
+## 13. Roteiro de demonstração
 
 1. **Busca**: "Preciso monitorar 20 máquinas com temperatura entre
    0 °C e 150 °C. Que sensores vocês têm?" → `search_products`;
 2. **Estoque**: "O sensor PRD-TEMP-001 parece adequado. Tem 20
    unidades disponíveis?" → `check_inventory`;
 3. **Cotação** (gate de confirmação): "Quero uma cotação para a
-   empresa C0001 com 20 unidades do produto PRD-TEMP-001." → o chat
-   pede confirmação → botão "✅ Confirmar ação pendente" →
-   `create_quote`;
-4. **Aprovação humana**: "Encaminhe a cotação para aprovação humana."
+   empresa C0001 com 20 unidades do produto PRD-TEMP-001." → botão
+   "✅ Confirmar" → `create_quote`;
+4. **Bloqueio**: "Quero simular o pagamento da cotação com sucesso."
+   → confirmar → a ferramenta rejeita com `approval_required` (nada é
+   alterado);
+5. **Aprovação humana**: "Encaminhe a cotação para aprovação humana."
    → confirmar → botões "✅ Aprovar (vendor-001)" / "❌ Rejeitar" →
    `request_human_approval`;
-5. **Pagamento simulado**: "Quero simular o pagamento da cotação com
-   sucesso." → confirmar → `simulate_payment` (bloqueado sem
-   aprovação — demonstre o bloqueio antes de aprovar);
-6. **Documento simulado**: "Quero o documento simulado da cotação."
-   → confirmar → `generate_document`;
-7. Depois, abra o dashboard **Nexum Sales Metrics** para mostrar o
-   funil, as métricas do agente e o custo reais.
+6. **Pagamento simulado**: repetir o passo 4 → agora `simulated_success`
+   (com o aviso de simulação);
+7. **Documento simulado**: "Quero o documento simulado da cotação." →
+   confirmar → `generate_document`;
+8. Rodar `bundle run nexum_sales_assistant_job` e abrir o dashboard
+   **Nexum Sales Metrics** (funil, operação e custo reais).
 
-### Limitações conhecidas do chat local
-
-- uma sessão por execução do app (sem multi-sessão);
-- o estado de confirmação pendente vive na execução do app;
-- sem autenticação de usuário (demonstração local);
-- primeira mensagem pode levar alguns segundos (cold start do
-  serverless).
-
-## Desenvolvimento local
-
-### Pré-requisitos
-
-- Git;
-- Python compatível com o projeto (ver `.python-version`);
-- Databricks CLI autenticada;
-- `uv`.
-
-### Instalar dependências
-
-```bash
-uv sync --dev
-```
-
-### Executar testes
+## 14. Testes
 
 ```bash
 uv run pytest
 ```
 
-### Verificar estilo
+175+ testes unitários em memória (ferramentas, Silver/Gold, agente com
+LLM fake determinístico, métricas, chat) — sem API externa, segredo ou
+custo de LLM. Estilo: `uv run ruff check .`
 
-```bash
-uv run ruff check .
-```
+## 15. Segurança
 
-### Validar o bundle
+- sem pagamento real nem integração financeira;
+- sem documento fiscal; todo documento tem `has_fiscal_value = false`;
+- sem tokens/segredos em arquivos versionados (`.env`, `.env.*`,
+  `.claude/settings*.json` no `.gitignore`);
+- o LLM não executa SQL arbitrário nem acessa tabelas diretamente —
+  somente pelas seis ferramentas;
+- prompt injection e pedidos de segredos são recusados e registrados;
+- auditoria de cada ferramenta e de cada turno do agente.
 
-```bash
-databricks bundle validate --profile <perfil>
-```
+## 16. Limitações
 
-### Deploy no target `dev`
+- dados sintéticos (ver §17) — não representam catálogo industrial
+  real;
+- chat local com uma sessão por execução, sem autenticação de usuário;
+- custo financeiro estimado do LLM não é retornado pela FM API
+  (registrado como 0/NULL);
+- respostas textuais do modelo podem variar entre execuções (as
+  garantias do contrato estão nas ferramentas e nos guardrails, não no
+  texto do modelo);
+- primeira mensagem do chat pode levar alguns segundos (cold start do
+  serverless); sessões Connect expiram por inatividade e são
+  recuperadas automaticamente.
 
-```bash
-databricks bundle deploy --target dev --profile <perfil>
-databricks bundle run --target dev --profile <perfil>
-```
+## 17. Dados sintéticos
 
-Os targets configurados são `dev` e `prod`, com catálogo `workspace`.
-O target `prod` só deverá ser utilizado após a validação completa do
-MVP.
+Todos os dados são sintéticos e identificados como demonstração:
+catálogo pequeno e controlado cobrindo `temperature`, `pressure` e
+`vibration` (ADR-005), com casos de produto compatível, incompatível,
+inativo, estoque suficiente/insuficiente/ausente/desatualizado e
+registros inválidos de propósito (qualidade de dados). Nenhuma empresa,
+produto ou transação real.
+
+## 18. Pagamentos e documentos simulados
+
+`simulate_payment` registra exclusivamente simulações
+(`simulated = true`) e `generate_document` produz um documento marcado
+como **sem validade fiscal, financeira ou contábil** — não há nota
+fiscal, dinheiro real ou efeito contábil em nenhum ponto do fluxo.
 
 ---
 
-## Estado atual
+## Documentação de referência
 
-O repositório implementa o escopo ativo do MVP (Nexum Sales Assistant):
+```text
+docs/discovery.md      # Descoberta do problema e escopo
+docs/prd.md            # Requisitos do produto
+docs/data_model.md     # Modelo lógico de dados
+docs/agent_harness.md  # Uso de agentes no desenvolvimento
+docs/specs/            # Contratos das ferramentas e do agente
+docs/adrs/             # Decisões arquiteturais registradas
+```
 
-- ingestão Bronze dos dados sintéticos (`bronze_companies`,
-  `bronze_products`, `bronze_inventory`);
-- camada Silver tratada e validada (`silver_companies`,
-  `silver_products`, `silver_inventory`);
-- camada Gold de consumo (`gold_product_catalog`,
-  `gold_product_availability`, `gold_quote_summary`,
-  `gold_conversation_audit`);
-- as seis ferramentas do MVP com contratos em `docs/specs/`.
+## Estrutura do projeto
 
-A documentação em `docs/` define o escopo ativo; as etapas de dados
-seguem a arquitetura Bronze → Silver → Gold descrita em
-`docs/data_model.md`.
-
----
+```text
+nexum_sales_assistant/
+├── app/                # Chat local Streamlit
+├── docs/               # Fonte de verdade do produto
+├── fixtures/           # Dados sintéticos de entrada
+├── prompts/            # Prompts de implementação por etapa
+├── resources/          # Recursos Databricks (jobs, pipeline, dashboard, volume)
+├── src/
+│   ├── nexum_sales_assistant/            # Ferramentas, agente, métricas, chat
+│   └── nexum_sales_assistant_etl/        # Transformações Bronze → Silver → Gold
+├── tests/              # Testes automatizados
+├── databricks.yml      # Configuração principal do bundle
+└── pyproject.toml      # Configuração do projeto Python
+```
 
 ## Licença e origem dos dados
 
-Este projeto é destinado a fins educacionais e de portfólio.
-
-Os dados utilizados são sintéticos e não representam empresas,
-produtos ou transações reais.
+Projeto destinado a fins educacionais e de portfólio. Os dados
+utilizados são sintéticos e não representam empresas, produtos ou
+transações reais.

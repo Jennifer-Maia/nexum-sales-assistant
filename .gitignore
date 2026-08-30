@@ -19,6 +19,7 @@ scratch/**
 
 # Claude Code / configurações locais
 .claude/settings.local.json
+.claude/settings.json
 
 # Databricks local state
 .databricks/

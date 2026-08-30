@@ -92,8 +92,26 @@ class TestSafeRate:
 
 
 class TestAllowedTables:
-    def test_allowed_tables_cover_pipeline_and_runtime(self):
-        assert "gold_product_catalog" in ALLOWED_TABLES
-        assert "conversation_events" in ALLOWED_TABLES
-        assert "agent_events" in ALLOWED_TABLES
-        assert "sample_trips_grid_intelligence" not in ALLOWED_TABLES
+    def test_dashboard_reads_only_gold_tables(self):
+        # Regra do ADR-008: o dashboard consulta exclusivamente Gold —
+        # nenhuma tabela runtime/transacional é permitida nas queries.
+        for name in ALLOWED_TABLES:
+            assert name.startswith("gold_"), f"tabela não-Gold permitida: {name}"
+        assert "gold_conversation_audit" in ALLOWED_TABLES
+        assert "gold_agent_operations" in ALLOWED_TABLES
+        assert "gold_data_freshness" in ALLOWED_TABLES
+
+    def test_runtime_tables_not_allowed(self):
+        for forbidden in (
+            "agent_events",
+            "conversation_events",
+            "quotes",
+            "quote_items",
+            "approvals",
+            "payments",
+            "documents",
+            "bronze_companies",
+            "silver_companies",
+            "sample_trips_grid_intelligence",
+        ):
+            assert forbidden not in ALLOWED_TABLES

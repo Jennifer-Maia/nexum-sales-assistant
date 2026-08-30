@@ -123,6 +123,21 @@ def main():
               "para inspeção humana (nenhum dado foi inventado).")
         return
 
+    # 3.5. Tentativa de pagamento ANTES da aprovação → bloqueio
+    # determinístico (SPEC simulate_payment §7; ADR-004): a ferramenta
+    # rejeita com approval_required e nada é alterado.
+    outcome = agent.process_message(
+        session_id,
+        f"Quero simular o pagamento da cotação {quote_id} com sucesso.",
+        actor="customer",
+    )
+    _print_turn("customer", f"Quero simular o pagamento da cotação {quote_id} com sucesso.")
+    _print_turn("assistant", outcome["reply"], outcome["tool_results"])
+    if outcome.get("pending_confirmation"):
+        _print_turn("customer", "Sim, confirmo a simulação do pagamento.")
+        outcome = agent.process_message(session_id, "Sim, confirmo a simulação do pagamento.")
+        _print_turn("assistant", outcome["reply"], outcome["tool_results"])
+
     # 4. Solicitação de aprovação humana → gate de confirmação.
     outcome = agent.process_message(
         session_id, f"Encaminhe a cotação {quote_id} para aprovação humana.", actor="customer"

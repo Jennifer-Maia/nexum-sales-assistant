@@ -131,10 +131,22 @@ Responsável por criar modelos prontos para consumo:
 - `gold_product_catalog`;
 - `gold_product_availability`;
 - `gold_quote_summary`;
-- `gold_conversation_audit`.
+- `gold_conversation_audit`;
+- `gold_agent_operations` (ADR-008): operações do agente para o
+  dashboard — projeção de `agent_events` (turnos e chamadas de
+  ferramenta com latência, tokens, modelo e custo) unida aos eventos
+  de segurança de `conversation_events` (`refusal`,
+  `tool_selection_blocked`, `error`, `handoff_to_human`), com coluna
+  `source` de rastreabilidade;
+- `gold_data_freshness` (ADR-008): contagens e último timestamp de
+  ingestão por tabela das camadas Bronze/Silver/Gold e runtime.
 
 A Gold poderá combinar produtos e estoque para facilitar consultas,
 mas não deverá substituir as fontes detalhadas da Silver.
+
+Regra de consumo (ADR-008): o dashboard Lakeview consulta
+exclusivamente tabelas Gold; o runtime do agente continua gravando
+`agent_events` e as tabelas transacionais.
 
 ## 6. Entidade `products`
 
@@ -607,8 +619,11 @@ Decisões registradas durante a implementação do scaffold:
   explícita quando as variáveis não estão definidas;
 - registro operacional do agente: a tabela runtime `agent_events`
   (ADR-007) guarda latência, tokens, modelo, status e erro por
-  interação; as métricas do dashboard são queries SQL sobre as tabelas
-  existentes, sem novas Golds (ADR-007);
+  interação;
+- dashboard somente Gold (ADR-008): as queries do dashboard leem
+  exclusivamente as seis Golds — `gold_agent_operations` e
+  `gold_data_freshness` foram criadas para cobrir operação do agente e
+  atualização dos dados sem expor o runtime ao dashboard;
 - lista de aprovadores da demonstração: implementada como constante
   placeholder (`APPROVERS = {"vendor-001"}`), aguardando a lista
   documentada nos dados sintéticos da etapa 01-bronze —
