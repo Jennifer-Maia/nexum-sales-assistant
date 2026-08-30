@@ -1,9 +1,15 @@
 # Job orquestrador central do Nexum Sales Assistant.
 #
-# Hoje contém uma única task: atualizar a pipeline ETL
-# (Bronze → Silver → Gold). A task do agente será adicionada em uma
-# etapa futura, quando o runtime do agente estiver definido
-# (docs/data_model.md §19).
+# Tasks (com dependência explícita):
+#   1. bootstrap_runtime: garante as tabelas runtime das ferramentas e
+#      do agente (CREATE TABLE IF NOT EXISTS — idempotente, ADR-007);
+#      as Golds da pipeline leem essas tabelas com linhagem DLT;
+#   2. refresh_pipeline: atualiza a pipeline ETL
+#      (Bronze → Silver → Gold), após o bootstrap.
+#
+# A task do agente conversacional NÃO faz parte deste job (agente é
+# interativo/on-demand — ADR-006; job próprio
+# nexum_sales_assistant_agent_job).
 #
 # O nome implantado no target dev é
 # "[dev jen_maia] nexum_sales_assistant_job" (prefixo padrão do
@@ -23,8 +29,30 @@ resources:
           unit: DAYS
         pause_status: PAUSED
 
+      # Ambiente serverless das tasks Python (mesmo padrão do job do
+      # agente, com o wheel do bundle como dependência).
+      environments:
+        - environment_key: Default
+          spec:
+            client: "4"
+            dependencies:
+              - ${workspace.root_path}/artifacts/.internal/nexum_sales_assistant-0.0.1-py3-none-any.whl
+
       tasks:
+        - task_key: bootstrap_runtime
+          description: "Garante as tabelas runtime (CREATE TABLE IF NOT EXISTS — ADR-007)"
+          environment_key: Default
+          spark_python_task:
+            python_file: ../src/nexum_sales_assistant/agent/schema_bootstrap.py
+            parameters:
+              - "--catalog"
+              - ${var.catalog}
+              - "--schema"
+              - ${var.schema}
+
         - task_key: refresh_pipeline
           description: "Orquestração ETL: atualiza a pipeline Bronze → Silver → Gold"
+          depends_on:
+            - task_key: bootstrap_runtime
           pipeline_task:
             pipeline_id: ${resources.pipelines.nexum_sales_assistant_etl.id}

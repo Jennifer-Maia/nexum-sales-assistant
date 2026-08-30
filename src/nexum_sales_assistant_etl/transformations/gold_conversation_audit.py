@@ -42,8 +42,8 @@ def _materialized_view(**kwargs):
 #
 # Eventos com session_id ausente ou com event_type fora do mapeamento
 # não entram na agregação (nada é inventado). Comportamento sem dados:
-# `conversation_events` é garantida com `CREATE TABLE IF NOT EXISTS`
-# (mesmo schema do schema_bootstrap do agente, ADR-007) e a Gold lê
+# `conversation_events` é garantida pela task de bootstrap do job
+# orquestrador (executada antes do refresh da pipeline) e a Gold lê
 # SEMPRE a tabela, preservando a linhagem no DLT (o MV recomputa a cada
 # atualização da pipeline).
 #
@@ -132,20 +132,9 @@ def _audit_pandas(iterator):
         yield pd.DataFrame(build_rows(records), columns=COLUMNS)
 
 
-# Schema de conversation_events (mesmo do schema_bootstrap do agente —
-# ADR-007). Duplicado aqui para o pacote ETL permanecer autocontido.
-_CONVERSATION_EVENTS_SCHEMA = (
-    "event_id STRING, session_id STRING, event_type STRING, actor STRING, "
-    "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
-)
-
-
 @_materialized_view(
     comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §17)",
 )
 def gold_conversation_audit():
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS conversation_events ({_CONVERSATION_EVENTS_SCHEMA})"
-    )
     events = spark.read.table("conversation_events").coalesce(1)
     return events.mapInPandas(_audit_pandas, schema=SCHEMA)

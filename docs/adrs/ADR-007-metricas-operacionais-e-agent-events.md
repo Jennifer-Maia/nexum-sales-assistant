@@ -60,7 +60,9 @@ sobre `agent_events` + tabelas existentes.
 ## Decisão
 
 1. Criar a tabela runtime `agent_events` (criada de forma idempotente
-   por `schema_bootstrap.py`, junto das demais tabelas runtime):
+   por `schema_bootstrap.py` — usado pelo job do agente e pela task
+   `bootstrap_runtime` do job orquestrador, que roda antes do refresh
+   da pipeline), junto das demais tabelas runtime:
 
 ```text
 event_id, session_id, conversation_event_id, created_at, event_type,

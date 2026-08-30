@@ -61,3 +61,27 @@ def ensure_runtime_tables(spark):
             f"CREATE TABLE IF NOT EXISTS {qualified_table(table)} ({schema})"
         )
     return list(RUNTIME_SCHEMAS)
+
+
+def main():
+    """Entry point da task de bootstrap do job orquestrador.
+
+    Recebe --catalog/--schema das variáveis do bundle e garante as
+    tabelas runtime de forma idempotente, antes do refresh da pipeline
+    (as Golds leem essas tabelas com linhagem DLT).
+    """
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(description="Bootstrap das tabelas runtime do Nexum")
+    parser.add_argument("--catalog", required=True)
+    parser.add_argument("--schema", required=True)
+    args = parser.parse_args()
+
+    os.environ["NEXUM_CATALOG"] = args.catalog
+    os.environ["NEXUM_SCHEMA"] = args.schema
+
+    from databricks.sdk.runtime import spark
+
+    tables = ensure_runtime_tables(spark)
+    print(f"Tabelas runtime garantidas: {', '.join(tables)}")
