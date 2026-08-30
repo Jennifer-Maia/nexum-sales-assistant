@@ -13,10 +13,18 @@ resources:
     nexum_sales_assistant_agent_job:
       name: nexum_sales_assistant_agent_job
 
+      # "Default" é o ambiente serverless (sem cluster fixo); precisa ser
+      # declarado na lista environments para a task referenciá-lo.
+      # `client` é a versão do ambiente base serverless (referência do
+      # job com dependências via spec.client).
+      environments:
+        - environment_key: Default
+          spec:
+            client: "4"
+
       tasks:
         - task_key: agent_demo
           description: "Jornada de demonstração do agente de vendas IA"
-          # "Default" seleciona o ambiente serverless (sem cluster fixo).
           environment_key: Default
           spark_python_task:
             python_file: ../src/nexum_sales_assistant/agent/demo.py
