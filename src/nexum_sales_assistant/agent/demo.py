@@ -93,10 +93,10 @@ def main():
     # 2. Seleção de produto → consulta de estoque.
     outcome = agent.process_message(
         session_id,
-        "O Sensor de Temperatura Industrial T150 parece adequado. "
+        "O sensor PRD-TEMP-001 parece adequado. "
         "Tem 20 unidades disponíveis?",
     )
-    _print_turn("customer", "O Sensor de Temperatura Industrial T150 parece adequado. "
+    _print_turn("customer", "O sensor PRD-TEMP-001 parece adequado. "
                 "Tem 20 unidades disponíveis?")
     _print_turn("assistant", outcome["reply"], outcome["tool_results"])
 

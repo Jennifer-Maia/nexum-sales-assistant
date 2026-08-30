@@ -38,7 +38,10 @@ TOOL_REGISTRY = {
         "description": (
             "Busca produtos ativos do catálogo compatíveis com os requisitos "
             "técnicos (categoria, faixa operacional, unidade). Retorna somente "
-            "produtos existentes nos dados estruturados. Não confirma estoque."
+            "produtos existentes nos dados estruturados. Não confirma estoque. "
+            "measurement_unit deve ser exatamente um dos valores aceitos: "
+            "'C' para temperatura (nunca 'celsius' ou '°C'), 'bar' ou 'psi' "
+            "para pressure e 'mm/s' para vibration."
         ),
         "parameters": _schema(
             {
@@ -46,7 +49,7 @@ TOOL_REGISTRY = {
                 "category": {"type": "string", "enum": ["temperature", "pressure", "vibration"]},
                 "min_required_value": _NUMBER,
                 "max_required_value": _NUMBER,
-                "measurement_unit": _STRING,
+                "measurement_unit": {"type": "string", "enum": ["C", "bar", "psi", "mm/s"]},
                 "quantity": _INTEGER,
                 "use_case": _STRING,
                 "limit": _INTEGER,
@@ -59,7 +62,9 @@ TOOL_REGISTRY = {
     "check_inventory": {
         "description": (
             "Consulta a disponibilidade de um produto para uma quantidade "
-            "solicitada. Somente leitura: nunca altera o estoque."
+            "solicitada. Somente leitura: nunca altera o estoque. product_id "
+            "tem o formato PRD-XXXX-### e deve ser copiado da saída de "
+            "search_products."
         ),
         "parameters": _schema(
             {
@@ -76,7 +81,9 @@ TOOL_REGISTRY = {
         "description": (
             "Cria uma cotação em estado draft para um cliente cadastrado, "
             "congelando os preços do catálogo nos itens. Valida cliente, "
-            "produtos e estoque. Não aprova e não reserva estoque."
+            "produtos e estoque. Não aprova e não reserva estoque. Não "
+            "informe valid_until nem currency: o sistema usa os padrões "
+            "documentados (validade de 7 dias e moeda BRL)."
         ),
         "parameters": _schema(
             {
@@ -90,8 +97,6 @@ TOOL_REGISTRY = {
                         ["product_id", "quantity"],
                     ),
                 },
-                "currency": _STRING,
-                "valid_until": _STRING,
             },
             ["session_id", "customer_id", "items"],
         ),

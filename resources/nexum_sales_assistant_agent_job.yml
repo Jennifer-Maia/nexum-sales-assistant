@@ -1,10 +1,14 @@
 # Job de demonstração do agente de vendas IA (ADR-006; SPEC agent §12).
 #
 # Executa a jornada completa de conversa com LLM real
-# (Foundation Model API, pay-per-token) via python_wheel_task
-# serverless — o DABs instala automaticamente o wheel do bundle
-# (entry point `agent-demo`). On-demand: sem agendamento — um agente
-# conversacional interativo não roda como task periódica do ETL.
+# (Foundation Model API, pay-per-token) via spark_python_task
+# serverless. On-demand: sem agendamento — um agente conversacional
+# interativo não roda como task periódica do ETL.
+#
+# O pacote nexum_sales_assistant chega ao ambiente serverless pela
+# dependência do wheel publicado pelo bundle em
+# `${workspace.root_path}/artifacts/.internal/` (python_wheel_task
+# serverless não resolve o wheel do bundle nesta versão do DABs).
 #
 # O job ETL (nexum_sales_assistant_job) não foi alterado; este job é
 # complementar e independente.
@@ -21,15 +25,19 @@ resources:
         - environment_key: Default
           spec:
             client: "4"
+            dependencies:
+              - ${workspace.root_path}/artifacts/.internal/nexum_sales_assistant-0.0.1-py3-none-any.whl
 
       tasks:
         - task_key: agent_demo
           description: "Jornada de demonstração do agente de vendas IA"
           environment_key: Default
-          python_wheel_task:
-            package_name: nexum_sales_assistant
-            entry_point: agent-demo
-            named_parameters:
-              catalog: ${var.catalog}
-              schema: ${var.schema}
-              model_endpoint: ${var.model_endpoint}
+          spark_python_task:
+            python_file: ../src/nexum_sales_assistant/agent/demo.py
+            parameters:
+              - "--catalog"
+              - ${var.catalog}
+              - "--schema"
+              - ${var.schema}
+              - "--model_endpoint"
+              - ${var.model_endpoint}
