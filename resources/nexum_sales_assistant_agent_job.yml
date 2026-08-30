@@ -1,0 +1,29 @@
+# Job de demonstração do agente de vendas IA (ADR-006; SPEC agent §12).
+#
+# Executa a jornada completa de conversa com LLM real
+# (Foundation Model API, pay-per-token) via spark_python_task
+# serverless. On-demand: sem agendamento — um agente conversacional
+# interativo não roda como task periódica do ETL.
+#
+# O job ETL (nexum_sales_assistant_job) não foi alterado; este job é
+# complementar e independente.
+
+resources:
+  jobs:
+    nexum_sales_assistant_agent_job:
+      name: nexum_sales_assistant_agent_job
+
+      tasks:
+        - task_key: agent_demo
+          description: "Jornada de demonstração do agente de vendas IA"
+          # "Default" seleciona o ambiente serverless (sem cluster fixo).
+          environment_key: Default
+          spark_python_task:
+            python_file: ../src/nexum_sales_assistant/agent/demo.py
+            parameters:
+              - "--catalog"
+              - ${var.catalog}
+              - "--schema"
+              - ${var.schema}
+              - "--model-endpoint"
+              - ${var.model_endpoint}
