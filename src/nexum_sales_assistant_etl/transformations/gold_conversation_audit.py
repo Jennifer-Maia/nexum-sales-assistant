@@ -42,8 +42,10 @@ def _materialized_view(**kwargs):
 #
 # Eventos com session_id ausente ou com event_type fora do mapeamento
 # não entram na agregação (nada é inventado). Comportamento sem dados:
-# enquanto `conversation_events` não existir no catálogo, a Gold
-# materializa vazia com o schema documentado.
+# `conversation_events` é garantida com `CREATE TABLE IF NOT EXISTS`
+# (mesmo schema do schema_bootstrap do agente, ADR-007) e a Gold lê
+# SEMPRE a tabela, preservando a linhagem no DLT (o MV recomputa a cada
+# atualização da pipeline).
 #
 # Decisão de implementação: `build_rows` (função pura testável) aplicada
 # via `mapInPandas` com `coalesce(1)` — mesma decisão documentada em
@@ -111,16 +113,6 @@ def build_rows(events):
     return rows
 
 
-def _existing_tables():
-    """Nomes das tabelas do catalog/schema atuais da pipeline.
-
-    `spark.catalog.tableExists` não é permitido no runtime DLT
-    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
-    e não fixa nomes de catalog/schema no código.
-    """
-    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
-
-
 def _to_python(value):
     """Converte valores vindos do pandas para tipos Python limpos."""
     if value is None:
@@ -144,7 +136,11 @@ def _audit_pandas(iterator):
     comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §17)",
 )
 def gold_conversation_audit():
-    if "conversation_events" not in _existing_tables():
-        return spark.createDataFrame([], schema=SCHEMA)
+    from nexum_sales_assistant.agent.schema_bootstrap import RUNTIME_SCHEMAS
+
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS conversation_events "
+        f"({RUNTIME_SCHEMAS['conversation_events']})"
+    )
     events = spark.read.table("conversation_events").coalesce(1)
     return events.mapInPandas(_audit_pandas, schema=SCHEMA)

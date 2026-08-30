@@ -1,5 +1,5 @@
 from pyspark.sql import Window
-from pyspark.sql.functions import col, count, lit, row_number, sum as spark_sum
+from pyspark.sql.functions import col, count, row_number, sum as spark_sum
 
 try:
     from pyspark import pipelines as dp
@@ -40,9 +40,12 @@ def _materialized_view(**kwargs):
 #   (quantidade de itens), total_quantity (quantidade total de produtos)
 #   e approval_status (status da aprovação).
 #
-# Comportamento sem dados: enquanto as tabelas transacionais ainda não
-# existirem no catálogo (nenhuma cotação criada), a Gold materializa
-# vazia com o schema documentado; nenhuma linha é inventada.
+# Comportamento sem dados: as tabelas transacionais são garantidas com
+# `CREATE TABLE IF NOT EXISTS` (mesmo schema do schema_bootstrap do
+# agente); sem transações a Gold materializa vazia com o schema
+# documentado — nenhuma linha é inventada. A leitura SEMPRE parte das
+# tabelas runtime, preservando a linhagem no DLT (o MV recomputa a cada
+# atualização da pipeline).
 #
 # Decisão de implementação: agregações e joins em Spark (linhagem
 # preservada no DLT); `build_rows` permanece como referência testável
@@ -134,52 +137,46 @@ def build_rows(quotes, items, approvals, companies):
     return rows
 
 
-def _existing_tables():
-    """Nomes das tabelas do catalog/schema atuais da pipeline.
+def _ensure_runtime_tables():
+    """Garante as tabelas runtime lidas por esta Gold (idempotente).
 
-    `spark.catalog.tableExists` não é permitido no runtime DLT
-    (PY4J_BLOCKED_API); `SHOW TABLES` via `spark.sql` é a API permitida
-    e não fixa nomes de catalog/schema no código.
+    Mesmos schemas do schema_bootstrap do agente (ADR-007); a Gold lê
+    SEMPRE as tabelas para preservar a linhagem no DLT.
     """
-    return {row["tableName"] for row in spark.sql("SHOW TABLES").collect()}
+    from nexum_sales_assistant.agent.schema_bootstrap import RUNTIME_SCHEMAS
+
+    for table in ("quotes", "quote_items", "approvals"):
+        spark.sql(f"CREATE TABLE IF NOT EXISTS {table} ({RUNTIME_SCHEMAS[table]})")
 
 
 @_materialized_view(
     comment="Gold: resumo de cotações com itens, aprovação e cliente canônico (ADR-002)",
 )
 def gold_quote_summary():
-    existing_tables = _existing_tables()
-    if "quotes" not in existing_tables:
-        return spark.createDataFrame([], schema=SCHEMA)
+    _ensure_runtime_tables()
 
     quotes = spark.read.table("quotes")
 
     # Quantidade de itens e quantidade total de produtos por cotação.
-    if "quote_items" in existing_tables:
-        items_agg = (
-            spark.read.table("quote_items")
-            .groupBy("quote_id")
-            .agg(
-                count("quote_item_id").cast("int").alias("item_count"),
-                spark_sum("quantity").cast("int").alias("total_quantity"),
-            )
+    items_agg = (
+        spark.read.table("quote_items")
+        .groupBy("quote_id")
+        .agg(
+            count("quote_item_id").cast("int").alias("item_count"),
+            spark_sum("quantity").cast("int").alias("total_quantity"),
         )
-        result = quotes.join(items_agg, "quote_id", "left")
-    else:
-        result = quotes.withColumn("item_count", lit(0)).withColumn("total_quantity", lit(0))
+    )
+    result = quotes.join(items_agg, "quote_id", "left")
 
     # Status da resolução mais recente por cotação (ADRs 002/003).
-    if "approvals" in existing_tables:
-        window = Window.partitionBy("quote_id").orderBy(col("created_at").desc())
-        approvals_latest = (
-            spark.read.table("approvals")
-            .withColumn("_rn", row_number().over(window))
-            .filter(col("_rn") == 1)
-            .select(col("quote_id"), col("status").alias("approval_status"))
-        )
-        result = result.join(approvals_latest, "quote_id", "left")
-    else:
-        result = result.withColumn("approval_status", lit(None).cast("string"))
+    window = Window.partitionBy("quote_id").orderBy(col("created_at").desc())
+    approvals_latest = (
+        spark.read.table("approvals")
+        .withColumn("_rn", row_number().over(window))
+        .filter(col("_rn") == 1)
+        .select(col("quote_id"), col("status").alias("approval_status"))
+    )
+    result = result.join(approvals_latest, "quote_id", "left")
 
     # Nome do cliente pela fonte canônica (ADR-002); a chave continua
     # sendo silver_companies.company_id (customer_id na cotação).
