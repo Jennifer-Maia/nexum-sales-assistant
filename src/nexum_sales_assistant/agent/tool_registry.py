@@ -41,7 +41,10 @@ TOOL_REGISTRY = {
             "produtos existentes nos dados estruturados. Não confirma estoque. "
             "measurement_unit deve ser exatamente um dos valores aceitos: "
             "'C' para temperatura (nunca 'celsius' ou '°C'), 'bar' ou 'psi' "
-            "para pressure e 'mm/s' para vibration."
+            "para pressure e 'mm/s' para vibration. NÃO use esta ferramenta "
+            "quando a mensagem do cliente já cita um product_id específico "
+            "(formato PRD-XXXX-###): nesse caso, a disponibilidade é "
+            "verificada com check_inventory."
         ),
         "parameters": _schema(
             {
@@ -51,7 +54,6 @@ TOOL_REGISTRY = {
                 "max_required_value": _NUMBER,
                 "measurement_unit": {"type": "string", "enum": ["C", "bar", "psi", "mm/s"]},
                 "quantity": _INTEGER,
-                "use_case": _STRING,
                 "limit": _INTEGER,
                 "product_ids": {"type": "array", "items": _STRING},
             },
@@ -64,14 +66,14 @@ TOOL_REGISTRY = {
             "Consulta a disponibilidade de um produto para uma quantidade "
             "solicitada. Somente leitura: nunca altera o estoque. product_id "
             "tem o formato PRD-XXXX-### e deve ser copiado da saída de "
-            "search_products."
+            "search_products. O depósito é sempre o padrão do sistema "
+            "(WH-MAIN): NÃO informe warehouse_id."
         ),
         "parameters": _schema(
             {
                 "session_id": _STRING,
                 "product_id": _STRING,
                 "quantity_requested": _INTEGER,
-                "warehouse_id": _STRING,
             },
             ["session_id", "product_id", "quantity_requested"],
         ),

@@ -434,3 +434,15 @@ class TestRegistry:
             assert spec["parameters"]["type"] == "object"
             assert spec["parameters"]["required"]
             assert callable(spec["call"])
+
+    def test_registry_hides_system_owned_fields(self):
+        # Campos cujos valores o sistema define (padrões documentados)
+        # NÃO são expostos ao LLM — evita invenção de valores
+        # (ex.: warehouse_id="DW-001" fabricado, use_case mal extraído).
+        search_props = TOOL_REGISTRY["search_products"]["parameters"]["properties"]
+        assert "use_case" not in search_props
+        inventory_props = TOOL_REGISTRY["check_inventory"]["parameters"]["properties"]
+        assert "warehouse_id" not in inventory_props
+        quote_props = TOOL_REGISTRY["create_quote"]["parameters"]["properties"]
+        assert "valid_until" not in quote_props
+        assert "currency" not in quote_props

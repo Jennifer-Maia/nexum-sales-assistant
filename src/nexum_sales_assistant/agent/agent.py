@@ -81,7 +81,12 @@ SYSTEM_PROMPT = (
     "6. Se uma ferramenta retornar erro, explique o erro ao cliente com os "
     "dados reais do retorno e proponha o próximo passo permitido.\n"
     "7. Peça esclarecimento quando faltar categoria, faixa, unidade ou "
-    "quantidade; nunca adivinhe esses valores."
+    "quantidade; nunca adivinhe esses valores.\n"
+    "8. Se a mensagem do cliente cita um product_id específico (formato "
+    "PRD-XXXX-###) e pergunta sobre disponibilidade ou quantidade, use "
+    "check_inventory com esse product_id — NÃO repita search_products.\n"
+    "9. Nunca invente identificadores (warehouse_id, quote_id, approval_id): "
+    "use somente valores retornados pelas ferramentas ou citados pelo cliente."
 )
 
 REFUSAL_REPLY = (
@@ -380,7 +385,7 @@ class Agent:
             turn_started,
             tool_name=name,
             status=_tool_status(result),
-            result_summary=_summarize_result(result),
+            result_summary=f"args={_compact_arguments(arguments)} result={_summarize_result(result)}",
             duration_ms=duration_ms,
         )
         return {"name": name, "result": result}
@@ -601,6 +606,12 @@ def _tool_status(result):
         if key in result:
             return str(result[key])
     return "unknown"
+
+
+def _compact_arguments(arguments):
+    """Argumentos da chamada (sem session_id) para o registro operacional."""
+    compact = {key: value for key, value in (arguments or {}).items() if key != "session_id"}
+    return json.dumps(compact, ensure_ascii=False, default=str)[:300]
 
 
 def _summarize_result(result):
