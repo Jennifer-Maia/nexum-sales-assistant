@@ -1,7 +1,7 @@
 """Ferramenta `search_products` do Nexum Sales Assistant.
 
 Contrato: docs/specs/search_products.md
-Fonte de dados: `gold_product_catalog` (docs/data_model.md §16).
+Fonte de dados: `gold_product_catalog` (docs/data_model.md §17).
 """
 
 import uuid

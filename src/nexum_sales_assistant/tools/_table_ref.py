@@ -1,6 +1,6 @@
 """Resolução de nomes de tabela totalmente qualificados nas ferramentas.
 
-Decisão registrada em docs/data_model.md §18: as ferramentas não podem
+Decisão registrada em docs/data_model.md §19: as ferramentas não podem
 depender de `USE CATALOG`/`USE SCHEMA` de sessão, pois não há garantia
 de que o entry point (`main.py`) seja executado antes delas. Cada
 ferramenta passa a resolver o nome completo `{catalog}.{schema}.{tabela}`.

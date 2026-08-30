@@ -38,7 +38,7 @@ def _inventory(
     product_id="PRD-TEMP-001", available_quantity=42, inventory_updated_at="2026-08-26"
 ):
     # A Gold `gold_product_availability` expõe `inventory_updated_at`
-    # (docs/data_model.md §16), consumida por check_inventory.
+    # (docs/data_model.md §17), consumida por check_inventory.
     return {
         "inventory_id": f"INV-{product_id}",
         "product_id": product_id,

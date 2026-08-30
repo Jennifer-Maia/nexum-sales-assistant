@@ -83,7 +83,7 @@ def _allow_stderr_output(config: pytest.Config):
 def pytest_configure(config: pytest.Config):
     """Configure pytest session."""
     # As ferramentas resolvem nomes de tabela totalmente qualificados a
-    # partir de NEXUM_CATALOG/NEXUM_SCHEMA (docs/data_model.md §18).
+    # partir de NEXUM_CATALOG/NEXUM_SCHEMA (docs/data_model.md §19).
     # Os testes usam valores de teste; variáveis já definidas no ambiente
     # não são sobrescritas.
     os.environ.setdefault("NEXUM_CATALOG", "test_catalog")
@@ -199,7 +199,7 @@ def _apply_update(tables, statement):
     """Aplica um UPDATE simples (`SET col = 'v'[, col = NULL] WHERE ...`).
 
     O nome da tabela pode ser totalmente qualificado
-    (`catalog.schema.tabela`), conforme docs/data_model.md §18.
+    (`catalog.schema.tabela`), conforme docs/data_model.md §19.
     """
     match = re.match(
         r"^UPDATE\s+([\w.]+)\s+SET\s+(.+?)\s+WHERE\s+(.+)$", statement, re.IGNORECASE

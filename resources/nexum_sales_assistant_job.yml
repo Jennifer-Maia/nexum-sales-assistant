@@ -3,7 +3,7 @@
 # Hoje contém uma única task: atualizar a pipeline ETL
 # (Bronze → Silver → Gold). A task do agente será adicionada em uma
 # etapa futura, quando o runtime do agente estiver definido
-# (docs/data_model.md §18).
+# (docs/data_model.md §19).
 #
 # O nome implantado no target dev é
 # "[dev jen_maia] nexum_sales_assistant_job" (prefixo padrão do

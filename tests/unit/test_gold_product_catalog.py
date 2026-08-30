@@ -1,4 +1,4 @@
-"""Testes da camada Gold — gold_product_catalog (docs/data_model.md §16).
+"""Testes da camada Gold — gold_product_catalog (docs/data_model.md §17).
 
 Cobrem schema, exclusão de produtos inválidos, permanência de inativos
 válidos, ausência de dados inventados e comportamento sem dados, com
@@ -38,7 +38,7 @@ def _product(product_id="PRD-TEMP-001", active=True, quality="valid", **override
 
 class TestSchema:
     def test_schema_columns(self):
-        # Campos exatamente conforme docs/data_model.md §16.
+        # Campos exatamente conforme docs/data_model.md §17.
         assert _schema_columns() == [
             "product_id",
             "sku",
@@ -72,7 +72,7 @@ class TestExclusions:
 
 class TestNoInvention:
     def test_only_catalog_columns_returned(self):
-        # Nenhuma coluna além do contrato da Gold (docs/data_model.md §16).
+        # Nenhuma coluna além do contrato da Gold (docs/data_model.md §17).
         row = gc.build_rows([_product()])[0]
         assert set(row.keys()) == set(gc.CATALOG_COLUMNS)
 

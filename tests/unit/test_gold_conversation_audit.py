@@ -1,4 +1,4 @@
-"""Testes da camada Gold — gold_conversation_audit (docs/data_model.md §16).
+"""Testes da camada Gold — gold_conversation_audit (docs/data_model.md §17).
 
 Cobrem schema, granularidade por session_id, contagem por tipo de evento,
 eventos ignorados (sem session_id / tipo desconhecido), ausência de

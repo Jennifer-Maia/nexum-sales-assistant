@@ -9,7 +9,7 @@ Conforme decisão registrada na migração, a ferramenta monta o conteúdo
 completo do documento e registra `content_reference` como o caminho
 previsto (`documents/simulated_receipt/<quote_id>.<formato>`), sem
 gravar fisicamente o arquivo; o local de armazenamento será definido
-em etapa posterior (docs/data_model.md §18).
+em etapa posterior (docs/data_model.md §19).
 """
 
 import uuid

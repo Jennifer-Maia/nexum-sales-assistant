@@ -18,7 +18,7 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
-# Camada Gold — gold_quote_summary (docs/data_model.md §16; ADR-002).
+# Camada Gold — gold_quote_summary (docs/data_model.md §17; ADR-002).
 #
 # Visão resumida das cotações, uma linha por quote_id. Combina:
 #   - `quotes` e `quote_items`: tabelas transacionais persistidas em
@@ -34,7 +34,7 @@ def _materialized_view(**kwargs):
 #     `customer_name`; a chave canônica permanece
 #     `silver_companies.company_id`, exposta como `customer_id`.
 #
-# Campos conforme docs/data_model.md §16 e ADR-002:
+# Campos conforme docs/data_model.md §17 e ADR-002:
 #   quote_id, customer_id, customer_name, status, total_amount, currency,
 #   created_at, approved_at, approved_by, payment_status, item_count
 #   (quantidade de itens), total_quantity (quantidade total de produtos)

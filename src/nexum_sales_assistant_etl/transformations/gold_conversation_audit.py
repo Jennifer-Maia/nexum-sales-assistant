@@ -19,14 +19,14 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
-# Camada Gold — gold_conversation_audit (docs/data_model.md §16).
+# Camada Gold — gold_conversation_audit (docs/data_model.md §17).
 #
 # Visão de auditoria da conversa e das ferramentas, uma linha por
 # session_id, agregando os eventos de `conversation_events` — tabela
 # persistida em tempo de execução pelas ferramentas (docs/data_model.md
 # §13; docs/agent_harness.md §20).
 #
-# Mapeamento dos campos de docs/data_model.md §16 para os tipos de
+# Mapeamento dos campos de docs/data_model.md §17 para os tipos de
 # evento documentados em docs/data_model.md §13:
 #   - quantidade de mensagens ............ message_received
 #   - quantidade de perguntas ............ question_asked
@@ -49,7 +49,7 @@ def _materialized_view(**kwargs):
 # via `mapInPandas` com `coalesce(1)` — mesma decisão documentada em
 # silver_companies.py.
 
-# event_type (docs/data_model.md §13) → coluna da Gold (docs/data_model.md §16).
+# event_type (docs/data_model.md §13) → coluna da Gold (docs/data_model.md §17).
 EVENT_TYPE_MAPPING = {
     "message_received": "message_count",
     "question_asked": "question_count",
@@ -141,7 +141,7 @@ def _audit_pandas(iterator):
 
 
 @_materialized_view(
-    comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §16)",
+    comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §17)",
 )
 def gold_conversation_audit():
     if "conversation_events" not in _existing_tables():

@@ -3,7 +3,7 @@
 ## Objetivo
 
 Implementar os modelos Gold de consumo do agente, derivados das
-camadas tratadas, conforme `docs/data_model.md` §5.3 e §16.
+camadas tratadas, conforme `docs/data_model.md` §5.3 e §17.
 
 As Golds facilitam consultas, mas não substituem as fontes detalhadas
 da Silver. A fonte canônica de clientes continua sendo
@@ -15,7 +15,7 @@ Antes de alterar qualquer arquivo, leia:
 
 - `AGENTS.md`;
 - `CLAUDE.md`;
-- `docs/data_model.md` (§5.3, §16);
+- `docs/data_model.md` (§5.3, §17);
 - `docs/agent_harness.md` (§13);
 - `docs/adrs/ADR-002-silver-companies-como-fonte-de-cliente.md`;
 - `docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`;
@@ -39,18 +39,18 @@ Não criar Golds adicionais sem decisão registrada em ADR
 
 ### `gold_product_catalog`
 
-Campos conforme `docs/data_model.md` §16. Será consumida por
+Campos conforme `docs/data_model.md` §17. Será consumida por
 `search_products` (`docs/specs/search_products.md` §12).
 
 ### `gold_product_availability`
 
-Combina catálogo e estoque; campos conforme `docs/data_model.md` §16,
+Combina catálogo e estoque; campos conforme `docs/data_model.md` §17,
 incluindo `is_available` e `inventory_updated_at`. Será consumida por
 `check_inventory` (`docs/specs/check_inventory.md` §5).
 
 ### `gold_quote_summary`
 
-Visão resumida das cotações; campos conforme `docs/data_model.md` §16.
+Visão resumida das cotações; campos conforme `docs/data_model.md` §17.
 Poderá combinar `silver_quotes`, `silver_quote_items` e
 `silver_companies` (ADR-002), mantendo a chave canônica em
 `silver_companies.company_id`.
@@ -58,7 +58,7 @@ Poderá combinar `silver_quotes`, `silver_quote_items` e
 ### `gold_conversation_audit`
 
 Visão de auditoria da conversa e das ferramentas; campos conforme
-`docs/data_model.md` §16.
+`docs/data_model.md` §17.
 
 ## Regras
 
@@ -78,7 +78,7 @@ Visão de auditoria da conversa e das ferramentas; campos conforme
 Antes de modificar qualquer arquivo:
 
 1. apresentar o mapeamento de cada Gold para suas fontes Silver;
-2. listar os campos de cada Gold conforme `docs/data_model.md` §16;
+2. listar os campos de cada Gold conforme `docs/data_model.md` §17;
 3. listar arquivos a criar, alterar e remover;
 4. explicar riscos;
 5. aguardar aprovação explícita.
@@ -104,7 +104,7 @@ databricks bundle validate --profile <perfil>
 A etapa estará concluída quando:
 
 - as quatro Golds previstas estiverem implementadas com os campos de
-  `docs/data_model.md` §16;
+  `docs/data_model.md` §17;
 - cada Gold for derivada da Silver correspondente;
 - `gold_product_catalog` e `gold_product_availability` atenderem aos
   contratos das SPECs `search_products` e `check_inventory`;

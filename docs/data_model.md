@@ -416,7 +416,39 @@ error
 - Eventos de erro e encaminhamento humano também devem ser registrados.
 - O conteúdo não deve armazenar dados financeiros reais.
 
-## 14. Relacionamento com o CRM existente
+## 14. Entidade `agent_events` (métricas operacionais do agente)
+
+Tabela runtime criada pelo agente de vendas (ADR-006/ADR-007) para
+registro operacional das interações — latência, tokens, modelo, status
+e erro. Complementa `conversation_events` (auditoria do fluxo) sem
+alterar o schema das seis ferramentas.
+
+| Campo | Tipo | Obrigatório | Regra |
+|---|---|---:|---|
+| `event_id` | STRING | Sim | Chave primária |
+| `session_id` | STRING | Sim | Sessão da conversa |
+| `conversation_event_id` | STRING | Não | Evento correlato em `conversation_events` |
+| `created_at` | TIMESTAMP | Sim | Momento do registro |
+| `event_type` | STRING | Sim | `turn`, `tool_call`, `refusal`, `agent_error` |
+| `tool_name` | STRING | Não | Ferramenta associada |
+| `result_summary` | STRING | Não | Resumo compacto do resultado |
+| `status` | STRING | Não | `success`, `error`, `blocked` ou status da ferramenta |
+| `duration_ms` | BIGINT | Não | Latência medida em milissegundos |
+| `input_tokens` | INT | Não | Tokens de entrada, quando fornecidos pela API |
+| `output_tokens` | INT | Não | Tokens de saída, quando fornecidos |
+| `model` | STRING | Não | Modelo usado na chamada |
+| `cost_estimated` | DECIMAL(18,6) | Não | Custo estimado; NULL enquanto não houver fonte documentada |
+| `error_message` | STRING | Não | Erro, quando houver |
+
+### Regras de `agent_events`
+
+- Nunca gravar credenciais, tokens de autenticação ou conteúdo do
+  prompt de sistema.
+- Tokens e custo ausentes são registrados como NULL, nunca inventados.
+- As métricas do dashboard derivam desta tabela e das entidades
+  transacionais, sem novas Golds (ADR-007).
+
+## 15. Relacionamento com o CRM existente
 
 A tabela `quotes.customer_id` deverá referenciar:
 
@@ -434,7 +466,7 @@ Caso essa necessidade surja no futuro, ela deverá ser modelada como uma
 nova entidade e registrada em um ADR específico, e não reaproveitada de
 um modelo anterior.
 
-## 15. Chaves e integridade
+## 16. Chaves e integridade
 
 ### Chaves primárias
 
@@ -464,7 +496,7 @@ quotes.quote_id
     └── documents.quote_id
 ```
 
-## 16. Gold views
+## 17. Gold views
 
 ### `gold_product_catalog`
 
@@ -532,7 +564,7 @@ Modelo para auditoria:
 - encaminhamento humano;
 - erros.
 
-## 17. Dados sintéticos
+## 18. Dados sintéticos
 
 Os dados sintéticos deverão:
 
@@ -547,7 +579,7 @@ Os dados sintéticos deverão:
 - incluir ao menos um documento simulado;
 - ser claramente identificados como dados de demonstração.
 
-## 18. Decisões pendentes
+## 19. Decisões pendentes
 
 As seguintes decisões serão detalhadas nas SPECs e ADRs:
 
@@ -573,6 +605,10 @@ Decisões registradas durante a implementação do scaffold:
   repassados pelo bundle. A resolução está centralizada em
   `src/nexum_sales_assistant/tools/_table_ref.py` e falha de forma
   explícita quando as variáveis não estão definidas;
+- registro operacional do agente: a tabela runtime `agent_events`
+  (ADR-007) guarda latência, tokens, modelo, status e erro por
+  interação; as métricas do dashboard são queries SQL sobre as tabelas
+  existentes, sem novas Golds (ADR-007);
 - lista de aprovadores da demonstração: implementada como constante
   placeholder (`APPROVERS = {"vendor-001"}`), aguardando a lista
   documentada nos dados sintéticos da etapa 01-bronze —

@@ -1,7 +1,7 @@
 """Ferramenta `check_inventory` do Nexum Sales Assistant.
 
 Contrato: docs/specs/check_inventory.md
-Fonte de dados: `gold_product_availability` (docs/data_model.md §16).
+Fonte de dados: `gold_product_availability` (docs/data_model.md §17).
 
 A ferramenta é somente de consulta: não reserva, não reduz e não
 altera o estoque (SPEC §16).

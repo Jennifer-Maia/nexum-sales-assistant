@@ -20,11 +20,11 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
-# Camada Gold — gold_product_catalog (docs/data_model.md §16;
+# Camada Gold — gold_product_catalog (docs/data_model.md §17;
 # prompts/03-gold.md).
 #
 # Fonte: silver_products. Campos exatamente conforme
-# docs/data_model.md §16 — a Gold inclui apenas produtos com
+# docs/data_model.md §17 — a Gold inclui apenas produtos com
 # `_quality_status = valid` (ADR-005: os critérios de qualidade são
 # verificados antes de os dados chegarem à Gold; dados inválidos são
 # sinalizados na Silver, não corrigidos silenciosamente).
@@ -38,7 +38,7 @@ def _materialized_view(**kwargs):
 # via `mapInPandas` com `coalesce(1)` (mesma decisão documentada em
 # silver_companies.py), preservando a linhagem no DLT.
 
-# Colunas de saída conforme docs/data_model.md §16.
+# Colunas de saída conforme docs/data_model.md §17.
 CATALOG_COLUMNS = [
     "product_id",
     "sku",
@@ -70,7 +70,7 @@ def build_rows(products):
 
     Entrada: lista de dicts no schema de silver_products.
     Saída: lista de dicts com exatamente as colunas de
-    docs/data_model.md §16 (nenhum dado é inventado).
+    docs/data_model.md §17 (nenhum dado é inventado).
     """
     return [
         {column: row[column] for column in CATALOG_COLUMNS}

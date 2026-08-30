@@ -1,0 +1,20 @@
+# Dashboard Lakeview de métricas do Nexum (ADR-007).
+#
+# As queries do arquivo .lvdash.json usam nomes de tabela nus; o
+# catalog/schema são supridos por dataset_catalog/dataset_schema
+# (var.catalog/var.schema do bundle) — nunca tabelas de outros
+# projetos.
+#
+# É um dashboard NOVO do Nexum (funil, operação do agente, qualidade e
+# segurança, custo, atualização dos dados) — não é o dashboard legado
+# do projeto antigo (que está fora do escopo).
+
+resources:
+  dashboards:
+    nexum_sales_metrics:
+      display_name: Nexum Sales Metrics
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${var.catalog}
+      dataset_schema: ${var.schema}
+      file_path: ./nexum_sales_metrics.lvdash.json
+      parent_path: ${workspace.file_path}

@@ -21,12 +21,12 @@ def _materialized_view(**kwargs):
     return dp.materialized_view(**kwargs)
 
 
-# Camada Gold — gold_product_availability (docs/data_model.md §16;
+# Camada Gold — gold_product_availability (docs/data_model.md §17;
 # prompts/03-gold.md).
 #
 # Combina catálogo (silver_products) e estoque (silver_inventory),
 # somente registros válidos de ambas as camadas. Campos conforme
-# docs/data_model.md §16:
+# docs/data_model.md §17:
 #   - campos principais de products (product_id, sku, product_name,
 #     category, measurement_unit, active);
 #   - warehouse_id, available_quantity, reserved_quantity,
@@ -46,7 +46,7 @@ def _materialized_view(**kwargs):
 # `_availability_row` via mapInPandas — a mesma usada pela referência
 # testável `build_rows`.
 
-# Campos principais de products na Gold (docs/data_model.md §16).
+# Campos principais de products na Gold (docs/data_model.md §17).
 PRODUCT_COLUMNS = ("product_id", "sku", "product_name", "category", "measurement_unit", "active")
 
 COLUMNS = [
@@ -75,7 +75,7 @@ def _availability_row(row):
     """Projeta uma linha combinada (produto + estoque) para o schema da Gold.
 
     `is_available` indica existência de quantidade disponível
-    (docs/data_model.md §16), sem reserva física no MVP.
+    (docs/data_model.md §17), sem reserva física no MVP.
     """
     return {
         **{column: row[column] for column in PRODUCT_COLUMNS},
@@ -145,7 +145,7 @@ def _availability_pandas(iterator):
 
 
 @_materialized_view(
-    comment="Gold: disponibilidade combinando catálogo e estoque válidos (docs/data_model.md §16)",
+    comment="Gold: disponibilidade combinando catálogo e estoque válidos (docs/data_model.md §17)",
 )
 def gold_product_availability():
     products = (

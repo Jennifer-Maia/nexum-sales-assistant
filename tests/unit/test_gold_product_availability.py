@@ -1,4 +1,4 @@
-"""Testes da camada Gold — gold_product_availability (docs/data_model.md §16).
+"""Testes da camada Gold — gold_product_availability (docs/data_model.md §17).
 
 Cobrem schema, cálculo de is_available, combinação somente de registros
 válidos, ausência de produto sem estoque e comportamento sem dados, com
@@ -67,7 +67,7 @@ class TestAvailability:
 
     def test_is_available_zero_quantity(self):
         # is_available indica existência de quantidade disponível
-        # (docs/data_model.md §16), sem reserva física no MVP.
+        # (docs/data_model.md §17), sem reserva física no MVP.
         row = ga.build_rows([_product()], [_inventory(available_quantity=0)])[0]
         assert row["is_available"] is False
 

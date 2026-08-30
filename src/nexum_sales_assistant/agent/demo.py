@@ -59,7 +59,7 @@ def _print_turn(actor, text, tool_results=None):
 def main():
     args = _parse_args()
 
-    # Catalog/schema totalmente qualificados (docs/data_model.md §18).
+    # Catalog/schema totalmente qualificados (docs/data_model.md §19).
     os.environ["NEXUM_CATALOG"] = args.catalog
     os.environ["NEXUM_SCHEMA"] = args.schema
     if args.model_endpoint:

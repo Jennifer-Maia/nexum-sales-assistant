@@ -1,4 +1,4 @@
-"""Testes da camada Gold — gold_quote_summary (docs/data_model.md §16; ADR-002).
+"""Testes da camada Gold — gold_quote_summary (docs/data_model.md §17; ADR-002).
 
 Cobrem schema, granularidade por quote_id, contagem de itens, quantidade
 total, status da aprovação, customer_name canônico e comportamento sem

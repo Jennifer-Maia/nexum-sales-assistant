@@ -18,6 +18,10 @@ variables:
     description: The catalog to use
   schema:
     description: The schema to use
+  model_endpoint:
+    description: Foundation Model API endpoint usado pelo agente (ADR-006)
+  warehouse_id:
+    description: SQL warehouse do dashboard de métricas (ADR-007)
 
 targets:
   dev:
@@ -32,6 +36,8 @@ targets:
     variables:
       catalog: workspace
       schema: dev
+      model_endpoint: databricks-meta-llama-3-3-70b-instruct
+      warehouse_id: 0dab9be99bd37e7c
   prod:
     mode: production
     workspace:
@@ -41,6 +47,8 @@ targets:
     variables:
       catalog: workspace
       schema: prod
+      model_endpoint: databricks-meta-llama-3-3-70b-instruct
+      warehouse_id: 0dab9be99bd37e7c
     permissions:
       - user_name: jen_maia@hotmail.com
         level: CAN_MANAGE

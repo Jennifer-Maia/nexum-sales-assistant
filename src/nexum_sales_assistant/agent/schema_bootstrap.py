@@ -12,7 +12,7 @@ schema de `conversation_events` não comporta sem alterar o contrato
 das ferramentas.
 
 Todos os nomes usam catalog/schema totalmente qualificados
-(docs/data_model.md §18).
+(docs/data_model.md §19).
 """
 
 from nexum_sales_assistant.tools._table_ref import qualified_table
