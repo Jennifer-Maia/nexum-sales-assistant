@@ -14,6 +14,8 @@ import os
 
 from databricks.sdk import WorkspaceClient
 
+from nexum_sales_assistant.runtime_local import resolve_profile
+
 DEFAULT_MODEL_ENDPOINT = "databricks-meta-llama-3-3-70b-instruct"
 ENDPOINT_ENV = "NEXUM_MODEL_ENDPOINT"
 
@@ -38,7 +40,9 @@ class LLMClient:
         if tools:
             payload["tools"] = tools
         try:
-            response = WorkspaceClient().api_client.do(
+            # Perfil explícito (runtime_local.resolve_profile): nunca
+            # depende do default do .databrickscfg.
+            response = WorkspaceClient(profile=resolve_profile()).api_client.do(
                 "POST", f"/serving-endpoints/{self.endpoint}/invocations", body=payload
             )
         except Exception as exc:

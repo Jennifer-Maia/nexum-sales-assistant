@@ -16,6 +16,21 @@ nada é fixado aqui. A autenticação vem do perfil do Databricks CLI
 import os
 
 
+def resolve_profile():
+    """Perfil do Databricks usado pela sessão local (configurável).
+
+    Precedência: `NEXUM_DATABRICKS_PROFILE` > `DATABRICKS_CONFIG_PROFILE`
+    > `"jornada"`. O perfil é SEMPRE explícito — nunca depende do
+    default do `.databrickscfg` (o `[__settings__]` deste workspace
+    aponta para um perfil antigo com token inválido).
+    """
+    return (
+        os.environ.get("NEXUM_DATABRICKS_PROFILE")
+        or os.environ.get("DATABRICKS_CONFIG_PROFILE")
+        or "jornada"
+    )
+
+
 def _enable_serverless_fallback():
     """Habilita compute serverless quando nenhum cluster está configurado.
 
@@ -27,7 +42,7 @@ def _enable_serverless_fallback():
     try:
         from databricks.sdk import WorkspaceClient
 
-        conf = WorkspaceClient().config
+        conf = WorkspaceClient(profile=resolve_profile()).config
         if conf.serverless_compute_id or conf.cluster_id:
             return
     except Exception:
@@ -36,11 +51,23 @@ def _enable_serverless_fallback():
 
 
 def get_spark():
-    """Sessão Spark via Databricks Connect (serverless)."""
+    """Sessão Spark via Databricks Connect (serverless).
+
+    O perfil é passado explicitamente ao builder e também fixado no
+    ambiente (os providers de auth do SDK spawnam o CLI com o perfil
+    do Config); sem isso, o Connect resolve o default do
+    `.databrickscfg` e pode falhar com perfil errado.
+    """
     _enable_serverless_fallback()
+    profile = resolve_profile()
+    os.environ["DATABRICKS_CONFIG_PROFILE"] = profile
     from databricks.connect import DatabricksSession
 
-    return DatabricksSession.builder.getOrCreate()
+    try:
+        return DatabricksSession.builder.profile(profile).getOrCreate()
+    except AttributeError:
+        # Versões do builder sem .profile() usam o env var já fixado.
+        return DatabricksSession.builder.getOrCreate()
 
 
 def ensure_environment(spark):
