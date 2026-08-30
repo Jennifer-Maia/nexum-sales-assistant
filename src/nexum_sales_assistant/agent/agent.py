@@ -32,6 +32,13 @@ from nexum_sales_assistant.tools._table_ref import qualified_table
 
 MAX_TOOL_CALLS = 6
 
+# Histórico por turno: quantos eventos da trilha de auditoria são
+# reenviados ao modelo e o limite de tamanho por conteúdo (controla o
+# custo pay-per-token — ADR-006; a conversa é retomável pelo session_id
+# porque o histórico vem de conversation_events — SPEC §9).
+HISTORY_LIMIT = 24
+HISTORY_CONTENT_LIMIT = 1500
+
 SENSITIVE_TOOLS = {
     "create_quote",
     "request_human_approval",
@@ -175,6 +182,10 @@ class Agent:
         aguardando confirmação, quando aplicável).
         """
         started = time.monotonic()
+        # O histórico é reconstruído ANTES de registrar a mensagem
+        # atual (a trilha de auditoria alimenta o contexto do modelo —
+        # SPEC §9: a conversa é retomável pelo session_id).
+        history = _history_messages(session_id)
         _record_event(session_id, "message_received", actor, user_message)
 
         guard, reason = check_prompt_injection(user_message)
@@ -183,6 +194,7 @@ class Agent:
 
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
+            *history,
             {"role": "user", "content": user_message},
         ]
         tool_results = []
@@ -440,6 +452,51 @@ def _spark():
         from pyspark.sql import SparkSession
 
         return SparkSession.builder.getOrCreate()
+
+
+def _history_messages(session_id):
+    """Constrói o histórico de mensagens a partir da trilha de auditoria.
+
+    Lê os últimos eventos de `conversation_events` da sessão e os
+    converte no formato de chat: mensagens do cliente, respostas do
+    assistente e resultados das ferramentas como notas de sistema.
+    Assim o modelo tem o contexto real (ex.: o quote_id criado em
+    turnos anteriores) sem inventar dados, e a conversa é retomável
+    entre execuções pelo session_id.
+    """
+    rows = (
+        _spark()
+        .table(qualified_table("conversation_events"))
+        .filter(f"session_id = '{session_id}'")
+        .collect()
+    )
+    events = [
+        row.asDict() for row in rows if isinstance(row, object)
+    ]
+    events.sort(
+        key=lambda event: (
+            event.get("created_at") is None,
+            event.get("created_at") or datetime.min,
+        )
+    )
+    messages = []
+    for event in events[-HISTORY_LIMIT:]:
+        event_type = event.get("event_type")
+        content = str(event.get("content") or "")[:HISTORY_CONTENT_LIMIT]
+        if event_type == "session_started":
+            continue
+        if event_type == "message_received":
+            messages.append({"role": "user", "content": content})
+        elif event_type == "agent_response":
+            messages.append({"role": "assistant", "content": content})
+        else:
+            tool_name = event.get("tool_name")
+            if tool_name:
+                note = f"[resultado de {tool_name} ({event_type})] {content}"
+            else:
+                note = f"[evento {event_type}] {content}"
+            messages.append({"role": "system", "content": note})
+    return messages
 
 
 def _record_event(session_id, event_type, actor, content, tool_name=None, tool_reference_id=None):

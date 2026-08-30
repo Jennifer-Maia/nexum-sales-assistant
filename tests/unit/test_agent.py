@@ -9,6 +9,7 @@ determinístico em memória (sem API externa, sem segredo, sem custo).
 
 import json
 import time
+from datetime import datetime
 
 from nexum_sales_assistant.agent.agent import Agent, check_prompt_injection
 from nexum_sales_assistant.agent.llm_client import LLMError
@@ -341,6 +342,80 @@ class TestAuditAndMetrics:
         elapsed = int((time.monotonic() - started) * 1000)
         tool_event = [e for e in _agent_events(fake_spark) if e["event_type"] == "tool_call"][0]
         assert 0 <= tool_event["duration_ms"] <= elapsed + 100
+
+
+class TestConversationHistory:
+    def test_history_rebuilt_from_audit_trail(self, fake_spark):
+        # O modelo recebe o contexto real de turnos anteriores (ex.: o
+        # quote_id criado), reconstruído de conversation_events — sem
+        # inventar dados (SPEC §9: conversa retomável pelo session_id).
+        fake_spark.tables[qualified_table("conversation_events")] = [
+            {
+                "event_id": "EVT-1",
+                "session_id": "SES-1",
+                "event_type": "session_started",
+                "actor": "system",
+                "content": "Conversa iniciada",
+                "tool_name": None,
+                "tool_reference_id": None,
+                "created_at": datetime(2026, 8, 30, 10, 0, 0),
+            },
+            {
+                "event_id": "EVT-2",
+                "session_id": "SES-1",
+                "event_type": "message_received",
+                "actor": "customer",
+                "content": "Quero uma cotação",
+                "tool_name": None,
+                "tool_reference_id": None,
+                "created_at": datetime(2026, 8, 30, 10, 1, 0),
+            },
+            {
+                "event_id": "EVT-3",
+                "session_id": "SES-1",
+                "event_type": "quote_created",
+                "actor": "system",
+                "content": '{"quote_id": "QTE-1", "quote_status": "created"}',
+                "tool_name": "create_quote",
+                "tool_reference_id": "QTE-1",
+                "created_at": datetime(2026, 8, 30, 10, 2, 0),
+            },
+            {
+                "event_id": "EVT-4",
+                "session_id": "SES-1",
+                "event_type": "agent_response",
+                "actor": "assistant",
+                "content": "Cotação criada: QTE-1",
+                "tool_name": None,
+                "tool_reference_id": None,
+                "created_at": datetime(2026, 8, 30, 10, 3, 0),
+            },
+        ]
+        llm = FakeLLM([_completion(content="ok")])
+        agent = Agent(llm=llm)
+        agent.process_message("SES-1", "Encaminhe a cotação para aprovação.")
+        messages = llm.calls[0]["messages"]
+        # session_started é ignorado; usuário, nota de ferramenta e
+        # resposta anterior entram no contexto do modelo.
+        assert messages[0]["role"] == "system"  # prompt de sistema
+        assert messages[1] == {"role": "user", "content": "Quero uma cotação"}
+        assert any(
+            "QTE-1" in m["content"] and "create_quote" in m["content"]
+            for m in messages
+            if m["role"] == "system"
+        )
+        assert {"role": "assistant", "content": "Cotação criada: QTE-1"} in messages
+        assert messages[-1] == {
+            "role": "user",
+            "content": "Encaminhe a cotação para aprovação.",
+        }
+
+    def test_history_empty_for_new_session(self, fake_spark):
+        llm = FakeLLM([_completion(content="oi")])
+        Agent(llm=llm).process_message("SES-NOVA", "Olá")
+        messages = llm.calls[0]["messages"]
+        assert len(messages) == 2  # system + mensagem atual, sem histórico
+        assert messages[-1] == {"role": "user", "content": "Olá"}
 
 
 class TestRegistry:
