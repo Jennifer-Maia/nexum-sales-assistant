@@ -15,12 +15,15 @@ resources:
 
       # "Default" é o ambiente serverless (sem cluster fixo); precisa ser
       # declarado na lista environments para a task referenciá-lo.
-      # `client` é a versão do ambiente base serverless (referência do
-      # job com dependências via spec.client).
+      # `client` é a versão do ambiente base serverless e o wheel do
+      # bundle fornece o pacote nexum_sales_assistant para o
+      # spark_python_task (mesmo padrão de dependência do projeto).
       environments:
         - environment_key: Default
           spec:
             client: "4"
+            dependencies:
+              - ${artifacts.python_artifact.workspace_path}
 
       tasks:
         - task_key: agent_demo
