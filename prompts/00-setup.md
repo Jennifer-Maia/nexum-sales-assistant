@@ -1,155 +1,139 @@
-# Etapa 00 — Setup do projeto
+# Etapa 00 — Setup do projeto Nexum
 
 ## Objetivo
 
-Preparar o bundle Databricks para o projeto B2B Sales Intelligence, removendo os exemplos de táxi gerados pelo template e deixando a estrutura pronta para as etapas Bronze, Silver e Gold.
+Migrar a estrutura do repositório e o bundle Databricks do produto
+anterior para o Nexum Sales Assistant.
 
-Esta etapa não deve implementar ainda a lógica de ingestão, transformação, score ou recomendação comercial.
+Esta etapa prepara o terreno para as etapas seguintes (Bronze, Silver,
+Gold, ferramentas e validação). Ela não deve implementar lógica de
+negócio do Nexum.
 
 ## Documentos obrigatórios
 
 Antes de alterar qualquer arquivo, leia:
 
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.llm/prd.md`
-- `README.md`
-- `databricks.yml`
-- `resources/sample_job.job.yml`
-- `resources/b2b_sales_intelligence_etl.pipeline.yml`
-- `pyproject.toml`
+- `AGENTS.md`;
+- `CLAUDE.md`;
+- `docs/discovery.md`;
+- `docs/prd.md`;
+- `docs/data_model.md`;
+- `docs/agent_harness.md`;
+- `docs/adrs/ADR-004-llm-interpreta-codigo-decide.md`;
+- `docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`;
+- `docs/specs/` (contratos das ferramentas; contexto das próximas etapas);
+- `README.md`;
+- `databricks.yml`;
+- `resources/*.yml`;
+- `pyproject.toml`.
 
-## Escopo permitido
+## Contexto
 
-### Arquivos que podem ser removidos
+O repositório já passou pela migração estrutural: a documentação em
+`docs/` define o Nexum Sales Assistant; `README.md`, `CLAUDE.md` e
+`AGENTS.md` foram migrados; o pacote `src/nexum_sales_assistant/`
+(ferramentas) e a pipeline `src/nexum_sales_assistant_etl/` (Bronze)
+foram criados; os recursos em `resources/` foram renomeados. Esta etapa
+é de verificação e alinhamento final da estrutura.
 
-Remover somente os arquivos de exemplo de táxi:
+O fluxo do Nexum é:
 
-- `src/sample_notebook.ipynb`
-- `src/b2b_sales_intelligence/taxis.py`
-- `src/b2b_sales_intelligence_etl/transformations/sample_trips_b2b_sales_intelligence.py`
-- `src/b2b_sales_intelligence_etl/transformations/sample_zones_b2b_sales_intelligence.py`
-- `src/b2b_sales_intelligence_etl/explorations/sample_exploration.ipynb`
-- `tests/sample_taxis_test.py`
+```text
+search_products
+    ↓
+check_inventory
+    ↓
+create_quote
+    ↓
+request_human_approval
+    ↓
+simulate_payment
+    ↓
+generate_document
+```
 
-Antes de remover qualquer arquivo, confirmar que ele pertence somente ao exemplo de táxi e que não é referenciado por outro recurso necessário.
+## Arquivos que podem ser removidos
 
-### Arquivos que podem ser alterados
+A migração já removeu os pacotes legados, as fixtures antigas e a
+imagem do produto anterior. Não há artefatos legados conhecidos
+restantes.
 
-- `resources/sample_job.job.yml`
-- `resources/b2b_sales_intelligence_etl.pipeline.yml`
-- `README.md`
-- `CLAUDE.md`
-- `AGENTS.md`, somente se houver instruções conflitantes ou incompletas
+Quaisquer candidatos identificados durante a análise devem ser listados
+antes da remoção, com justificativa e confirmação de que pertencem ao
+produto anterior (`AGENTS.md` §8), aguardando aprovação explícita.
 
-### Arquivos que podem ser criados
+Antes de remover qualquer arquivo, verificar que ele não é referenciado
+por outro recurso necessário.
+
+## Arquivos que podem ser alterados
+
+- `resources/*.yml`, se houver referência restante a ser alinhada;
+- `src/nexum_sales_assistant/main.py`, somente se o entry point
+  precisar de ajuste;
+- `README.md`, somente se a estrutura descrita mudar;
+- `pyproject.toml`, somente se uma dependência for realmente necessária.
+
+## Arquivos que podem ser criados
 
 Somente arquivos necessários para:
 
-- substituir referências quebradas aos exemplos de táxi;
-- manter a estrutura mínima do bundle;
+- manter a estrutura mínima do bundle válida;
 - documentar a nova organização.
 
 Não criar ainda:
 
-- lógica Bronze;
-- lógica Silver;
-- lógica Gold;
-- score comercial;
-- dashboard;
-- notebooks de negócio;
+- lógica Bronze, Silver ou Gold do Nexum;
+- ferramentas do agente;
+- tabelas ou Golds;
 - integrações externas.
 
-## Job
-
-Analisar o job atual em `resources/sample_job.job.yml`.
-
-Remover as tarefas relacionadas ao exemplo de táxi, incluindo:
-
-- `notebook_task`;
-- `python_wheel_task`, caso ela não seja necessária para a execução futura da pipeline.
-
-Manter somente a tarefa de atualização da pipeline se isso for compatível com a configuração atual.
-
-Avaliar se o arquivo deve ser renomeado para:
-
-```text
-resources/b2b_sales_intelligence_job.yml
-```
-
-Se o arquivo for renomeado, atualizar todas as referências necessárias e explicar a mudança.
-
-O job não deve executar automaticamente durante esta etapa.
-
-Não habilitar notificações, schedules ou triggers adicionais.
-
-## Pipeline
-
-Manter a definição básica da pipeline em:
-
-```text
-resources/b2b_sales_intelligence_etl.pipeline.yml
-```
+## Bundle e pipeline
 
 Preservar:
 
-- o uso de `${var.catalog}`;
-- o uso de `${var.schema}`;
+- `catalog` e `schema` como variáveis (`${var.catalog}`,
+  `${var.schema}`);
+- targets `dev` e `prod` em `databricks.yml`;
 - serverless compute;
-- a estrutura de recursos do bundle.
+- o padrão de volume gerenciado para os dados de entrada, se ele for
+  reutilizável para os dados sintéticos do Nexum.
 
-Remover referências às transformações de táxi.
+Não renomear o bundle nem os targets nesta etapa, salvo aprovação
+explícita com lista de impactos.
 
-Não implementar ainda as tabelas Bronze, Silver ou Gold.
+Verificar se a pipeline e o job não possuem referências restantes ao
+produto anterior. Se a pipeline não puder ficar válida sem uma
+transformação, explicar o problema antes de criar um arquivo
+temporário.
 
-Se a pipeline não puder ficar válida sem uma transformação, explicar o problema antes de criar um arquivo temporário.
+O job não deve executar automaticamente durante esta etapa. Não
+habilitar notificações, schedules ou triggers adicionais.
 
 ## Configuração
-
-Não alterar ainda os targets `dev` e `prod` em `databricks.yml`, salvo se houver uma referência quebrada diretamente causada pela limpeza do template.
-
-Preservar:
-
-```text
-catalog dev: workspace
-schema dev: dev
-catalog prod: workspace
-schema prod: prod
-```
 
 Não criar novo catalog, novo schema ou recurso externo nesta etapa.
 
 ## Dados
 
-Preservar os arquivos:
+Não criar os dados sintéticos do Nexum nesta etapa; eles pertencem à
+etapa 01 (`01-bronze.md`), conforme `docs/data_model.md` §17 e
+`docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`.
 
-```text
-fixtures/companies_clean.csv
-fixtures/employees_clean.csv
-```
-
-Não modificar conteúdo dos CSVs.
-
-Não adicionar os arquivos noisy nesta etapa.
+Não modificar os arquivos de `fixtures/` sem aprovação.
 
 ## Documentação
 
-Atualizar o `README.md` para deixar claro que:
+Ao final, garantir que:
 
-- o projeto é uma solução B2B Sales Intelligence;
-- os exemplos de táxi foram removidos;
-- Bronze, Silver e Gold serão implementadas nas próximas etapas;
-- os dados principais estão em `fixtures/`;
-- esta etapa é somente de preparação.
-
-Não afirmar que Bronze, Silver ou Gold já estão funcionando.
+- o README descreva corretamente o estado atual do projeto;
+- a estrutura de `src/` esteja documentada;
+- nenhuma documentação ativa cite artefatos removidos.
 
 ## Regras de segurança
 
 - Não apagar arquivos fora da lista autorizada.
-- Não alterar os CSVs.
+- Não alterar `docs/` sem aprovação.
 - Não adicionar dependências sem justificativa.
-- Não usar Supabase, JDBC, Fivetran, AWS, Azure ou GCP.
 - Não usar machine learning.
 - Não fazer deploy.
 - Não executar comandos destrutivos fora do escopo.
@@ -161,13 +145,10 @@ Não afirmar que Bronze, Silver ou Gold já estão funcionando.
 Antes de modificar qualquer arquivo:
 
 1. apresentar um resumo do estado atual;
-2. explicar como o job atual funciona;
-3. explicar como a pipeline atual funciona;
-4. listar os arquivos que serão removidos;
-5. listar os arquivos que serão alterados;
-6. listar os arquivos que serão criados;
-7. explicar possíveis riscos;
-8. aguardar aprovação explícita.
+2. listar os artefatos legados identificados;
+3. listar os arquivos que serão removidos, alterados e criados;
+4. explicar possíveis riscos;
+5. aguardar aprovação explícita.
 
 Depois da aprovação:
 
@@ -177,7 +158,7 @@ Depois da aprovação:
 4. executar:
 
 ```bash
-databricks bundle validate --profile grid_intelligence
+databricks bundle validate --profile <perfil>
 ```
 
 5. mostrar o resultado da validação;
@@ -189,16 +170,15 @@ databricks bundle validate --profile grid_intelligence
 
 A etapa estará concluída quando:
 
-- os arquivos de táxi autorizados forem removidos;
+- os artefatos legados aprovados tiverem sido removidos;
 - não existirem referências quebradas aos arquivos removidos;
-- o job não depender mais do notebook de táxi;
-- a pipeline não depender mais das transformações de táxi;
-- os CSVs permanecerem intactos;
-- o README refletir corretamente o estado do projeto;
+- a pipeline e o job não dependerem mais do código legado;
 - o bundle passar em:
 
 ```bash
-databricks bundle validate --profile grid_intelligence
+databricks bundle validate --profile <perfil>
 ```
 
-- nenhuma lógica de Bronze, Silver, Gold ou score tiver sido implementada prematuramente.
+- nenhuma lógica de Bronze, Silver, Gold ou ferramenta do Nexum tiver
+  sido implementada prematuramente;
+- a estrutura estiver pronta para a etapa 01.

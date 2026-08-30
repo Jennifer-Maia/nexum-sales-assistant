@@ -1,10 +1,9 @@
-# Volume gerenciado para os dados de entrada do B2B Sales Intelligence.
+# Volume gerenciado para os dados de entrada do Nexum Sales Assistant.
 #
-# Os CSVs de fixtures/ são copiados para este volume uma única vez, após o deploy:
-#   databricks fs cp fixtures/companies_clean.csv \
-#     dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
-#   databricks fs cp fixtures/employees_clean.csv \
-#     dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
+# Os arquivos sintéticos de fixtures/ são copiados para este volume uma
+# única vez, após o deploy:
+#   databricks fs cp fixtures/<arquivo> \
+#     dbfs:/Volumes/workspace/dev/raw_data/ --profile <perfil>
 #
 # O caminho real do volume é referenciado na pipeline via
 # ${resources.volumes.raw_data.volume_path}.

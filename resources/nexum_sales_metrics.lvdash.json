@@ -1,0 +1,829 @@
+{
+  "datasets": [
+    {
+      "name": "ds_sessions",
+      "displayName": "Sessões de conversa (Gold)",
+      "queryLines": [
+        "SELECT session_id, message_count, question_count, products_consulted, \n",
+        "quotes_created, approvals_requested, approvals_resolved, \n",
+        "payments_simulated, documents_generated, errors \n",
+        "FROM gold_conversation_audit"
+      ]
+    },
+    {
+      "name": "ds_funnel",
+      "displayName": "Funil de vendas (Gold)",
+      "queryLines": [
+        "SELECT 'sessoes' AS etapa, 1 AS ordem, COUNT(*) AS total \n",
+        "FROM gold_conversation_audit \n",
+        "UNION ALL SELECT 'cotacoes', 2, COUNT(*) FROM gold_quote_summary \n",
+        "UNION ALL SELECT 'aprovacoes', 3, COUNT(*) FROM gold_quote_summary \n",
+        "WHERE approval_status = 'approved' \n",
+        "UNION ALL SELECT 'pagamentos_simulados', 4, COUNT(*) FROM gold_quote_summary \n",
+        "WHERE payment_status = 'simulated_success' \n",
+        "UNION ALL SELECT 'documentos_simulados', 5, COUNT(*) FROM gold_quote_summary \n",
+        "WHERE status = 'completed' \n",
+        "ORDER BY ordem"
+      ]
+    },
+    {
+      "name": "ds_tool_calls",
+      "displayName": "Chamadas de ferramenta (Gold)",
+      "queryLines": [
+        "SELECT session_id, tool_name, status, duration_ms, created_at \n",
+        "FROM gold_agent_operations \n",
+        "WHERE event_type = 'tool_call'"
+      ]
+    },
+    {
+      "name": "ds_agent_turns",
+      "displayName": "Atividade do agente (Gold)",
+      "queryLines": [
+        "SELECT session_id, event_type, tool_name, status, duration_ms, \n",
+        "input_tokens, output_tokens, model, cost_estimated, error_message, \n",
+        "created_at, source \n",
+        "FROM gold_agent_operations"
+      ]
+    },
+    {
+      "name": "ds_quality",
+      "displayName": "Qualidade e segurança (Gold)",
+      "queryLines": [
+        "SELECT 'aprovacoes_pendentes' AS indicador, COUNT(*) AS total \n",
+        "FROM gold_quote_summary WHERE approval_status = 'pending' \n",
+        "UNION ALL SELECT 'rejeicoes', COUNT(*) FROM gold_quote_summary \n",
+        "WHERE approval_status = 'rejected' \n",
+        "UNION ALL SELECT 'recusas', COUNT(*) FROM gold_agent_operations \n",
+        "WHERE event_type = 'refusal' \n",
+        "UNION ALL SELECT 'bloqueios_ferramenta', COUNT(*) FROM gold_agent_operations \n",
+        "WHERE event_type = 'tool_selection_blocked' \n",
+        "UNION ALL SELECT 'falhas_validacao', COUNT(*) FROM gold_agent_operations \n",
+        "WHERE status IN ('validation_error', 'data_error') \n",
+        "UNION ALL SELECT 'erros_agente', COUNT(*) FROM gold_agent_operations \n",
+        "WHERE event_type = 'agent_error' \n",
+        "ORDER BY indicador"
+      ]
+    },
+    {
+      "name": "ds_cost",
+      "displayName": "Custo por sessão (Gold)",
+      "queryLines": [
+        "SELECT session_id, \n",
+        "COUNT(*) AS interacoes, \n",
+        "COALESCE(SUM(input_tokens), 0) AS tokens_entrada, \n",
+        "COALESCE(SUM(output_tokens), 0) AS tokens_saida, \n",
+        "COALESCE(SUM(cost_estimated), 0) AS custo_estimado, \n",
+        "MIN(created_at) AS primeira_interacao \n",
+        "FROM gold_agent_operations \n",
+        "WHERE event_type = 'turn' \n",
+        "GROUP BY session_id \n",
+        "ORDER BY session_id"
+      ]
+    },
+    {
+      "name": "ds_update",
+      "displayName": "Atualização dos dados (Gold)",
+      "queryLines": [
+        "SELECT tabela, camada, registros, atualizado_em \n",
+        "FROM gold_data_freshness \n",
+        "ORDER BY tabela"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "funil",
+      "displayName": "Funil de vendas",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "funil-titulo",
+            "multilineTextboxSpec": {"lines": ["# Nexum Sales Assistant — Funil de vendas"]}
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "funil-subtitulo",
+            "multilineTextboxSpec": {
+              "lines": ["Métricas reais do fluxo Bronze → Silver → Gold e do agente de IA. Zero significa ausência de dados operacionais — nenhum valor é fictício."]
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-sessoes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`etapa` = 'sessoes'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Sessões", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Sessões"}
+            }
+          },
+          "position": {"x": 0, "y": 2, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-cotacoes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`etapa` = 'cotacoes'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Cotações", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Cotações"}
+            }
+          },
+          "position": {"x": 4, "y": 2, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-aprovacoes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`etapa` = 'aprovacoes'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Aprovações", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Aprovações"}
+            }
+          },
+          "position": {"x": 8, "y": 2, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-pagamentos",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`etapa` = 'pagamentos_simulados'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Pagamentos simulados", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Pagamentos simulados"}
+            }
+          },
+          "position": {"x": 0, "y": 5, "width": 6, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-documentos",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`etapa` = 'documentos_simulados'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Documentos simulados", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Documentos simulados"}
+            }
+          },
+          "position": {"x": 6, "y": 5, "width": 6, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "grafico-funil",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [
+                  {"name": "etapa", "expression": "`etapa`"},
+                  {"name": "sum(total)", "expression": "SUM(`total`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "etapa", "scale": {"type": "categorical"}},
+                "y": {"fieldName": "sum(total)", "displayName": "Total", "scale": {"type": "quantitative"}}
+              },
+              "frame": {"showTitle": true, "title": "Etapas do funil de vendas"}
+            }
+          },
+          "position": {"x": 0, "y": 8, "width": 12, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "tabela-funil",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_funnel",
+                "fields": [
+                  {"name": "etapa", "expression": "`etapa`"},
+                  {"name": "total", "expression": "`total`"}
+                ],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "etapa", "displayName": "Etapa"},
+                  {"fieldName": "total", "displayName": "Total"}
+                ]
+              },
+              "frame": {"showTitle": true, "title": "Funil detalhado"}
+            }
+          },
+          "position": {"x": 0, "y": 13, "width": 12, "height": 5}
+        }
+      ]
+    },
+    {
+      "name": "operacao",
+      "displayName": "Operação do agente",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "op-titulo",
+            "multilineTextboxSpec": {"lines": ["# Operação do agente"]}
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-op-sessoes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_sessions",
+                "fields": [{"name": "countdistinct(session_id)", "expression": "COUNT(DISTINCT `session_id`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "countdistinct(session_id)", "displayName": "Sessões", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Sessões"}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-op-mensagens",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_sessions",
+                "fields": [{"name": "sum(message_count)", "expression": "SUM(`message_count`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "sum(message_count)", "displayName": "Mensagens", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Mensagens de clientes"}
+            }
+          },
+          "position": {"x": 3, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-op-latencia",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_agent_turns",
+                "fields": [{"name": "avg(duration_ms)", "expression": "AVG(`duration_ms`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "avg(duration_ms)", "displayName": "Latência média (ms)", "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 0}}}
+              },
+              "frame": {"showTitle": true, "title": "Latência média do turno (ms)"}
+            }
+          },
+          "position": {"x": 6, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-op-tokens",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_agent_turns",
+                "fields": [{"name": "sum(input_tokens)", "expression": "SUM(`input_tokens`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "sum(input_tokens)", "displayName": "Tokens de entrada", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Tokens de entrada"}
+            }
+          },
+          "position": {"x": 9, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "bar-uso-ferramentas",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_tool_calls",
+                "fields": [
+                  {"name": "tool_name", "expression": "`tool_name`"},
+                  {"name": "count(*)", "expression": "COUNT(*)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "tool_name", "scale": {"type": "categorical"}},
+                "y": {"fieldName": "count(*)", "displayName": "Chamadas", "scale": {"type": "quantitative"}}
+              },
+              "frame": {"showTitle": true, "title": "Uso das ferramentas"}
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 6, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "bar-latencia-ferramentas",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_tool_calls",
+                "fields": [
+                  {"name": "tool_name", "expression": "`tool_name`"},
+                  {"name": "avg(duration_ms)", "expression": "AVG(`duration_ms`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "tool_name", "scale": {"type": "categorical"}},
+                "y": {"fieldName": "avg(duration_ms)", "displayName": "Latência (ms)", "scale": {"type": "quantitative"}}
+              },
+              "frame": {"showTitle": true, "title": "Latência média por ferramenta (ms)"}
+            }
+          },
+          "position": {"x": 6, "y": 4, "width": 6, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "tabela-atividade",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_agent_turns",
+                "fields": [
+                  {"name": "created_at", "expression": "`created_at`"},
+                  {"name": "session_id", "expression": "`session_id`"},
+                  {"name": "event_type", "expression": "`event_type`"},
+                  {"name": "tool_name", "expression": "`tool_name`"},
+                  {"name": "status", "expression": "`status`"},
+                  {"name": "duration_ms", "expression": "`duration_ms`"}
+                ],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "created_at", "displayName": "Quando"},
+                  {"fieldName": "session_id", "displayName": "Sessão"},
+                  {"fieldName": "event_type", "displayName": "Evento"},
+                  {"fieldName": "tool_name", "displayName": "Ferramenta"},
+                  {"fieldName": "status", "displayName": "Status"},
+                  {"fieldName": "duration_ms", "displayName": "Duração (ms)"}
+                ]
+              },
+              "frame": {"showTitle": true, "title": "Atividade recente do agente"}
+            }
+          },
+          "position": {"x": 0, "y": 9, "width": 12, "height": 6}
+        }
+      ]
+    },
+    {
+      "name": "qualidade",
+      "displayName": "Qualidade e segurança",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "q-titulo",
+            "multilineTextboxSpec": {"lines": ["# Qualidade e segurança"]}
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-q-recusas",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`indicador` = 'recusas'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Recusas", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Recusas (injeção/segredos)"}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-q-bloqueios",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`indicador` = 'bloqueios_ferramenta'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Ferramentas bloqueadas", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Ferramentas não autorizadas bloqueadas"}
+            }
+          },
+          "position": {"x": 4, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-q-validacao",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`indicador` = 'falhas_validacao'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Falhas de validação", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Falhas de validação"}
+            }
+          },
+          "position": {"x": 8, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-q-pendentes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`indicador` = 'aprovacoes_pendentes'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Aprovações pendentes", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Aprovações pendentes"}
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 6, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-q-rejeicoes",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [{"name": "total", "expression": "`total`"}],
+                "filters": [{"expression": "`indicador` = 'rejeicoes'"}],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "total", "displayName": "Rejeições", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Rejeições"}
+            }
+          },
+          "position": {"x": 6, "y": 4, "width": 6, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "bar-qualidade",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_quality",
+                "fields": [
+                  {"name": "indicador", "expression": "`indicador`"},
+                  {"name": "sum(total)", "expression": "SUM(`total`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "indicador", "scale": {"type": "categorical"}},
+                "y": {"fieldName": "sum(total)", "displayName": "Total", "scale": {"type": "quantitative"}}
+              },
+              "frame": {"showTitle": true, "title": "Indicadores de qualidade e segurança"}
+            }
+          },
+          "position": {"x": 0, "y": 7, "width": 12, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "q-nota",
+            "multilineTextboxSpec": {
+              "lines": ["Recusas cobrem tentativas de prompt injection e pedidos de segredos (eventos `refusal`). Documentos bloqueados aparecem como ausência de `documentos` no funil — a geração é bloqueada pelas ferramentas sem pagamento simulado bem-sucedido."]
+            }
+          },
+          "position": {"x": 0, "y": 12, "width": 12, "height": 2}
+        }
+      ]
+    },
+    {
+      "name": "custo",
+      "displayName": "Custo",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "c-titulo",
+            "multilineTextboxSpec": {"lines": ["# Custo da IA"]}
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-c-tokens-in",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_cost",
+                "fields": [{"name": "sum(tokens_entrada)", "expression": "SUM(`tokens_entrada`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "sum(tokens_entrada)", "displayName": "Tokens de entrada", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Tokens de entrada"}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-c-tokens-out",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_cost",
+                "fields": [{"name": "sum(tokens_saida)", "expression": "SUM(`tokens_saida`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "sum(tokens_saida)", "displayName": "Tokens de saída", "format": {"type": "number"}}
+              },
+              "frame": {"showTitle": true, "title": "Tokens de saída"}
+            }
+          },
+          "position": {"x": 4, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-c-custo",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_cost",
+                "fields": [{"name": "sum(custo_estimado)", "expression": "SUM(`custo_estimado`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {"fieldName": "sum(custo_estimado)", "displayName": "Custo estimado", "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 6}}}
+              },
+              "frame": {"showTitle": true, "title": "Custo estimado (não fornecido pela FM API → 0)"}
+            }
+          },
+          "position": {"x": 8, "y": 1, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "tabela-custo",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_cost",
+                "fields": [
+                  {"name": "session_id", "expression": "`session_id`"},
+                  {"name": "primeira_interacao", "expression": "`primeira_interacao`"},
+                  {"name": "interacoes", "expression": "`interacoes`"},
+                  {"name": "tokens_entrada", "expression": "`tokens_entrada`"},
+                  {"name": "tokens_saida", "expression": "`tokens_saida`"},
+                  {"name": "custo_estimado", "expression": "`custo_estimado`"}
+                ],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "session_id", "displayName": "Sessão"},
+                  {"fieldName": "primeira_interacao", "displayName": "Primeira interação"},
+                  {"fieldName": "interacoes", "displayName": "Interações"},
+                  {"fieldName": "tokens_entrada", "displayName": "Tokens entrada"},
+                  {"fieldName": "tokens_saida", "displayName": "Tokens saída"},
+                  {"fieldName": "custo_estimado", "displayName": "Custo estimado"}
+                ]
+              },
+              "frame": {"showTitle": true, "title": "Custo e tokens por sessão (período de referência: todo o histórico)"}
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 12, "height": 6}
+        }
+      ]
+    },
+    {
+      "name": "atualizacao",
+      "displayName": "Atualização dos dados",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "a-titulo",
+            "multilineTextboxSpec": {"lines": ["# Atualização dos dados"]}
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "tabela-atualizacao",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_update",
+                "fields": [
+                  {"name": "tabela", "expression": "`tabela`"},
+                  {"name": "camada", "expression": "`camada`"},
+                  {"name": "registros", "expression": "`registros`"},
+                  {"name": "atualizado_em", "expression": "`atualizado_em`"}
+                ],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "tabela", "displayName": "Tabela"},
+                  {"fieldName": "camada", "displayName": "Camada"},
+                  {"fieldName": "registros", "displayName": "Registros"},
+                  {"fieldName": "atualizado_em", "displayName": "Última ingestão"}
+                ]
+              },
+              "frame": {"showTitle": true, "title": "Tabelas, registros e última ingestão"}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 12, "height": 8}
+        },
+        {
+          "widget": {
+            "name": "a-nota",
+            "multilineTextboxSpec": {
+              "lines": ["Fonte: gold_data_freshness (ADR-008). `atualizado_em` vem do timestamp de ingestão das camadas Bronze/Silver e de `created_at` das tabelas runtime; as Golds não possuem timestamp próprio (NULL). A última execução da pipeline é refletida nas contagens de registros."]
+            }
+          },
+          "position": {"x": 0, "y": 9, "width": 12, "height": 2}
+        }
+      ]
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {"light": "#FCFCFC", "dark": "#1F272D"},
+      "widgetBackgroundColor": {"light": "#FFFFFF", "dark": "#11171C"},
+      "fontColor": {"light": "#11171C", "dark": "#E8ECF0"},
+      "selectionColor": {"light": "#2272B4", "dark": "#8ACAFF"},
+      "visualizationColors": [
+        "#0072B2", "#E69F00", "#009E73", "#CC79A7", "#D55E00", "#56B4E9"
+      ],
+      "widgetHeaderAlignment": "LEFT"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+company_id,company_name,industry,region
+C0001,Metalúrgica Ferrovale Ltda,metalurgia,Sudeste
+C0002,Fiação Santa Amália,têxtil,Sul
+C0003,Transportadora Rota Azul,logística,Sudeste
+C0004,Frigorífico Pampa Central,alimentos,Sul
+C0005,Cerâmica Alto Vale,cerâmica,Sudeste
+C0006,Química Nova Era,química,Sudeste
+C0007,Usina Bioenergia Verde,energia,Centro-Oeste
+C0008,Plásticos Horizonte,plásticos,Sul
+C0009,Alimentos Cereal Brasil,alimentos,Nordeste
+C0010,Autopeças Serra Azul,autopeças,Sudeste
+C0011,Papel e Celulose Rio Claro,papel e celulose,Sudeste
+C0012,Laticínios Campo Belo,laticínios,Sul
+C0013,Mineração Pedra Alta,mineração,Norte
+C0014,Têxtil Fio Forte,têxtil,Nordeste
+C0015,Bebidas Cana Doce,bebidas,Sudeste
+C0016,Construção Civil Prisma,construção civil,Centro-Oeste

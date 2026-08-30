@@ -1,443 +1,307 @@
-# B2B Sales Intelligence
+# Nexum Sales Assistant
 
-Pipeline analítica de dados para priorização comercial B2B, identificação de oportunidades de recompra e recomendação de contatos decisores.
+Assistente de vendas B2B com agente de IA que transforma uma
+necessidade descrita em linguagem natural em recomendação de produto,
+cotação aprovada por humano, pagamento simulado e documento simulado —
+executado sobre Databricks (Delta, Declarative Automation Bundles e
+Foundation Model API).
 
-> Projeto de portfólio desenvolvido com Databricks Declarative Automation Bundles (DABs), arquitetura medalhão e execução automatizada por CLI.
-
----
-![Imagem do projeto](src/image_gen_output.png)
-## Visão geral
-
-Equipes comerciais B2B normalmente possuem muitas empresas, contratos e contatos, mas recursos limitados para realizar abordagens personalizadas.
-
-O **B2B Sales Intelligence** transforma dados de empresas e funcionários em informações acionáveis para responder perguntas como:
-
-- Quais empresas devem ser priorizadas pelo time comercial?
-- Quais clientes apresentam maior potencial de recompra?
-- Quais empresas estão sem contato recente?
-- Quem são os melhores contatos para uma abordagem comercial?
-- Quais fatores justificam a prioridade de cada empresa?
-
-A solução será construída em camadas **Bronze, Silver e Gold**, com regras de negócio explicáveis e rastreabilidade dos dados de origem.
+> Projeto de portfólio com dados sintéticos, aprovação humana
+> obrigatória e pagamento exclusivamente simulado.
 
 ---
 
-## Objetivo do projeto
+## 1. Objetivo
 
-Construir um MVP de engenharia e análise de dados que:
+O **Nexum Sales Assistant** é o assistente de vendas da **Nexum
+Industrial**, empresa fictícia de equipamentos para manutenção,
+operação e monitoramento industrial. Ele demonstra ponta a ponta a
+engenharia de um assistente comercial com IA: engenharia de dados
+(Bronze → Silver → Gold), ferramentas determinísticas, agente com LLM
+real, aprovação humana, auditoria completa e métricas operacionais.
 
-1. ingira dados de empresas e funcionários;
-2. preserve os dados originais em tabelas Bronze;
-3. limpe, padronize e relacione os dados na camada Silver;
-4. gere oportunidades comerciais na camada Gold;
-5. recomende contatos comerciais relevantes;
-6. calcule um score de prioridade explicável;
-7. disponibilize os resultados para análises e consumo futuro.
+## 2. Problema de negócio
 
----
+Vendedores B2B gastam tempo traduzindo a necessidade do cliente em
+produtos adequados, consultando especificações, disponibilidade, preço
+e prazo. O assistente reduz essa fricção: o LLM **interpreta** a
+conversa, e o código **valida, consulta, calcula e controla estados** —
+o modelo nunca inventa dados comerciais.
 
-## Dados utilizados
+## 3. Funcionalidades
 
-O projeto utiliza um dataset sintético de CRM e marketing B2B.
+- busca determinística de produtos por categoria, faixa e unidade;
+- consulta de estoque somente-leitura (com sinalização de dado
+  desatualizado);
+- criação de cotação com congelamento de preço;
+- aprovação humana obrigatória antes do pagamento simulado;
+- pagamento exclusivamente simulado (sem dinheiro real);
+- documento simulado sem validade fiscal, financeira ou contábil;
+- auditoria completa da conversa e das ferramentas;
+- agente de IA conversacional com LLM real e tool calling controlado;
+- chat local (Streamlit) e job de demonstração;
+- dashboard Lakeview de funil, operação, qualidade, custo e
+  atualização dos dados.
 
-Arquivos principais:
+## 4. Arquitetura de dados — Bronze → Silver → Gold
 
 ```text
-fixtures/
-├── companies_clean.csv
-└── employees_clean.csv
+fixtures/CSV (dados sintéticos)
+        ↓
+Bronze   dados de origem preservados + metadados de ingestão
+        ↓
+Silver   dados padronizados, tipados e validados (_quality_status)
+        ↓
+Gold     modelos de consumo das ferramentas e do dashboard
 ```
 
-Arquivos previstos para etapas futuras de qualidade:
+Datasets implementados:
 
 ```text
-companies_noisy.csv
-employees_noisy.csv
-employees_with_company_sample.csv
+bronze_companies · bronze_products · bronze_inventory
+silver_companies (fonte canônica de clientes — ADR-002)
+silver_products · silver_inventory
+gold_product_catalog        ← search_products
+gold_product_availability   ← check_inventory
+gold_quote_summary          ← visão de cotações (ADR-002)
+gold_conversation_audit     ← auditoria por sessão
+gold_agent_operations       ← operação do agente (ADR-008)
+gold_data_freshness         ← atualização dos dados (ADR-008)
 ```
 
-### Entidades principais
+Registros inválidos são sinalizados em `_quality_status` e nunca
+corrigidos silenciosamente (ADR-005). As entidades transacionais
+(`quotes`, `quote_items`, `approvals`, `payments`, `documents`,
+`conversation_events`, `agent_events`) são criadas em tempo de execução
+pelas ferramentas e pelo agente; o dashboard lê **somente Gold**
+(ADR-008).
 
-| Entidade | Arquivo | Chave |
+## 5. Agente com LLM
+
+O agente (`src/nexum_sales_assistant/agent/`) usa a **Foundation Model
+API** do Databricks (pay-per-token; endpoint configurável via
+`model_endpoint` do bundle, padrão
+`databricks-meta-llama-3-3-70b-instruct`). O loop de tool calling é
+próprio e determinístico (ADR-006):
+
+- o LLM só pode solicitar as **seis ferramentas aprovadas**;
+- ferramenta fora do catálogo → bloqueada e registrada
+  (`tool_selection_blocked`);
+- ações sensíveis (cotação, aprovação, pagamento, documento) exigem
+  **confirmação explícita** do cliente (gate determinístico);
+- prompt injection e pedidos de segredos → recusa registrada
+  (`refusal`);
+- cada turno registra latência, tokens, modelo, status e erro em
+  `agent_events` (custo permanece 0/NULL — a API não retorna custo;
+  nenhum valor é inventado — ADR-007);
+- o histórico de cada turno é reconstruído da trilha de auditoria
+  (`conversation_events`) — a conversa é retomável pelo `session_id`.
+
+## 6. As seis ferramentas
+
+| Ferramenta | Responsabilidade | Fonte de dados |
 |---|---|---|
-| Empresas | `companies_clean.csv` | `Company_ID` |
-| Funcionários | `employees_clean.csv` | `Employee_ID` |
-| Relacionamento empresa-contato | Ambos | `Company_ID` |
+| `search_products` | Buscar produtos ativos e compatíveis | `gold_product_catalog` |
+| `check_inventory` | Disponibilidade sem alterar o estoque | `gold_product_availability` |
+| `create_quote` | Cotação em `draft` com preços congelados | `silver_companies` + Golds |
+| `request_human_approval` | Solicitar/registrar aprovação humana | `quotes`, `approvals` |
+| `simulate_payment` | Pagamento exclusivamente simulado | `quotes`, `approvals`, `payments` |
+| `generate_document` | Documento simulado sem validade fiscal | `quotes`, `quote_items`, `payments`, `silver_companies` |
 
-O relacionamento entre empresas e funcionários é realizado por:
+Contratos formais em `docs/specs/` (entradas, saídas, erros, auditoria,
+critérios de aceite).
 
-```text
-employees_clean.Company_ID = companies_clean.Company_ID
-```
+## 7. Aprovação humana
 
-Os dados são sintéticos e não representam clientes reais.
-
----
-
-## Arquitetura
-
-```text
-CSV files
-   │
-   ▼
-Bronze
-Dados brutos com rastreabilidade
-   │
-   ▼
-Silver
-Dados limpos, tipados e relacionados
-   │
-   ▼
-Gold
-Oportunidades e contatos recomendados
-   │
-   ▼
-Análises comerciais
-```
-
-### Camada Bronze
-
-Responsável pela ingestão dos arquivos de origem sem perda dos dados originais.
-
-Tabelas implementadas (etapa 01):
+Obrigatória antes do pagamento simulado (ADR-004). O agente solicita e
+repassa a decisão de um aprovador autorizado (demo: `vendor-001`);
+nunca decide `approved`/`rejected` por conta própria. Transições
+inválidas da máquina de estados de `quotes` são bloqueadas pelo código:
 
 ```text
-bronze_companies
-bronze_employees
+draft → pending_approval → approved → paid → completed
+                       ↘ rejected
 ```
 
-Colunas técnicas adicionadas:
+## 8. Interface Streamlit (chat local)
+
+Chat local em `app/chat.py` que reusa o agente e as ferramentas,
+gravando nas mesmas tabelas do Databricks (o dashboard funciona sem
+alteração). Conexão via **Databricks Connect** com compute
+**serverless**; recupera automaticamente de sessões expiradas por
+inatividade.
 
 ```text
-_ingestion_timestamp
-_source_file
-_source_system
+Chat Streamlit (app/chat.py)
+        ↓
+Databricks Connect (sessão Spark serverless)
+        ↓
+Agente (LLM real) → seis ferramentas determinísticas
+        ↓
+Tabelas em workspace.dev (runtime + Bronze/Silver/Gold)
+        ↓
+Dashboard Lakeview (Nexum Sales Metrics)
 ```
 
-As colunas de origem são preservadas como `STRING` na Bronze (leitura sem inferência de schema); a tipagem e a padronização ficam para a Silver. Não há deduplicação, limpeza de HTML ou regras de negócio nesta camada. As tabelas Bronze usam Column Mapping do Delta (`delta.columnMapping.mode: name`), necessário para preservar os nomes originais das colunas que contêm espaços, parênteses e `%`.
+## 9. Dashboard Lakeview
 
-#### Disponibilização dos arquivos (volume gerenciado)
+`Nexum Sales Metrics` (deployado pelo bundle) com páginas de funil de
+vendas, operação do agente, qualidade e segurança, custo e atualização
+dos dados. Todas as queries leem exclusivamente tabelas Gold
+(ADR-008); sem dados operacionais, mostra zero — nenhum valor fictício.
 
-Os CSVs de `fixtures/` são publicados em um volume gerenciado do Unity Catalog (`raw_data`), declarado no bundle em `resources/raw_data.volume.yml` e criado pelo deploy. O upload é feito uma única vez pela CLI, após o deploy:
+## 10. Instruções de configuração
 
-```bash
-databricks fs cp fixtures/companies_clean.csv \
-  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
-databricks fs cp fixtures/employees_clean.csv \
-  dbfs:/Volumes/workspace/dev/raw_data/ --profile grid_intelligence
-```
-
-A pipeline lê o caminho a partir do parâmetro `source_base_path` declarado em `resources/b2b_sales_intelligence_etl.pipeline.yml`, resolvido pelo bundle como `${resources.volumes.raw_data.volume_path}` — nenhum caminho de catalog/schema é fixado no código.
-
-### Camada Silver
-
-Responsável pela limpeza e padronização dos dados.
-
-Processos previstos:
-
-- padronização dos nomes das colunas;
-- conversão de tipos numéricos;
-- conversão de datas;
-- tratamento de entidades HTML, como `&`;
-- remoção de duplicidades;
-- validação das chaves;
-- validação do relacionamento entre empresas e funcionários;
-- criação da visão consolidada de empresas e contatos.
-
-Tabelas previstas:
-
-```text
-silver_companies
-silver_employees
-silver_company_contacts
-```
-
-### Camada Gold
-
-Responsável por transformar os dados tratados em produtos analíticos para o negócio.
-
-Tabelas previstas:
-
-```text
-gold_company_opportunities
-gold_recommended_contacts
-```
-
-#### `gold_company_opportunities`
-
-Deverá apresentar, por empresa:
-
-- informações cadastrais;
-- status do contrato;
-- frequência de compra;
-- recência da última compra;
-- volume de compras;
-- indicadores de marketing;
-- existência de decisores;
-- score de prioridade;
-- nível de prioridade;
-- recomendação de ação comercial.
-
-#### `gold_recommended_contacts`
-
-Deverá apresentar os contatos mais relevantes para abordagem comercial, considerando fatores como:
-
-- empresa relacionada;
-- papel ou cargo;
-- classificação como decisor;
-- influência;
-- completude dos dados;
-- prioridade da empresa.
-
----
-
-## Score de prioridade
-
-O MVP utilizará um score heurístico, transparente e explicável.
-
-O score poderá considerar:
-
-- frequência de compra;
-- dias desde a última compra;
-- volume de compras no último ano;
-- status do contrato;
-- leads gerados;
-- taxa de conversão;
-- existência de decisores;
-- influência dos contatos;
-- necessidade de follow-up.
-
-Os pesos e as regras serão documentados no projeto e validados com base na distribuição real dos dados.
-
-> O MVP não utilizará machine learning. A prioridade será calculada por regras de negócio reproduzíveis.
-
----
-
-## Tecnologias
-
-- Databricks Free Edition;
-- Databricks Declarative Automation Bundles;
-- Databricks CLI;
-- Python;
-- PySpark;
-- Delta Lake;
-- Lakeflow Declarative Pipelines;
-- Serverless Compute;
-- Git e GitHub;
-- Claude Code / Databricks AI Dev Kit;
-- `pytest`;
-- `ruff`;
-- `uv`.
-
----
-
-## Estrutura do projeto
-
-```text
-b2b_sales_intelligence/
-├── .claude/                         # Configurações locais do agente
-├── .llm/
-│   └── prd.md                       # Requisitos do produto
-├── fixtures/                        # Dados de entrada e arquivos de teste
-│   ├── companies_clean.csv
-│   └── employees_clean.csv
-├── prompts/                         # Prompts versionados de implementação
-│   ├── README.md
-│   ├── 00-setup.md
-│   ├── 01-bronze.md
-│   ├── 02-silver.md
-│   ├── 03-gold.md
-│   ├── 04-scoring.md
-│   └── 05-validation.md
-├── resources/                       # Recursos Databricks declarados em YAML
-├── src/                             # Código executado no Databricks
-├── tests/                           # Testes automatizados
-├── AGENTS.md                        # Instruções gerais para agentes de IA
-├── CLAUDE.md                        # Instruções específicas para o Claude
-├── databricks.yml                   # Configuração principal do bundle
-├── pyproject.toml                   # Configuração do projeto Python
-├── .gitignore
-└── README.md
-```
-
----
-
-## Metodologia de desenvolvimento com IA
-
-O projeto utiliza uma abordagem orientada por documentação e prompts versionados.
-
-Antes de alterar o código, o agente deve consultar:
-
-```text
-.llm/prd.md
-AGENTS.md
-CLAUDE.md
-prompts/<etapa-atual>.md
-```
-
-A implementação será realizada em etapas:
-
-| Etapa | Entrega |
-|---|---|
-| `00-setup` | Preparação do bundle e remoção dos exemplos do template |
-| `01-bronze` | Ingestão dos arquivos de empresas e funcionários |
-| `02-silver` | Limpeza, tipagem, deduplicação e relacionamento |
-| `03-gold` | Tabelas analíticas de oportunidades e contatos |
-| `04-scoring` | Score de prioridade e recomendações comerciais |
-| `05-validation` | Testes de qualidade, contagens e validação final |
-
-Cada etapa deverá:
-
-1. explicar o plano de implementação;
-2. listar os arquivos que serão alterados;
-3. executar somente o escopo aprovado;
-4. validar o resultado;
-5. documentar as decisões;
-6. gerar um commit próprio.
-
----
-
-## Ambiente Databricks
-
-O bundle utiliza o catálogo:
-
-```text
-workspace
-```
-
-Os targets configurados são:
-
-```text
-dev
-prod
-```
-
-Durante o desenvolvimento, os recursos serão publicados no target `dev`.
-
-Comandos principais:
-
-```bash
-databricks bundle validate --profile grid_intelligence
-databricks bundle deploy --profile grid_intelligence --target dev
-databricks bundle run --profile grid_intelligence --target dev
-```
-
-O target de produção só deverá ser utilizado após a validação completa do MVP.
-
----
-
-## Desenvolvimento local
-
-### Pré-requisitos
-
-- Git;
-- Python compatível com o projeto;
-- Databricks CLI;
-- `uv`;
-- acesso ao workspace Databricks;
-- Claude Code ou agente compatível com o Databricks AI Dev Kit.
-
-### Instalar dependências
-
-Na raiz do projeto:
+Pré-requisitos: Git, Python 3.12, `uv`, Databricks CLI autenticada com
+o perfil `jornada` (workspace de demonstração).
 
 ```bash
 uv sync --dev
 ```
 
-### Executar testes
+Variáveis de ambiente (PowerShell):
+
+```powershell
+$env:DATABRICKS_CONFIG_PROFILE = "jornada"
+$env:NEXUM_CATALOG = "workspace"
+$env:NEXUM_SCHEMA = "dev"
+```
+
+(Git Bash: `export DATABRICKS_CONFIG_PROFILE=jornada` etc.) A
+autenticação vem do perfil do Databricks CLI — nenhum token ou segredo
+fica em arquivo do repositório.
+
+## 11. Execução do pipeline
+
+```bash
+databricks bundle validate -t dev --profile jornada
+databricks bundle deploy -t dev --profile jornada
+databricks bundle run nexum_sales_assistant_job -t dev --profile jornada
+```
+
+O job orquestrador executa `bootstrap_runtime` (garante as tabelas
+runtime) e `refresh_pipeline` (Bronze → Silver → Gold), com trigger
+diário pausado no dev.
+
+## 12. Execução do chat
+
+```bash
+uv run streamlit run app/chat.py
+```
+
+Cada execução do app usa uma sessão nova (`SES-CHAT-*`, exibida na
+barra lateral). Alternativa sem interface: o job de demonstração
+executa a jornada completa com LLM real:
+
+```bash
+databricks bundle run nexum_sales_assistant_agent_job -t dev --profile jornada
+```
+
+## 13. Roteiro de demonstração
+
+1. **Busca**: "Preciso monitorar 20 máquinas com temperatura entre
+   0 °C e 150 °C. Que sensores vocês têm?" → `search_products`;
+2. **Estoque**: "O sensor PRD-TEMP-001 parece adequado. Tem 20
+   unidades disponíveis?" → `check_inventory`;
+3. **Cotação** (gate de confirmação): "Quero uma cotação para a
+   empresa C0001 com 20 unidades do produto PRD-TEMP-001." → botão
+   "✅ Confirmar" → `create_quote`;
+4. **Bloqueio**: "Quero simular o pagamento da cotação com sucesso."
+   → confirmar → a ferramenta rejeita com `approval_required` (nada é
+   alterado);
+5. **Aprovação humana**: "Encaminhe a cotação para aprovação humana."
+   → confirmar → botões "✅ Aprovar (vendor-001)" / "❌ Rejeitar" →
+   `request_human_approval`;
+6. **Pagamento simulado**: repetir o passo 4 → agora `simulated_success`
+   (com o aviso de simulação);
+7. **Documento simulado**: "Quero o documento simulado da cotação." →
+   confirmar → `generate_document`;
+8. Rodar `bundle run nexum_sales_assistant_job` e abrir o dashboard
+   **Nexum Sales Metrics** (funil, operação e custo reais).
+
+## 14. Testes
 
 ```bash
 uv run pytest
 ```
 
-### Verificar estilo do código
+175+ testes unitários em memória (ferramentas, Silver/Gold, agente com
+LLM fake determinístico, métricas, chat) — sem API externa, segredo ou
+custo de LLM. Estilo: `uv run ruff check .`
 
-```bash
-uv run ruff check .
-```
+## 15. Segurança
 
-### Validar o bundle
+- sem pagamento real nem integração financeira;
+- sem documento fiscal; todo documento tem `has_fiscal_value = false`;
+- sem tokens/segredos em arquivos versionados (`.env`, `.env.*`,
+  `.claude/settings*.json` no `.gitignore`);
+- o LLM não executa SQL arbitrário nem acessa tabelas diretamente —
+  somente pelas seis ferramentas;
+- prompt injection e pedidos de segredos são recusados e registrados;
+- auditoria de cada ferramenta e de cada turno do agente.
 
-```bash
-databricks bundle validate --profile grid_intelligence
-```
+## 16. Limitações
 
----
+- dados sintéticos (ver §17) — não representam catálogo industrial
+  real;
+- chat local com uma sessão por execução, sem autenticação de usuário;
+- custo financeiro estimado do LLM não é retornado pela FM API
+  (registrado como 0/NULL);
+- respostas textuais do modelo podem variar entre execuções (as
+  garantias do contrato estão nas ferramentas e nos guardrails, não no
+  texto do modelo);
+- primeira mensagem do chat pode levar alguns segundos (cold start do
+  serverless); sessões Connect expiram por inatividade e são
+  recuperadas automaticamente.
 
-## Deploy
+## 17. Dados sintéticos
 
-### Desenvolvimento
+Todos os dados são sintéticos e identificados como demonstração:
+catálogo pequeno e controlado cobrindo `temperature`, `pressure` e
+`vibration` (ADR-005), com casos de produto compatível, incompatível,
+inativo, estoque suficiente/insuficiente/ausente/desatualizado e
+registros inválidos de propósito (qualidade de dados). Nenhuma empresa,
+produto ou transação real.
 
-```bash
-databricks bundle deploy \
-  --profile grid_intelligence \
-  --target dev
-```
+## 18. Pagamentos e documentos simulados
 
-### Produção
-
-O deploy em produção será realizado somente após a validação do MVP:
-
-```bash
-databricks bundle deploy \
-  --profile grid_intelligence \
-  --target prod
-```
-
----
-
-## Critérios de aceite
-
-O projeto será considerado funcional quando:
-
-- o bundle passar no `databricks bundle validate`;
-- os arquivos de empresas e funcionários forem ingeridos;
-- as tabelas Bronze forem criadas;
-- os tipos de dados forem padronizados;
-- as duplicidades forem tratadas;
-- o relacionamento entre empresas e funcionários for validado;
-- as tabelas Silver forem criadas;
-- as tabelas Gold forem criadas;
-- o score de prioridade for calculado;
-- os contatos recomendados forem identificados;
-- os testes de qualidade forem executados;
-- o pipeline puder ser reproduzido por CLI;
-- a documentação estiver atualizada.
+`simulate_payment` registra exclusivamente simulações
+(`simulated = true`) e `generate_document` produz um documento marcado
+como **sem validade fiscal, financeira ou contábil** — não há nota
+fiscal, dinheiro real ou efeito contábil em nenhum ponto do fluxo.
 
 ---
 
-## Status atual
+## Documentação de referência
 
-**Etapas 00 (setup) e 01 (Bronze) concluídas no código — Silver, Gold e score serão implementadas nas próximas etapas.**
+```text
+docs/discovery.md      # Descoberta do problema e escopo
+docs/prd.md            # Requisitos do produto
+docs/data_model.md     # Modelo lógico de dados
+docs/agent_harness.md  # Uso de agentes no desenvolvimento
+docs/specs/            # Contratos das ferramentas e do agente
+docs/adrs/             # Decisões arquiteturais registradas
+```
 
-Concluído:
+## Estrutura do projeto
 
-- bundle Databricks criado;
-- autenticação da CLI configurada;
-- target `dev` validado;
-- dataset adicionado à pasta `fixtures`;
-- estrutura inicial de documentação criada;
-- PRD em preparação;
-- prompts de implementação em preparação;
-- exemplos de táxi do template removidos;
-- job ajustado para executar somente a pipeline ETL;
-- estrutura do bundle preparada para as próximas etapas;
-- camada Bronze implementada (`bronze_companies` e `bronze_employees`);
-- volume gerenciado `raw_data` declarado no bundle (criado no deploy).
-
-Próximas etapas:
-
-1. publicar o bundle no target `dev` e subir os CSVs para o volume `raw_data`;
-2. executar a pipeline e validar a ingestão (734 empresas e 5.234 funcionários);
-3. implementar Silver e Gold;
-4. implementar o score de prioridade e as recomendações;
-5. executar a validação final.
-
----
+```text
+nexum_sales_assistant/
+├── app/                # Chat local Streamlit
+├── docs/               # Fonte de verdade do produto
+├── fixtures/           # Dados sintéticos de entrada
+├── prompts/            # Prompts de implementação por etapa
+├── resources/          # Recursos Databricks (jobs, pipeline, dashboard, volume)
+├── src/
+│   ├── nexum_sales_assistant/            # Ferramentas, agente, métricas, chat
+│   └── nexum_sales_assistant_etl/        # Transformações Bronze → Silver → Gold
+├── tests/              # Testes automatizados
+├── databricks.yml      # Configuração principal do bundle
+└── pyproject.toml      # Configuração do projeto Python
+```
 
 ## Licença e origem dos dados
 
-Este projeto é destinado a fins educacionais e de portfólio.
-
-Os dados utilizados são sintéticos. A licença e a referência original do dataset devem ser mantidas conforme as condições de distribuição da fonte utilizada.
+Projeto destinado a fins educacionais e de portfólio. Os dados
+utilizados são sintéticos e não representam empresas, produtos ou
+transações reais.

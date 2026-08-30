@@ -1,0 +1,35 @@
+# Pipeline principal do Nexum Sales Assistant.
+#
+# Etapas (conforme prompts/):
+#   - 01-bronze: dados sintéticos e ingestão Bronze via volume gerenciado
+#     raw_data
+#   - 02-silver: padronização e validação
+#   - 03-gold:   Golds de consumo do agente
+#
+# As transformações serão adicionadas na etapa de src/
+# (src/nexum_sales_assistant_etl/).
+
+resources:
+  pipelines:
+    nexum_sales_assistant_etl:
+      name: nexum_sales_assistant_etl
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      root_path: "../src/nexum_sales_assistant_etl"
+
+      configuration:
+        # Caminho do volume gerenciado com os dados sintéticos de fixtures/.
+        # Resolvido pelo bundle a partir do recurso resources.volumes.raw_data
+        # (catalog/schema nunca fixados no código).
+        source_base_path: ${resources.volumes.raw_data.volume_path}
+
+      libraries:
+        - glob:
+            include: ../src/nexum_sales_assistant_etl/transformations/**
+
+      environment:
+        dependencies:
+          # We include every dependency defined by pyproject.toml by defining an editable environment
+          # that points to the folder where pyproject.toml is deployed.
+          - --editable ${workspace.file_path}

@@ -1,10 +1,15 @@
-# Etapa 01 — Ingestão Bronze
+# Etapa 01 — Dados sintéticos e ingestão Bronze
 
 ## Objetivo
 
-Implementar a primeira camada da arquitetura medalhão do projeto B2B Sales Intelligence.
+Criar os dados sintéticos controlados do Nexum Sales Assistant e
+implementar a camada Bronze, que deve ingerir os arquivos de origem
+preservando os dados e adicionando metadados técnicos de
+rastreabilidade.
 
-A camada Bronze deve ingerir os arquivos de empresas e funcionários preservando os dados de origem e adicionando metadados técnicos de rastreabilidade.
+A Bronze não aplica regras de negócio, não calcula compatibilidade ou
+recomendação e não é consultada diretamente pelas ferramentas
+comerciais (`docs/data_model.md` §5.1; `docs/agent_harness.md` §13).
 
 ## Documentos obrigatórios
 
@@ -12,144 +17,156 @@ Antes de alterar qualquer arquivo, leia:
 
 - `AGENTS.md`;
 - `CLAUDE.md`;
-- `.llm/prd.md`;
+- `docs/prd.md`;
+- `docs/data_model.md` (§5.1, §17);
+- `docs/agent_harness.md` (§13, §14);
+- `docs/adrs/ADR-002-silver-companies-como-fonte-de-cliente.md`;
+- `docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md`;
+- `docs/specs/search_products.md`;
+- `docs/specs/check_inventory.md`;
 - `README.md`;
 - `databricks.yml`;
-- `resources/b2b_sales_intelligence_etl.pipeline.yml`;
-- `prompts/01-bronze.md`;
-- o conteúdo dos CSVs em `fixtures/`.
+- `resources/*.yml`.
 
-Conforme determinado em `AGENTS.md`, leia primeiro a skill `databricks-core`, caso ela esteja disponível.
+Conforme `AGENTS.md`, leia também as skills Databricks aplicáveis
+(`databricks-core` e a skill de produto correspondente), quando
+disponíveis.
+
+## Dados sintéticos
+
+Os dados sintéticos já existem em `fixtures/` (`companies.csv`,
+`products.csv` e `inventory.csv`). Antes da ingestão, validá-los contra
+`docs/data_model.md` §17 e
+`docs/adrs/ADR-005-catalogo-pequeno-no-mvp.md` e completá-los se algum
+caso obrigatório estiver ausente:
+
+- catálogo pequeno cobrindo as categorias `temperature`, `pressure` e
+  `vibration`;
+- produtos ativos e inativos;
+- casos compatíveis e incompatíveis por faixa, categoria e unidade;
+- estoque no depósito padrão `WH-MAIN`, com casos de estoque
+  suficiente, insuficiente, ausente e desatualizado (limite de 7 dias,
+  conforme `docs/specs/check_inventory.md` §13);
+- `currency = BRL`;
+- os casos obrigatórios de demonstração listados no ADR-005.
+
+Os dados devem ser identificados como sintéticos e de demonstração
+(`docs/data_model.md` §17). Não apresentar dados sintéticos como
+registros reais (`docs/agent_harness.md` §14).
 
 ## Dados de entrada
 
-Arquivos:
+Arquivos de origem (já existentes):
 
 ```text
-fixtures/companies_clean.csv
-fixtures/employees_clean.csv
+fixtures/companies.csv
+fixtures/products.csv
+fixtures/inventory.csv
 ```
 
-Entidades:
+Eles devem ser publicados no volume gerenciado `raw_data` do bundle,
+reutilizando o padrão já existente em `resources/raw_data.volume.yml`.
 
-- empresas, identificadas por `Company_ID`;
-- funcionários, identificados por `Employee_ID`;
-- relacionamento por `Company_ID`.
-
-Não modificar os arquivos CSV.
+Não fixar nomes de catalog ou schema no código. Não modificar os
+arquivos de origem sem aprovação.
 
 ## Tabelas de saída
 
-Criar as tabelas Bronze:
+Implementar os datasets Bronze previstos em `docs/data_model.md` §5.1
+que possuam arquivos de origem.
 
-```text
-bronze_companies
-bronze_employees
-```
+Observações:
 
-As tabelas devem utilizar o catalog e schema definidos pelas variáveis do bundle:
-
-```text
-${var.catalog}
-${var.schema}
-```
-
-Não fixar o nome do catalog ou schema no código.
+- `bronze_companies` reutiliza a base de empresas existente, mantida
+  como contexto de clientes B2B previamente cadastrados
+  (`docs/discovery.md`; ADR-002);
+- as entidades transacionais (`quotes`, `quote_items`, `approvals`,
+  `payments`, `documents`, `conversation_events`) podem possuir dados
+  semente sintéticos de demonstração (`docs/data_model.md` §17); a
+  ingestão Bronze desses datasets segue `docs/data_model.md` §5.1
+  quando existirem arquivos de origem correspondentes;
+- a criação dessas entidades em tempo de execução pelas ferramentas
+  pertence à etapa 04 (`04-tools.md`);
+- qualquer conflito entre os documentos deve ser sinalizado antes de
+  implementar (`docs/agent_harness.md` §4).
 
 ## Requisitos da ingestão
 
 A implementação deve:
 
-1. ler os dois arquivos CSV;
+1. ler os arquivos de origem;
 2. preservar as colunas de origem;
-3. evitar alterações de negócio nesta etapa;
+3. não aplicar regras de negócio nesta camada;
 4. adicionar as colunas técnicas:
    - `_ingestion_timestamp`;
    - `_source_file`;
    - `_source_system`;
-5. permitir identificar qual arquivo originou cada registro;
-6. usar tipos de leitura adequados;
-7. documentar se a leitura utiliza inferência de schema ou schema explícito;
-8. tratar corretamente o cabeçalho dos CSVs;
-9. não remover duplicidades nesta etapa;
-10. não aplicar regras de score;
-11. não criar tabelas Silver ou Gold.
-
-## Disponibilidade dos arquivos
-
-Os CSVs estão localizados inicialmente no repositório local, mas a pipeline será executada no Databricks.
-
-Antes de implementar a leitura, explique:
-
-- qual caminho a pipeline usará durante a execução;
-- como os arquivos locais serão disponibilizados no workspace;
-- se o caminho é compatível com Databricks Free Edition;
-- se será necessário alterar o bundle para publicar os arquivos;
-- se será necessário executar um upload separado.
-
-Não assumir que um caminho local do Windows estará disponível no Databricks.
-
-Se a estratégia de disponibilização dos arquivos não estiver clara, não implementar uma solução frágil. Apresente as alternativas e aguarde aprovação.
+5. documentar se a leitura utiliza inferência de schema ou schema
+   explícito;
+6. não remover duplicidades nesta etapa;
+7. não implementar Silver, Gold ou ferramentas.
 
 ## Implementação
 
-Preferir a abordagem declarativa já utilizada pela pipeline existente, mantendo:
+Preferir a abordagem declarativa já utilizada pelo bundle:
 
 - serverless compute;
-- `catalog: ${var.catalog}`;
-- `schema: ${var.schema}`;
-- estrutura de recursos do bundle;
-- transformações em Python quando apropriado.
+- `catalog: ${var.catalog}` e `schema: ${var.schema}`;
+- transformações em Python, um dataset por arquivo;
+- caminho dos arquivos parametrizado (padrão `source_base_path`).
 
 Não adicionar:
 
-- Supabase;
-- JDBC;
-- Fivetran;
-- AWS;
-- Azure;
-- GCP;
 - machine learning;
-- dependências externas desnecessárias.
+- integrações externas;
+- dependências desnecessárias.
 
 ## Arquivos permitidos
 
 O agente pode propor alterações ou criações nos seguintes locais:
 
-- `resources/b2b_sales_intelligence_etl.pipeline.yml`;
-- `src/b2b_sales_intelligence_etl/`;
+- `resources/*.yml`;
+- `src/nexum_sales_assistant_etl/`;
+- `fixtures/` (dados sintéticos);
 - `tests/`;
 - `README.md`;
-- `pyproject.toml`, somente se uma dependência for realmente necessária;
-- `fixtures/`, somente para leitura, nunca para modificar os CSVs.
+- `pyproject.toml`, somente se uma dependência for realmente necessária.
 
 Não remover arquivos sem explicar o motivo.
+
+## Regras de segurança
+
+- Não modificar `docs/` sem aprovação.
+- Não corrigir silenciosamente dados inconsistentes
+  (`docs/agent_harness.md` §14).
+- Não tratar dados sintéticos como dados reais.
+- Não fazer deploy.
+- Não fazer commit automaticamente.
 
 ## Processo obrigatório
 
 Antes de modificar qualquer arquivo:
 
-1. mostrar os nomes e colunas dos CSVs;
-2. explicar a estratégia de disponibilização dos arquivos;
-3. apresentar a arquitetura Bronze proposta;
-4. listar arquivos a criar;
-5. listar arquivos a alterar;
-6. listar arquivos a remover, se houver;
-7. explicar os riscos;
-8. aguardar aprovação explícita.
+1. apresentar o plano dos dados sintéticos (entidades, volumes e casos
+   de teste cobertos);
+2. explicar a estratégia de disponibilização dos arquivos no workspace;
+3. listar as tabelas Bronze que serão criadas e suas fontes;
+4. listar arquivos a criar, alterar e remover;
+5. explicar os riscos;
+6. aguardar aprovação explícita.
 
 Depois da aprovação:
 
-1. implementar somente a camada Bronze;
+1. implementar somente a camada Bronze e os dados sintéticos;
 2. não implementar Silver;
 3. não implementar Gold;
-4. não criar score;
+4. não implementar ferramentas;
 5. não fazer deploy;
 6. executar testes locais possíveis;
 7. executar:
 
 ```bash
-databricks bundle validate --profile grid_intelligence
+databricks bundle validate --profile <perfil>
 ```
 
 8. mostrar o diff produzido;
@@ -158,14 +175,13 @@ databricks bundle validate --profile grid_intelligence
 
 ## Critérios de aceite
 
-A etapa Bronze estará concluída quando:
+A etapa estará concluída quando:
 
-- a pipeline estiver configurada para ingerir os dois arquivos;
-- as tabelas `bronze_companies` e `bronze_employees` estiverem definidas;
-- as colunas técnicas estiverem presentes;
+- os dados sintéticos cobrirem os casos exigidos por
+  `docs/data_model.md` §17 e pelo ADR-005;
+- as tabelas Bronze previstas tiverem sido definidas com as colunas
+  técnicas de rastreabilidade;
 - os dados de origem forem preservados;
-- os CSVs não forem alterados;
-- não houver lógica Silver, Gold ou de score;
+- não houver lógica Silver, Gold ou de ferramentas;
 - o bundle passar na validação;
-- o README documentar a camada Bronze;
-- a estratégia de disponibilização dos arquivos estiver explicitamente documentada.
+- o README documentar a camada Bronze e a origem dos dados sintéticos.
