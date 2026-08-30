@@ -107,10 +107,12 @@ TOOL_REGISTRY = {
     "request_human_approval": {
         "description": (
             "Operação 'request': move a cotação de draft para pending_approval "
-            "e cria a solicitação de aprovação humana. Operação 'resolve': "
-            "registra a decisão de um aprovador humano autorizado "
-            "(approved/rejected). O agente nunca decide a aprovação por conta "
-            "própria."
+            "e cria a solicitação de aprovação humana (usa quote_id). "
+            "Operação 'resolve': registra a decisão de um aprovador humano "
+            "autorizado (approved/rejected); exige o approval_id exato "
+            "retornado pela operação request (formato APR-XXXX) e "
+            "resolved_by com o identificador do aprovador. O agente nunca "
+            "decide a aprovação por conta própria."
         ),
         "parameters": _schema(
             {

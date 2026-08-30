@@ -137,11 +137,22 @@ def main():
         _print_turn("assistant", outcome["reply"], outcome["tool_results"])
 
     # 5. Decisão do aprovador humano (vendor-001) — repassada pelo agente.
+    # O approval_id vem da solicitação criada no turno anterior.
+    approval_id = None
+    for item in outcome["tool_results"]:
+        if item["name"] == "request_human_approval" and item["result"].get("approval_id"):
+            approval_id = item["result"]["approval_id"]
+    if not approval_id:
+        print("\n# A solicitação de aprovação não foi criada; encerrando a "
+              "demonstração para inspeção humana.")
+        return
     approval_message = (
-        f"Sou o aprovador vendor-001. Aprovo a solicitação da cotação {quote_id}."
+        f"Sou o aprovador vendor-001. Aprovo a solicitação {approval_id} "
+        f"da cotação {quote_id}."
     )
     outcome = agent.process_message(session_id, approval_message, actor="approver")
-    _print_turn("approver", f"Aprovo a solicitação da cotação {quote_id} (vendor-001).")
+    _print_turn("approver", f"Aprovo a solicitação {approval_id} da cotação {quote_id} "
+                "(vendor-001).")
     _print_turn("assistant", outcome["reply"], outcome["tool_results"])
 
     # 6. Pagamento simulado após aprovação → gate de confirmação.
