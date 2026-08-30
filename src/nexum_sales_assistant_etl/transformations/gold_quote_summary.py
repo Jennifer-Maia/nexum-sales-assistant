@@ -137,16 +137,34 @@ def build_rows(quotes, items, approvals, companies):
     return rows
 
 
+# Schemas das tabelas runtime (mesmos do schema_bootstrap do agente —
+# ADR-007). Duplicados aqui para o pacote ETL permanecer autocontido
+# (o ambiente da pipeline não instala o pacote do agente).
+_RUNTIME_SCHEMAS = {
+    "quotes": (
+        "quote_id STRING, customer_id STRING, session_id STRING, status STRING, "
+        "total_amount DECIMAL(10,2), currency STRING, created_at TIMESTAMP, "
+        "approved_at TIMESTAMP, approved_by STRING, rejection_reason STRING, "
+        "payment_status STRING, document_id STRING"
+    ),
+    "quote_items": (
+        "quote_item_id STRING, quote_id STRING, product_id STRING, "
+        "quantity INT, unit_price DECIMAL(10,2), subtotal DECIMAL(10,2)"
+    ),
+    "approvals": (
+        "approval_id STRING, quote_id STRING, requested_by STRING, resolved_by STRING, "
+        "status STRING, reason STRING, created_at TIMESTAMP, resolved_at TIMESTAMP"
+    ),
+}
+
+
 def _ensure_runtime_tables():
     """Garante as tabelas runtime lidas por esta Gold (idempotente).
 
-    Mesmos schemas do schema_bootstrap do agente (ADR-007); a Gold lê
-    SEMPRE as tabelas para preservar a linhagem no DLT.
+    A Gold lê SEMPRE as tabelas para preservar a linhagem no DLT.
     """
-    from nexum_sales_assistant.agent.schema_bootstrap import RUNTIME_SCHEMAS
-
-    for table in ("quotes", "quote_items", "approvals"):
-        spark.sql(f"CREATE TABLE IF NOT EXISTS {table} ({RUNTIME_SCHEMAS[table]})")
+    for table, schema in _RUNTIME_SCHEMAS.items():
+        spark.sql(f"CREATE TABLE IF NOT EXISTS {table} ({schema})")
 
 
 @_materialized_view(

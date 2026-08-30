@@ -132,15 +132,20 @@ def _audit_pandas(iterator):
         yield pd.DataFrame(build_rows(records), columns=COLUMNS)
 
 
+# Schema de conversation_events (mesmo do schema_bootstrap do agente —
+# ADR-007). Duplicado aqui para o pacote ETL permanecer autocontido.
+_CONVERSATION_EVENTS_SCHEMA = (
+    "event_id STRING, session_id STRING, event_type STRING, actor STRING, "
+    "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
+)
+
+
 @_materialized_view(
     comment="Gold: auditoria da conversa e das ferramentas por sessão (docs/data_model.md §17)",
 )
 def gold_conversation_audit():
-    from nexum_sales_assistant.agent.schema_bootstrap import RUNTIME_SCHEMAS
-
     spark.sql(
-        f"CREATE TABLE IF NOT EXISTS conversation_events "
-        f"({RUNTIME_SCHEMAS['conversation_events']})"
+        f"CREATE TABLE IF NOT EXISTS conversation_events ({_CONVERSATION_EVENTS_SCHEMA})"
     )
     events = spark.read.table("conversation_events").coalesce(1)
     return events.mapInPandas(_audit_pandas, schema=SCHEMA)
