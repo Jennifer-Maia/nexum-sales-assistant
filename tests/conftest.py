@@ -243,7 +243,7 @@ class FakeSpark:
 
 @pytest.fixture
 def fake_spark(monkeypatch):
-    """Substitui `_spark` das seis ferramentas por um Spark fake em memória."""
+    """Substitui `_spark` das seis ferramentas e do agente por um Spark fake em memória."""
     import importlib
 
     fake = FakeSpark()
@@ -254,6 +254,7 @@ def fake_spark(monkeypatch):
         "nexum_sales_assistant.tools.request_human_approval",
         "nexum_sales_assistant.tools.simulate_payment",
         "nexum_sales_assistant.tools.generate_document",
+        "nexum_sales_assistant.agent.agent",
     ]
     for module_name in module_names:
         module = importlib.import_module(module_name)
