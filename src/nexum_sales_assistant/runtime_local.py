@@ -70,6 +70,33 @@ def get_spark():
         return DatabricksSession.builder.getOrCreate()
 
 
+def is_expired_session_error(exc):
+    """Detecta expiração da sessão Connect por inatividade.
+
+    O compute serverless encerra sessões ociosas; o erro típico é
+    `session_id is no longer usable (INACTIVITY_TIMEOUT)`. A UI do
+    chat usa esta checagem para recriar a sessão e repetir.
+    """
+    text = str(exc)
+    return "INACTIVITY_TIMEOUT" in text or "session_id is no longer usable" in text
+
+
+def reset_spark():
+    """Encerra a sessão Connect atual para forçar uma nova.
+
+    A próxima chamada a `get_spark()` (ou ao `getOrCreate()` das
+    ferramentas) cria uma sessão nova com outro session_id, o que
+    reanexa o compute serverless.
+    """
+    from pyspark.sql import SparkSession
+
+    session = SparkSession.getActiveSession() or SparkSession.builder.getOrCreate()
+    try:
+        session.stop()
+    except Exception:
+        pass
+
+
 def ensure_environment(spark):
     """Valida catalog/schema e garante as tabelas runtime.
 

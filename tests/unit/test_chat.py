@@ -15,6 +15,7 @@ from nexum_sales_assistant.chat import (
     pending_confirmation_label,
     summarize_tool_result,
 )
+from nexum_sales_assistant.runtime_local import is_expired_session_error
 from nexum_sales_assistant.tools._table_ref import qualified_table
 
 
@@ -106,6 +107,20 @@ class TestApproverMessage:
 class TestPendingConfirmationLabel:
     def test_label_names_tool(self):
         assert "simulate_payment" in pending_confirmation_label("simulate_payment")
+
+
+class TestSessionExpiration:
+    def test_inactivity_timeout_detected(self):
+        assert is_expired_session_error(
+            RuntimeError("session_id is no longer usable (INACTIVITY_TIMEOUT)")
+        )
+        assert is_expired_session_error(
+            RuntimeError("BAD_REQUEST: session_id is no longer usable. reason=INACTIVITY_TIMEOUT")
+        )
+
+    def test_other_errors_not_treated_as_expiration(self):
+        assert not is_expired_session_error(RuntimeError("table not found"))
+        assert not is_expired_session_error(ValueError("validation failed"))
 
 
 class TestChatFlowIntegration:

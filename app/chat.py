@@ -28,7 +28,12 @@ from nexum_sales_assistant.chat import (
     pending_confirmation_label,
     summarize_tool_result,
 )
-from nexum_sales_assistant.runtime_local import ensure_environment, get_spark
+from nexum_sales_assistant.runtime_local import (
+    ensure_environment,
+    get_spark,
+    is_expired_session_error,
+    reset_spark,
+)
 
 st.set_page_config(page_title="Nexum Sales Assistant", page_icon="🤝")
 
@@ -43,9 +48,26 @@ def get_agent():
     return Agent(), catalog, schema
 
 
+def _run_with_session_retry(fn):
+    """Executa fn; se a sessão Connect expirou por inatividade, recria a
+    sessão Spark e o agente e tenta mais uma vez (limitação conhecida
+    do compute serverless, README)."""
+    for attempt in (1, 2):
+        try:
+            return fn()
+        except Exception as exc:
+            if not is_expired_session_error(exc) or attempt == 2:
+                raise
+            reset_spark()
+            st.session_state.agent = Agent()
+            st.session_state.agent.start_session(st.session_state.session_id)
+
+
 def _send(session_id, message, actor="customer"):
     """Envia a mensagem ao agente e registra o turno no estado."""
-    outcome = st.session_state.agent.process_message(session_id, message, actor=actor)
+    outcome = _run_with_session_retry(
+        lambda: st.session_state.agent.process_message(session_id, message, actor=actor)
+    )
     st.session_state.messages.append(
         {
             "actor": actor,
@@ -91,7 +113,9 @@ if "agent" not in st.session_state:
     st.session_state.session_id = "SES-CHAT-" + uuid.uuid4().hex[:6].upper()
     st.session_state.messages = []
     st.session_state.approval = None
-    st.session_state.agent.start_session(st.session_state.session_id)
+    _run_with_session_retry(
+        lambda: st.session_state.agent.start_session(st.session_state.session_id)
+    )
 
 st.title("Nexum Sales Assistant")
 st.caption("Chat local de demonstração — dados reais do Databricks, pagamento simulado.")
