@@ -1,4 +1,13 @@
-# Job principal do Nexum Sales Assistant: apenas dispara a pipeline ETL.
+# Job orquestrador central do Nexum Sales Assistant.
+#
+# Hoje contém uma única task: atualizar a pipeline ETL
+# (Bronze → Silver → Gold). A task do agente será adicionada em uma
+# etapa futura, quando o runtime do agente estiver definido
+# (docs/data_model.md §18).
+#
+# O nome implantado no target dev é
+# "[dev jen_maia] nexum_sales_assistant_job" (prefixo padrão do
+# mode: development do bundle).
 
 resources:
   jobs:
@@ -6,12 +15,16 @@ resources:
       name: nexum_sales_assistant_job
 
       trigger:
-        # Roda o job diariamente; no target dev (mode: development) o gatilho fica pausado.
+        # Roda o job diariamente; no target dev (mode: development) o
+        # gatilho fica pausado. O pause_status PAUSED torna isso
+        # explícito também fora do modo de desenvolvimento.
         periodic:
           interval: 1
           unit: DAYS
+        pause_status: PAUSED
 
       tasks:
         - task_key: refresh_pipeline
+          description: "Orquestração ETL: atualiza a pipeline Bronze → Silver → Gold"
           pipeline_task:
             pipeline_id: ${resources.pipelines.nexum_sales_assistant_etl.id}
