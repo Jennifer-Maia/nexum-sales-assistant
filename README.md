@@ -298,6 +298,94 @@ nexum_sales_assistant/
 
 ---
 
+## Chat local (demonstração do agente)
+
+Interface de chat simples (Streamlit) que reusa o agente de IA, as seis
+ferramentas e as mesmas tabelas do Databricks (o dashboard Lakeview
+continua funcionando sem alteração). A conexão usa **Databricks
+Connect** com compute **serverless** do workspace — nenhum token ou
+segredo fica em arquivo; a autenticação vem do perfil do Databricks CLI.
+
+### Arquitetura local
+
+```text
+Chat Streamlit (app/chat.py)
+        ↓
+Databricks Connect (sessão Spark serverless)
+        ↓
+Agente (src/nexum_sales_assistant/agent/)
+        ↓
+Seis ferramentas determinísticas
+        ↓
+Tabelas em workspace.dev (runtime + Bronze/Silver/Gold)
+        ↓
+Dashboard Lakeview (Nexum Sales Metrics)
+```
+
+### Instalar dependências
+
+```bash
+uv sync --dev
+```
+
+### Configurar a conexão (sem expor segredos)
+
+Use o perfil já configurado no Databricks CLI (`jornada`) e as variáveis
+de ambiente do projeto:
+
+```bash
+# PowerShell
+$env:DATABRICKS_CONFIG_PROFILE = "jornada"
+$env:NEXUM_CATALOG = "workspace"
+$env:NEXUM_SCHEMA = "dev"
+
+# Git Bash
+export DATABRICKS_CONFIG_PROFILE=jornada
+export NEXUM_CATALOG=workspace
+export NEXUM_SCHEMA=dev
+```
+
+O endpoint do modelo já tem padrão documentado (`model_endpoint` do
+bundle); para trocar, defina `NEXUM_MODEL_ENDPOINT`.
+
+### Rodar o chat
+
+```bash
+uv run streamlit run app/chat.py
+```
+
+Abra a URL exibida no navegador. Cada execução do app usa uma sessão
+nova (`SES-CHAT-XXXXXX`), exibida na barra lateral.
+
+### Roteiro sugerido de demonstração
+
+1. **Busca**: "Preciso monitorar 20 máquinas com temperatura entre
+   0 °C e 150 °C. Que sensores vocês têm?" → `search_products`;
+2. **Estoque**: "O sensor PRD-TEMP-001 parece adequado. Tem 20
+   unidades disponíveis?" → `check_inventory`;
+3. **Cotação** (gate de confirmação): "Quero uma cotação para a
+   empresa C0001 com 20 unidades do produto PRD-TEMP-001." → o chat
+   pede confirmação → botão "✅ Confirmar ação pendente" →
+   `create_quote`;
+4. **Aprovação humana**: "Encaminhe a cotação para aprovação humana."
+   → confirmar → botões "✅ Aprovar (vendor-001)" / "❌ Rejeitar" →
+   `request_human_approval`;
+5. **Pagamento simulado**: "Quero simular o pagamento da cotação com
+   sucesso." → confirmar → `simulate_payment` (bloqueado sem
+   aprovação — demonstre o bloqueio antes de aprovar);
+6. **Documento simulado**: "Quero o documento simulado da cotação."
+   → confirmar → `generate_document`;
+7. Depois, abra o dashboard **Nexum Sales Metrics** para mostrar o
+   funil, as métricas do agente e o custo reais.
+
+### Limitações conhecidas do chat local
+
+- uma sessão por execução do app (sem multi-sessão);
+- o estado de confirmação pendente vive na execução do app;
+- sem autenticação de usuário (demonstração local);
+- primeira mensagem pode levar alguns segundos (cold start do
+  serverless).
+
 ## Desenvolvimento local
 
 ### Pré-requisitos
