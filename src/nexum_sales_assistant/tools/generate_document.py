@@ -14,6 +14,7 @@ em etapa posterior (docs/data_model.md §18).
 
 import uuid
 from datetime import datetime, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 ALLOWED_FORMATS = {"html", "txt"}
 DEFAULT_FORMAT = "html"
@@ -133,7 +134,7 @@ def run(inputs):
     spark = _spark()
 
     try:
-        quote_rows = spark.table("quotes").filter(f"quote_id = '{quote_id}'").collect()
+        quote_rows = spark.table(qualified_table("quotes")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quotes is not available: {exc}", session_id, quote_id)
     if not quote_rows:
@@ -150,7 +151,7 @@ def run(inputs):
         return result
 
     try:
-        item_count = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").count()
+        item_count = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").count()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id, quote_id)
     if item_count == 0:
@@ -165,7 +166,7 @@ def run(inputs):
 
     # Idempotência — SPEC §9.
     try:
-        document_rows = spark.table("documents").filter(
+        document_rows = spark.table(qualified_table("documents")).filter(
             f"quote_id = '{quote_id}'"
         ).collect()
     except Exception as exc:
@@ -183,7 +184,7 @@ def run(inputs):
 
     # Pagamento simulado bem-sucedido obrigatório — SPEC §7.
     try:
-        payment_rows = spark.table("payments").filter(
+        payment_rows = spark.table(qualified_table("payments")).filter(
             f"quote_id = '{quote_id}'"
         ).collect()
     except Exception as exc:
@@ -250,11 +251,11 @@ def run(inputs):
 
     # Dados do documento — SPEC §10.
     try:
-        item_rows = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").collect()
+        item_rows = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id, quote_id)
     try:
-        catalog_rows = spark.table("gold_product_catalog").collect()
+        catalog_rows = spark.table(qualified_table("gold_product_catalog")).collect()
     except Exception as exc:
         return _fail_data(f"gold_product_catalog is not available: {exc}", session_id, quote_id)
     catalog = {r.asDict().get("product_id"): r.asDict() for r in catalog_rows}
@@ -297,10 +298,10 @@ def run(inputs):
             "document_id STRING, quote_id STRING, document_type STRING, "
             "has_fiscal_value BOOLEAN, content_reference STRING, created_at TIMESTAMP"
         ),
-    ).write.mode("append").saveAsTable("documents")
+    ).write.mode("append").saveAsTable(qualified_table("documents"))
     spark.sql(
-        "UPDATE quotes SET status = 'completed', document_id = '{}' "
-        "WHERE quote_id = '{}'".format(document_id, quote_id)
+        "UPDATE {} SET status = 'completed', document_id = '{}' "
+        "WHERE quote_id = '{}'".format(qualified_table("quotes"), document_id, quote_id)
     )
 
     result = {
@@ -345,7 +346,7 @@ def _validate(inputs):
 def _company_name(spark, customer_id):
     """Nome da empresa cliente em `silver_companies`, quando disponível (SPEC §10)."""
     try:
-        rows = spark.table("silver_companies").filter(
+        rows = spark.table(qualified_table("silver_companies")).filter(
             f"company_id = '{customer_id}'"
         ).collect()
     except Exception:
@@ -426,7 +427,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):

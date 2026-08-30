@@ -12,6 +12,7 @@ coluna na tabela `quotes`.
 
 import uuid
 from datetime import datetime, timedelta, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 MVP_CURRENCY = "BRL"
 DEFAULT_VALIDITY_DAYS = 7
@@ -112,7 +113,7 @@ def run(inputs):
 
     # Validação do cliente — SPEC §5 (ADR-002).
     try:
-        customer_rows = spark.table("silver_companies").filter(
+        customer_rows = spark.table(qualified_table("silver_companies")).filter(
             f"company_id = '{customer_id}'"
         ).collect()
     except Exception as exc:
@@ -129,7 +130,7 @@ def run(inputs):
 
     # Produtos e preços do catálogo — SPEC §6 e §8.
     try:
-        catalog_rows = spark.table("gold_product_catalog").collect()
+        catalog_rows = spark.table(qualified_table("gold_product_catalog")).collect()
     except Exception as exc:
         return _fail_data(f"gold_product_catalog is not available: {exc}")
     catalog = {r.asDict().get("product_id"): r.asDict() for r in catalog_rows}
@@ -193,7 +194,7 @@ def run(inputs):
             "payment_status STRING, document_id STRING"
         ),
     )
-    quote_row.write.mode("append").saveAsTable("quotes")
+    quote_row.write.mode("append").saveAsTable(qualified_table("quotes"))
 
     item_rows = []
     for item in items:
@@ -222,7 +223,7 @@ def run(inputs):
             "quote_item_id STRING, quote_id STRING, product_id STRING, "
             "quantity INT, unit_price DECIMAL(10,2), subtotal DECIMAL(10,2)"
         ),
-    ).write.mode("append").saveAsTable("quote_items")
+    ).write.mode("append").saveAsTable(qualified_table("quote_items"))
 
     result = {
         "quote_status": "created",
@@ -369,7 +370,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):

@@ -562,6 +562,17 @@ As seguintes decisões serão detalhadas nas SPECs e ADRs:
 
 Decisões registradas durante a implementação do scaffold:
 
+- resolução de catalog/schema pelas ferramentas: as seis ferramentas
+  montam nomes de tabela totalmente qualificados
+  (`{catalog}.{schema}.{tabela}`), em vez de nomes nus, porque não há
+  garantia de que `main.py` (com `USE CATALOG`/`USE SCHEMA`) seja
+  executado antes delas. O catalog e o schema vêm das variáveis do
+  bundle (`var.catalog`/`var.schema`), entregues ao processo pelas
+  variáveis de ambiente `NEXUM_CATALOG`/`NEXUM_SCHEMA`, definidas por
+  `src/nexum_sales_assistant/main.py` a partir dos argumentos
+  repassados pelo bundle. A resolução está centralizada em
+  `src/nexum_sales_assistant/tools/_table_ref.py` e falha de forma
+  explícita quando as variáveis não estão definidas;
 - lista de aprovadores da demonstração: implementada como constante
   placeholder (`APPROVERS = {"vendor-001"}`), aguardando a lista
   documentada nos dados sintéticos da etapa 01-bronze —

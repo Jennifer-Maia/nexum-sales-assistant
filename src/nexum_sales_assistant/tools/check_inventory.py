@@ -9,6 +9,7 @@ altera o estoque (SPEC §16).
 
 import uuid
 from datetime import datetime, timedelta, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 DEFAULT_WAREHOUSE = "WH-MAIN"
 STALE_LIMIT_DAYS = 7
@@ -94,7 +95,7 @@ def run(inputs):
 
     # Produto inexistente no catálogo — SPEC §12.
     try:
-        catalog_rows = spark.table("gold_product_catalog").filter(
+        catalog_rows = spark.table(qualified_table("gold_product_catalog")).filter(
             f"product_id = '{product_id}'"
         ).collect()
     except Exception as exc:
@@ -127,7 +128,7 @@ def run(inputs):
 
     # Disponibilidade na Gold — SPEC §5.
     try:
-        inventory_rows = spark.table("gold_product_availability").filter(
+        inventory_rows = spark.table(qualified_table("gold_product_availability")).filter(
             f"product_id = '{product_id}' AND warehouse_id = '{warehouse_id}'"
         ).collect()
     except Exception as exc:
@@ -289,7 +290,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):

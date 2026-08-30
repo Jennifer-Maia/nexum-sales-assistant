@@ -11,6 +11,7 @@ simulação (ADR-004).
 
 import uuid
 from datetime import datetime, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 ALLOWED_RESULTS = {"success", "failure"}
 FORBIDDEN_RESULTS = {"approved", "confirmed", "real", "completed", "paid"}
@@ -45,7 +46,7 @@ def run(inputs):
     spark = _spark()
 
     try:
-        quote_rows = spark.table("quotes").filter(f"quote_id = '{quote_id}'").collect()
+        quote_rows = spark.table(qualified_table("quotes")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quotes is not available: {exc}", session_id, quote_id)
     if not quote_rows:
@@ -62,7 +63,7 @@ def run(inputs):
         return result
 
     try:
-        item_count = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").count()
+        item_count = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").count()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id, quote_id)
     if item_count == 0:
@@ -90,7 +91,7 @@ def run(inputs):
 
     # Idempotência — SPEC §14.
     try:
-        payment_rows = spark.table("payments").filter(
+        payment_rows = spark.table(qualified_table("payments")).filter(
             f"quote_id = '{quote_id}' AND status = 'simulated_success'"
         ).collect()
     except Exception as exc:
@@ -115,7 +116,7 @@ def run(inputs):
         _record_event(session_id, "payment_simulated", quote_id, _content(result))
         return result
     try:
-        approval_rows = spark.table("approvals").filter(
+        approval_rows = spark.table(qualified_table("approvals")).filter(
             f"quote_id = '{quote_id}' AND status = 'approved' "
             "AND resolved_by IS NOT NULL AND resolved_at IS NOT NULL"
         ).collect()
@@ -128,7 +129,7 @@ def run(inputs):
 
     # Consistência — SPEC §15.
     try:
-        item_rows = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").collect()
+        item_rows = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id, quote_id)
     computed_total = round(
@@ -171,9 +172,10 @@ def run(inputs):
                 "payment_id STRING, quote_id STRING, status STRING, "
                 "amount DECIMAL(10,2), currency STRING, simulated BOOLEAN, created_at TIMESTAMP"
             ),
-        ).write.mode("append").saveAsTable("payments")
+        ).write.mode("append").saveAsTable(qualified_table("payments"))
         spark.sql(
-            f"UPDATE quotes SET payment_status = 'simulated_failure' WHERE quote_id = '{quote_id}'"
+            f"UPDATE {qualified_table('quotes')} SET payment_status = 'simulated_failure' "
+            f"WHERE quote_id = '{quote_id}'"
         )
         result = {
             "payment_status": "simulated_failure",
@@ -207,10 +209,12 @@ def run(inputs):
             "payment_id STRING, quote_id STRING, status STRING, "
             "amount DECIMAL(10,2), currency STRING, simulated BOOLEAN, created_at TIMESTAMP"
         ),
-    ).write.mode("append").saveAsTable("payments")
+    ).write.mode("append").saveAsTable(qualified_table("payments"))
     spark.sql(
-        "UPDATE quotes SET payment_status = 'simulated_success', status = 'paid' "
-        f"WHERE quote_id = '{quote_id}'"
+        "UPDATE {} SET payment_status = 'simulated_success', status = 'paid' ".format(
+            qualified_table("quotes")
+        )
+        + f"WHERE quote_id = '{quote_id}'"
     )
     result = {
         "payment_status": "simulated_success",
@@ -333,7 +337,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):

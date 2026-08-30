@@ -6,6 +6,7 @@ Fonte de dados: `gold_product_catalog` (docs/data_model.md §16).
 
 import uuid
 from datetime import datetime, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 ALLOWED_CATEGORIES = {"temperature", "pressure", "vibration"}
 DEFAULT_LIMIT = 3
@@ -140,7 +141,7 @@ def run(inputs):
     product_ids = inputs.get("product_ids")
 
     try:
-        catalog = _spark().table("gold_product_catalog").collect()
+        catalog = _spark().table(qualified_table("gold_product_catalog")).collect()
     except Exception as exc:  # tabela indisponível — SPEC §11
         return _fail_data(
             session_id,
@@ -313,7 +314,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):

@@ -7,6 +7,7 @@ validade fiscal.
 """
 
 from nexum_sales_assistant.tools import generate_document as gd
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 
 def _quote(status="paid"):
@@ -72,58 +73,58 @@ class TestGenerateDocument:
     def test_generates_simulated_document(self, fake_spark):
         # CA01–CA06: pagamento simulated_success → documento gerado e
         # cotação concluída (paid → completed).
-        fake_spark.tables["quotes"] = [_quote("paid")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = [_payment()]
-        fake_spark.tables["gold_product_catalog"] = [_catalog_product()]
-        fake_spark.tables["silver_companies"] = [
+        fake_spark.tables[qualified_table("quotes")] = [_quote("paid")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = [_payment()]
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [_catalog_product()]
+        fake_spark.tables[qualified_table("silver_companies")] = [
             {"company_id": "C0001", "company_name": "Metalúrgica Ferrovale Ltda"}
         ]
         result = gd.run(_inputs())
         assert result["document_status"] == "generated"
         assert result["quote_status"] == "completed"
-        document = fake_spark.tables["documents"][0]
+        document = fake_spark.tables[qualified_table("documents")][0]
         assert document["document_type"] == "simulated_receipt"
         assert document["has_fiscal_value"] is False
         assert document["quote_id"] == "QTE-1"
-        quote = fake_spark.tables["quotes"][0]
+        quote = fake_spark.tables[qualified_table("quotes")][0]
         assert quote["status"] == "completed"
         assert quote["document_id"] == result["document_id"]
 
     def test_requires_successful_payment(self, fake_spark):
         # CA01: sem pagamento → payment_required; nenhum documento criado.
-        fake_spark.tables["quotes"] = [_quote("paid")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = []
+        fake_spark.tables[qualified_table("quotes")] = [_quote("paid")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = []
         result = gd.run(_inputs())
         assert result["document_status"] == "payment_required"
         assert result["error_code"] == "SUCCESSFUL_SIMULATED_PAYMENT_REQUIRED"
-        assert fake_spark.tables.get("documents", []) == []
+        assert fake_spark.tables.get(qualified_table("documents"), []) == []
 
     def test_payment_failed_no_document(self, fake_spark):
         # CA07: pagamento com falha → nenhum documento criado.
-        fake_spark.tables["quotes"] = [_quote("paid")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = [_payment(status="simulated_failure")]
+        fake_spark.tables[qualified_table("quotes")] = [_quote("paid")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = [_payment(status="simulated_failure")]
         result = gd.run(_inputs())
         assert result["document_status"] == "payment_failed"
         assert result["error_code"] == "PAYMENT_SIMULATION_FAILED"
-        assert fake_spark.tables.get("documents", []) == []
+        assert fake_spark.tables.get(qualified_table("documents"), []) == []
 
     def test_quote_not_paid(self, fake_spark):
         # SPEC §8: documento não é gerado para cotação fora de `paid`.
-        fake_spark.tables["quotes"] = [_quote("approved")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = [_payment()]
+        fake_spark.tables[qualified_table("quotes")] = [_quote("approved")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = [_payment()]
         result = gd.run(_inputs())
         assert result["error_code"] == "QUOTE_NOT_PAID"
 
     def test_idempotency(self, fake_spark):
         # CA08: não cria mais de um documento para a mesma cotação.
-        fake_spark.tables["quotes"] = [_quote("completed")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = [_payment()]
-        fake_spark.tables["documents"] = [
+        fake_spark.tables[qualified_table("quotes")] = [_quote("completed")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = [_payment()]
+        fake_spark.tables[qualified_table("documents")] = [
             {
                 "document_id": "DOC-1",
                 "quote_id": "QTE-1",
@@ -136,7 +137,7 @@ class TestGenerateDocument:
         result = gd.run(_inputs())
         assert result["document_status"] == "already_generated"
         assert result["document_id"] == "DOC-1"
-        assert len(fake_spark.tables["documents"]) == 1
+        assert len(fake_spark.tables[qualified_table("documents")]) == 1
 
     def test_content_contains_mandatory_warnings(self):
         # CA04: o conteúdo informa a ausência de validade fiscal,
@@ -168,13 +169,13 @@ class TestGenerateDocument:
 
     def test_audit_event_recorded(self, fake_spark):
         # CA09: a geração (ou falha) cria evento em conversation_events.
-        fake_spark.tables["quotes"] = [_quote("paid")]
-        fake_spark.tables["quote_items"] = [_quote_item()]
-        fake_spark.tables["payments"] = [_payment()]
-        fake_spark.tables["gold_product_catalog"] = [_catalog_product()]
-        fake_spark.tables["silver_companies"] = [{"company_id": "C0001"}]
+        fake_spark.tables[qualified_table("quotes")] = [_quote("paid")]
+        fake_spark.tables[qualified_table("quote_items")] = [_quote_item()]
+        fake_spark.tables[qualified_table("payments")] = [_payment()]
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [_catalog_product()]
+        fake_spark.tables[qualified_table("silver_companies")] = [{"company_id": "C0001"}]
         gd.run(_inputs())
-        events = fake_spark.tables.get("conversation_events", [])
+        events = fake_spark.tables.get(qualified_table("conversation_events"), [])
         assert any(
             e.get("event_type") == "document_generated"
             and e.get("tool_name") == "generate_document"

@@ -6,6 +6,7 @@ dados reais do catálogo, auditoria e reprodutibilidade.
 """
 
 from nexum_sales_assistant.tools import search_products as sp
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 
 def _product(**overrides):
@@ -33,7 +34,7 @@ class TestSearchProducts:
     def test_success_returns_active_compatible_products(self, fake_spark):
         # CA01/CA02/CA03: somente produtos ativos, da categoria e que
         # cobrem integralmente a faixa solicitada.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(),
             _product(
                 product_id="PRD-TEMP-002",
@@ -67,7 +68,7 @@ class TestSearchProducts:
 
     def test_inactive_products_never_returned(self, fake_spark):
         # CA02: produto inativo nunca aparece nos resultados.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(),
             _product(product_id="PRD-TEMP-OLD", sku="NEX-TEMP-OLD", active=False),
         ]
@@ -78,7 +79,7 @@ class TestSearchProducts:
     def test_ordering_and_default_limit(self, fake_spark):
         # SPEC §6: menor prazo, depois menor preço, depois product_id.
         # SPEC §7: limite padrão de 3 resultados.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(product_id="PRD-A", lead_time_days=5, price=100.0),
             _product(product_id="PRD-B", lead_time_days=3, price=500.0),
             _product(product_id="PRD-C", lead_time_days=3, price=200.0),
@@ -94,7 +95,7 @@ class TestSearchProducts:
 
     def test_no_compatible_product(self, fake_spark):
         # CA05: sem produto compatível → no_compatible_product, sem invenção.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(min_operating_value=20, max_operating_value=100),
         ]
         result = sp.run(
@@ -128,7 +129,7 @@ class TestSearchProducts:
     def test_data_error_active_product_without_specs(self, fake_spark):
         # SPEC §11: produto ativo sem especificações essenciais sinaliza
         # erro; a ferramenta não corrige silenciosamente.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(product_id="PRD-X", technical_specs=None),
         ]
         result = sp.run({"session_id": "SES-1", "category": "temperature"})
@@ -137,9 +138,9 @@ class TestSearchProducts:
 
     def test_audit_event_recorded(self, fake_spark):
         # CA09: cada execução gera evento em conversation_events.
-        fake_spark.tables["gold_product_catalog"] = [_product()]
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [_product()]
         sp.run({"session_id": "SES-1", "category": "temperature"})
-        events = fake_spark.tables.get("conversation_events", [])
+        events = fake_spark.tables.get(qualified_table("conversation_events"), [])
         assert any(
             e.get("event_type") == "product_search"
             and e.get("tool_name") == "search_products"
@@ -148,7 +149,7 @@ class TestSearchProducts:
 
     def test_reproducibility(self, fake_spark):
         # CA08: mesmas entradas e mesmo catálogo → resultados consistentes.
-        fake_spark.tables["gold_product_catalog"] = [
+        fake_spark.tables[qualified_table("gold_product_catalog")] = [
             _product(),
             _product(
                 product_id="PRD-TEMP-002",

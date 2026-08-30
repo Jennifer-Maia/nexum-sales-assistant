@@ -10,6 +10,7 @@ assistente não pode aprovar uma cotação em seu próprio nome.
 
 import uuid
 from datetime import datetime, timezone
+from nexum_sales_assistant.tools._table_ref import qualified_table
 
 # Lista simples de aprovadores da demonstração (SPEC §9). Placeholder
 # temporário: será substituída pela lista documentada nos dados
@@ -52,7 +53,7 @@ def _request(inputs):
 
     # Validações da SPEC §5.
     try:
-        quote_rows = spark.table("quotes").filter(f"quote_id = '{quote_id}'").collect()
+        quote_rows = spark.table(qualified_table("quotes")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quotes is not available: {exc}", session_id)
     if not quote_rows:
@@ -62,7 +63,7 @@ def _request(inputs):
     quote = quote_rows[0].asDict()
 
     try:
-        item_count = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").count()
+        item_count = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").count()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id)
     if item_count == 0:
@@ -81,7 +82,7 @@ def _request(inputs):
 
     # Consistência de preço e estoque dos itens (SPEC §5).
     try:
-        item_rows = spark.table("quote_items").filter(f"quote_id = '{quote_id}'").collect()
+        item_rows = spark.table(qualified_table("quote_items")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quote_items is not available: {exc}", session_id)
     invalid_item = next(
@@ -132,7 +133,7 @@ def _request(inputs):
             "approval_id STRING, quote_id STRING, requested_by STRING, resolved_by STRING, "
             "status STRING, reason STRING, created_at TIMESTAMP, resolved_at TIMESTAMP"
         ),
-    ).write.mode("append").saveAsTable("approvals")
+    ).write.mode("append").saveAsTable(qualified_table("approvals"))
     _update_quote_status(spark, quote_id, "pending_approval")
 
     result = {
@@ -183,7 +184,7 @@ def _resolve(inputs):
 
     # Validações da SPEC §9.
     try:
-        approval_rows = spark.table("approvals").filter(
+        approval_rows = spark.table(qualified_table("approvals")).filter(
             f"approval_id = '{approval_id}'"
         ).collect()
     except Exception as exc:
@@ -201,7 +202,7 @@ def _resolve(inputs):
 
     quote_id = approval.get("quote_id")
     try:
-        quote_rows = spark.table("quotes").filter(f"quote_id = '{quote_id}'").collect()
+        quote_rows = spark.table(qualified_table("quotes")).filter(f"quote_id = '{quote_id}'").collect()
     except Exception as exc:
         return _fail_data(f"quotes is not available: {exc}", session_id)
     if not quote_rows:
@@ -256,16 +257,18 @@ def _resolve(inputs):
 
 def _update_quote_status(spark, quote_id, status):
     spark.sql(
-        f"UPDATE quotes SET status = '{status}' WHERE quote_id = '{quote_id}'"
+        f"UPDATE {qualified_table('quotes')} SET status = '{status}' "
+        f"WHERE quote_id = '{quote_id}'"
     )
 
 
 def _update_approval(spark, approval_id, decision, resolved_by, reason, resolved_at):
     reason_sql = "NULL" if reason is None else f"'{reason}'"
     spark.sql(
-        "UPDATE approvals SET status = '{}', resolved_by = '{}', reason = {}, "
+        "UPDATE {} SET status = '{}', resolved_by = '{}', reason = {}, "
         "resolved_at = '{}' WHERE approval_id = '{}'".format(
-            decision, resolved_by, reason_sql, resolved_at.isoformat(), approval_id
+            qualified_table("approvals"), decision, resolved_by, reason_sql,
+            resolved_at.isoformat(), approval_id,
         )
     )
 
@@ -280,16 +283,16 @@ def _update_quote_fields(
     """
     if status == "approved":
         spark.sql(
-            "UPDATE quotes SET status = 'approved', approved_by = '{}', "
+            "UPDATE {} SET status = 'approved', approved_by = '{}', "
             "approved_at = '{}' WHERE quote_id = '{}'".format(
-                approved_by, approved_at.isoformat(), quote_id
+                qualified_table("quotes"), approved_by, approved_at.isoformat(), quote_id
             )
         )
     elif status == "rejected":
         reason_sql = "NULL" if rejection_reason is None else f"'{rejection_reason}'"
         spark.sql(
-            "UPDATE quotes SET status = 'rejected', rejection_reason = {} "
-            "WHERE quote_id = '{}'".format(reason_sql, quote_id)
+            "UPDATE {} SET status = 'rejected', rejection_reason = {} "
+            "WHERE quote_id = '{}'".format(qualified_table("quotes"), reason_sql, quote_id)
         )
 
 
@@ -356,7 +359,7 @@ def _record_event(session_id, event_type, tool_reference_id, content):
             "content STRING, tool_name STRING, tool_reference_id STRING, created_at TIMESTAMP"
         ),
     )
-    row.write.mode("append").saveAsTable("conversation_events")
+    row.write.mode("append").saveAsTable(qualified_table("conversation_events"))
 
 
 def _json_dumps(content):
