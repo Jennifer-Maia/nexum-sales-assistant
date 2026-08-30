@@ -103,9 +103,10 @@ def main():
     # 3. Cotação para o cliente cadastrado → gate de confirmação.
     outcome = agent.process_message(
         session_id,
-        "Quero uma cotação para a empresa C0001 com 20 unidades do sensor T150.",
+        "Quero uma cotação para a empresa C0001 com 20 unidades do produto PRD-TEMP-001.",
     )
-    _print_turn("customer", "Quero uma cotação para a empresa C0001 com 20 unidades do sensor T150.")
+    _print_turn("customer", "Quero uma cotação para a empresa C0001 com 20 unidades "
+                "do produto PRD-TEMP-001.")
     _print_turn("assistant", outcome["reply"], outcome["tool_results"])
     if outcome.get("pending_confirmation"):
         _print_turn("customer", "Sim, confirmo os itens e valores apresentados.")

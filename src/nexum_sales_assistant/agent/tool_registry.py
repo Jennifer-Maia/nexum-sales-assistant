@@ -81,9 +81,11 @@ TOOL_REGISTRY = {
         "description": (
             "Cria uma cotação em estado draft para um cliente cadastrado, "
             "congelando os preços do catálogo nos itens. Valida cliente, "
-            "produtos e estoque. Não aprova e não reserva estoque. Não "
-            "informe valid_until nem currency: o sistema usa os padrões "
-            "documentados (validade de 7 dias e moeda BRL)."
+            "produtos e estoque. Não aprova e não reserva estoque. Cada "
+            "product_id dos itens tem o formato PRD-XXXX-### e deve ser "
+            "copiado da saída de search_products. Não informe valid_until "
+            "nem currency: o sistema usa os padrões documentados (validade "
+            "de 7 dias e moeda BRL)."
         ),
         "parameters": _schema(
             {
