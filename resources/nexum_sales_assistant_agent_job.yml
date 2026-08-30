@@ -1,9 +1,10 @@
 # Job de demonstração do agente de vendas IA (ADR-006; SPEC agent §12).
 #
 # Executa a jornada completa de conversa com LLM real
-# (Foundation Model API, pay-per-token) via spark_python_task
-# serverless. On-demand: sem agendamento — um agente conversacional
-# interativo não roda como task periódica do ETL.
+# (Foundation Model API, pay-per-token) via python_wheel_task
+# serverless — o DABs instala automaticamente o wheel do bundle
+# (entry point `agent-demo`). On-demand: sem agendamento — um agente
+# conversacional interativo não roda como task periódica do ETL.
 #
 # O job ETL (nexum_sales_assistant_job) não foi alterado; este job é
 # complementar e independente.
@@ -15,26 +16,20 @@ resources:
 
       # "Default" é o ambiente serverless (sem cluster fixo); precisa ser
       # declarado na lista environments para a task referenciá-lo.
-      # `client` é a versão do ambiente base serverless e o wheel do
-      # bundle fornece o pacote nexum_sales_assistant para o
-      # spark_python_task (mesmo padrão de dependência do projeto).
+      # `client` é a versão do ambiente base serverless.
       environments:
         - environment_key: Default
           spec:
             client: "4"
-            dependencies:
-              - ${artifacts.python_artifact.workspace_path}
 
       tasks:
         - task_key: agent_demo
           description: "Jornada de demonstração do agente de vendas IA"
           environment_key: Default
-          spark_python_task:
-            python_file: ../src/nexum_sales_assistant/agent/demo.py
-            parameters:
-              - "--catalog"
-              - ${var.catalog}
-              - "--schema"
-              - ${var.schema}
-              - "--model-endpoint"
-              - ${var.model_endpoint}
+          python_wheel_task:
+            package_name: nexum_sales_assistant
+            entry_point: agent-demo
+            named_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              model_endpoint: ${var.model_endpoint}

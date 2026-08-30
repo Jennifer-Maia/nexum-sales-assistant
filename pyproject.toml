@@ -22,6 +22,7 @@ dev = [
 
 [project.scripts]
 main = "nexum_sales_assistant.main:main"
+agent-demo = "nexum_sales_assistant.agent.demo:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -33,7 +33,7 @@ def _parse_args():
     parser.add_argument("--catalog", required=True)
     parser.add_argument("--schema", required=True)
     parser.add_argument("--session-id", default=None)
-    parser.add_argument("--model-endpoint", default=None)
+    parser.add_argument("--model_endpoint", default=None)
     return parser.parse_args()
 
 
