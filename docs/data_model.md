@@ -574,7 +574,9 @@ Modelo para auditoria:
 - pagamento simulado;
 - documento gerado;
 - encaminhamento humano;
-- erros.
+- erros;
+- `first_event_at`/`last_event_at` (limites temporais da sessão —
+  fonte do filtro de período do dashboard, ADR-008).
 
 ## 18. Dados sintéticos
 

@@ -17,7 +17,10 @@ from nexum_sales_assistant.metrics import (
 
 def _table_names(query_lines):
     sql = " ".join(query_lines)
-    return set(re.findall(r"\bFROM\s+([a-z_][a-z0-9_]*)", sql, flags=re.IGNORECASE))
+    tables = set(re.findall(r"\bFROM\s+([a-z_][a-z0-9_]*)", sql, flags=re.IGNORECASE))
+    # Alias de CTE (WITH x AS (...)) não são tabelas físicas.
+    ctes = set(re.findall(r"([a-z_][a-z0-9_]*)\s+AS\s*\(", sql, flags=re.IGNORECASE))
+    return tables - ctes
 
 
 class TestQuerySources:
@@ -51,12 +54,22 @@ class TestQuerySources:
         assert set(DATASET_QUERIES) == {
             "ds_sessions",
             "ds_funnel",
+            "ds_conversion",
             "ds_tool_calls",
             "ds_agent_turns",
             "ds_quality",
             "ds_cost",
             "ds_update",
         }
+
+    def test_division_by_zero_is_safe_in_sql(self):
+        # As taxas do funil usam NULLIF/COALESCE (ADR-007): denominador
+        # zero produz 0, nunca erro de divisão.
+        sql = " ".join(DATASET_QUERIES["ds_conversion"]).lower()
+        assert "nullif" in sql
+        assert "coalesce" in sql
+        sql_cost = " ".join(DATASET_QUERIES["ds_cost"]).lower()
+        assert "nullif" in sql_cost
 
 
 class TestEmptyData:

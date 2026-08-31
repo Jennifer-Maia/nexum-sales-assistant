@@ -45,6 +45,8 @@ class TestSchema:
             "documents_generated",
             "handoffs_to_human",
             "errors",
+            "first_event_at",
+            "last_event_at",
         ]
 
 
@@ -100,11 +102,14 @@ class TestIgnoredEvents:
         rows = ga.build_rows([_event(session_id=None)])
         assert rows == []
 
-    def test_unknown_event_type_ignored(self):
-        # event_type fora do mapeamento documentado não entra na
-        # agregação nem cria linha de sessão (nenhum dado é inventado).
+    def test_unknown_event_type_not_counted(self):
+        # event_type fora do mapeamento documentado não entra nas
+        # contagens; a sessão existe (limites temporais) mas permanece
+        # zerada nas colunas do mapeamento (nenhum dado é inventado).
         rows = ga.build_rows([_event(event_type="session_started")])
-        assert rows == []
+        assert len(rows) == 1
+        assert all(rows[0][name] == 0 for name in ga.EVENT_TYPE_MAPPING.values())
+        assert rows[0]["first_event_at"] is not None
 
     def test_mapped_events_only_for_own_columns(self):
         # Um evento mapeado zera as demais colunas da sessão.
@@ -112,6 +117,23 @@ class TestIgnoredEvents:
         assert len(rows) == 1
         assert rows[0]["errors"] == 1
         assert rows[0]["message_count"] == 0
+
+    def test_session_temporal_bounds(self):
+        # first_event_at/last_event_at alimentam o filtro de período do
+        # dashboard (ADR-008), derivados da trilha de auditoria.
+        events = [
+            _event("EVT-1", created_at=datetime.datetime(2026, 8, 30, 10, 0, 0)),
+            _event("EVT-2", created_at=datetime.datetime(2026, 8, 30, 11, 0, 0)),
+            _event("EVT-3", event_type="error", created_at=datetime.datetime(2026, 8, 30, 9, 30, 0)),
+        ]
+        row = ga.build_rows(events)[0]
+        assert row["first_event_at"] == datetime.datetime(2026, 8, 30, 9, 30, 0)
+        assert row["last_event_at"] == datetime.datetime(2026, 8, 30, 11, 0, 0)
+
+    def test_temporal_bounds_none_without_timestamps(self):
+        row = ga.build_rows([_event(created_at=None)])[0]
+        assert row["first_event_at"] is None
+        assert row["last_event_at"] is None
 
 
 class TestNoInvention:

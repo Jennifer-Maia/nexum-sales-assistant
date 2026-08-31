@@ -79,13 +79,15 @@ COLUMNS = [
     "documents_generated",
     "handoffs_to_human",
     "errors",
+    "first_event_at",
+    "last_event_at",
 ]
 
 SCHEMA = (
     "session_id STRING, message_count INT, question_count INT, products_consulted INT, "
     "recommendations_created INT, quotes_created INT, approvals_requested INT, "
     "approvals_resolved INT, payments_simulated INT, documents_generated INT, "
-    "handoffs_to_human INT, errors INT"
+    "handoffs_to_human INT, errors INT, first_event_at TIMESTAMP, last_event_at TIMESTAMP"
 )
 
 
@@ -94,20 +96,32 @@ def build_rows(events):
 
     Entrada: lista de dicts no schema de conversation_events.
     Saída: lista de dicts no schema da Gold, uma linha por session_id,
-    ordenada por session_id (determinística).
+    ordenada por session_id (determinística). `first_event_at`/
+    `last_event_at` carregam os limites temporais da sessão (fonte do
+    filtro de período do dashboard — ADR-008).
     """
     sessions = {}
     for event in events:
         session_id = event.get("session_id")
         if session_id is None:
             continue
+        created_at = event.get("created_at")
         column = EVENT_TYPE_MAPPING.get(event.get("event_type"))
-        if column is None:
-            continue
-        stats = sessions.setdefault(
-            session_id, {name: 0 for name in EVENT_TYPE_MAPPING.values()}
+        session = sessions.setdefault(
+            session_id,
+            {
+                **{name: 0 for name in EVENT_TYPE_MAPPING.values()},
+                "first_event_at": None,
+                "last_event_at": None,
+            },
         )
-        stats[column] += 1
+        if column is not None:
+            session[column] += 1
+        if created_at is not None:
+            if session["first_event_at"] is None or created_at < session["first_event_at"]:
+                session["first_event_at"] = created_at
+            if session["last_event_at"] is None or created_at > session["last_event_at"]:
+                session["last_event_at"] = created_at
     rows = [{"session_id": session_id, **stats} for session_id, stats in sessions.items()]
     rows.sort(key=lambda row: row["session_id"])
     return rows
