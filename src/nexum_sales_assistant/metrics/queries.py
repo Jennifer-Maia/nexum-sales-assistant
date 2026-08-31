@@ -15,6 +15,10 @@ de datas) no dashboard para permitir o filtro global de período;
 usam filtro por campo (auto-injetado pelo Lakeview). Para validação
 via CLI, as mesmas queries são executadas com nomes totalmente
 qualificados e datas literais — a semântica é idêntica.
+
+Cada taxa de conversão é UMA query que retorna UMA linha com UMA
+coluna numérica `taxa` (DOUBLE 0-1, sem formatação em texto) — o
+formato mais simples e compatível com KPI no Lakeview.
 """
 
 # Tabelas permitidas nas queries: SOMENTE as Golds (ADR-008).
@@ -26,6 +30,35 @@ ALLOWED_TABLES = {
     "gold_agent_operations",
     "gold_data_freshness",
 }
+
+
+def _conversion_sql(numerator_stage, denominator_stage):
+    """Query de taxa de conversão: 1 linha, 1 coluna numérica `taxa`.
+
+    Fonte: somente Golds (gold_conversation_audit e
+    gold_quote_summary). Divisão por zero segura (NULLIF/COALESCE,
+    ADR-007); o valor permanece numérico (0-1) para o Lakeview
+    formatar como percentual.
+    """
+    return [
+        "WITH funil AS ( ",
+        "SELECT 'sessoes' AS etapa, first_event_at AS data FROM gold_conversation_audit ",
+        "WHERE first_event_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'cotacoes', created_at FROM gold_quote_summary ",
+        "WHERE created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'aprovacoes', created_at FROM gold_quote_summary ",
+        "WHERE approval_status = 'approved' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'pagamentos_simulados', created_at FROM gold_quote_summary ",
+        "WHERE payment_status = 'simulated_success' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'documentos_simulados', created_at FROM gold_quote_summary ",
+        "WHERE status = 'completed' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "), ",
+        "contagens AS (SELECT etapa, COUNT(*) AS total FROM funil GROUP BY etapa) ",
+        f"SELECT COALESCE(MAX(CASE WHEN etapa='{numerator_stage}' THEN total END) / ",
+        f"NULLIF(MAX(CASE WHEN etapa='{denominator_stage}' THEN total END), 0), 0) AS taxa ",
+        "FROM contagens",
+    ]
+
 
 DATASET_QUERIES = {
     # Sessões e contagens por sessão — fonte: gold_conversation_audit.
@@ -39,51 +72,29 @@ DATASET_QUERIES = {
         "FROM gold_conversation_audit",
     ],
     # Funil de vendas em granularidade de evento, com a data de cada
-    # etapa — fonte do filtro de período (parâmetro :data_range) e dos
+    # etapa e rótulos amigáveis para exibição (ordem explícita via
+    # coluna `ordem` — o gráfico usa custom-order em `etapa_label`).
+    # Fonte do filtro de período (parâmetro :data_range) e dos
     # KPIs/gráficos da página do funil.
     "ds_funnel": [
-        "SELECT 'sessoes' AS etapa, 1 AS ordem, first_event_at AS data ",
+        "SELECT 'sessoes' AS etapa, 'Sessões' AS etapa_label, 1 AS ordem, first_event_at AS data ",
         "FROM gold_conversation_audit ",
         "WHERE first_event_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'cotacoes', 2, created_at FROM gold_quote_summary ",
+        "UNION ALL SELECT 'cotacoes', 'Cotações', 2, created_at FROM gold_quote_summary ",
         "WHERE created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'aprovacoes', 3, created_at FROM gold_quote_summary ",
+        "UNION ALL SELECT 'aprovacoes', 'Aprovações', 3, created_at FROM gold_quote_summary ",
         "WHERE approval_status = 'approved' AND created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'pagamentos_simulados', 4, created_at FROM gold_quote_summary ",
+        "UNION ALL SELECT 'pagamentos_simulados', 'Pagamentos simulados', 4, created_at FROM gold_quote_summary ",
         "WHERE payment_status = 'simulated_success' AND created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'documentos_simulados', 5, created_at FROM gold_quote_summary ",
+        "UNION ALL SELECT 'documentos_simulados', 'Documentos simulados', 5, created_at FROM gold_quote_summary ",
         "WHERE status = 'completed' AND created_at BETWEEN :data_range.min AND :data_range.max",
     ],
-    # Taxas de conversão do funil (0-1), sem divisão por zero
-    # (NULLIF/COALESCE — ADR-007). CTE + agregação: filtro de período
-    # via parâmetro :data_range.
-    "ds_conversion": [
-        "WITH funil AS ( ",
-        "SELECT 'sessoes' AS etapa, first_event_at AS data FROM gold_conversation_audit ",
-        "WHERE data BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'cotacoes', created_at FROM gold_quote_summary ",
-        "WHERE created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'aprovacoes', created_at FROM gold_quote_summary ",
-        "WHERE approval_status = 'approved' AND created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'pagamentos_simulados', created_at FROM gold_quote_summary ",
-        "WHERE payment_status = 'simulated_success' AND created_at BETWEEN :data_range.min AND :data_range.max ",
-        "UNION ALL SELECT 'documentos_simulados', created_at FROM gold_quote_summary ",
-        "WHERE status = 'completed' AND created_at BETWEEN :data_range.min AND :data_range.max ",
-        "), ",
-        "contagens AS (SELECT etapa, COUNT(*) AS total FROM funil GROUP BY etapa) ",
-        "SELECT 'conversao_cotacao' AS etapa, ",
-        "COALESCE(MAX(CASE WHEN etapa='cotacoes' THEN total END) / NULLIF(MAX(CASE WHEN etapa='sessoes' THEN total END), 0), 0) AS taxa ",
-        "FROM contagens ",
-        "UNION ALL SELECT 'conversao_aprovacao', ",
-        "COALESCE(MAX(CASE WHEN etapa='aprovacoes' THEN total END) / NULLIF(MAX(CASE WHEN etapa='cotacoes' THEN total END), 0), 0) ",
-        "FROM contagens ",
-        "UNION ALL SELECT 'conversao_pagamento', ",
-        "COALESCE(MAX(CASE WHEN etapa='pagamentos_simulados' THEN total END) / NULLIF(MAX(CASE WHEN etapa='aprovacoes' THEN total END), 0), 0) ",
-        "FROM contagens ",
-        "UNION ALL SELECT 'conversao_documento', ",
-        "COALESCE(MAX(CASE WHEN etapa='documentos_simulados' THEN total END) / NULLIF(MAX(CASE WHEN etapa='pagamentos_simulados' THEN total END), 0), 0) ",
-        "FROM contagens",
-    ],
+    # Taxas de conversão do funil: UMA query por métrica, UMA linha,
+    # UMA coluna numérica (compatível com KPI).
+    "ds_conversion_cotacao": _conversion_sql("cotacoes", "sessoes"),
+    "ds_conversion_aprovacao": _conversion_sql("aprovacoes", "cotacoes"),
+    "ds_conversion_pagamento": _conversion_sql("pagamentos_simulados", "aprovacoes"),
+    "ds_conversion_documento": _conversion_sql("documentos_simulados", "pagamentos_simulados"),
     # Operação — chamadas de ferramenta com latência e status.
     # Seleção simples: filtro de período por campo (created_at).
     "ds_tool_calls": [

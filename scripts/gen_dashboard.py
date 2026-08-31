@@ -62,11 +62,53 @@ def counter(name, title, dataset_name, field_name, expression, step_filter=None,
     }
 
 
+def conversion_counter(name, title, dataset_name):
+    """KPI de conversão: dataset de 1 linha/1 coluna, sem filtros —
+    o formato mais simples e compatível com o renderer do Lakeview."""
+    return {
+        "widget": {
+            "name": name,
+            "queries": [{
+                "name": "main_query",
+                "query": {
+                    "datasetName": dataset_name,
+                    "fields": [{"name": "taxa", "expression": "`taxa`"}],
+                    "disaggregated": True,
+                },
+            }],
+            "spec": {
+                "version": 2,
+                "widgetType": "counter",
+                "encodings": {
+                    "value": {
+                        "fieldName": "taxa",
+                        "displayName": title,
+                        "format": {"type": "number-percent", "decimalPlaces": {"type": "exact", "places": 1}},
+                    }
+                },
+                "frame": {"showTitle": True, "title": title},
+            },
+        }
+    }
+
+
 def text(name, lines):
     return {"widget": {"name": name, "multilineTextboxSpec": {"lines": lines}}}
 
 
-def bar(name, title, dataset_name, x_field, y_field, y_display):
+def bar(name, title, dataset_name, x_field, y_field, y_display, sort_order=None, color_mappings=None):
+    x_scale = {"type": "categorical"}
+    if sort_order:
+        x_scale["sort"] = {"by": "custom-order", "orderedValues": sort_order}
+    encodings = {
+        "x": {"fieldName": x_field, "scale": x_scale},
+        "y": {"fieldName": y_field, "displayName": y_display, "scale": {"type": "quantitative"}},
+    }
+    if color_mappings:
+        encodings["color"] = {
+            "fieldName": x_field,
+            "scale": {"type": "categorical", "mappings": color_mappings},
+        }
     return {
         "widget": {
             "name": name,
@@ -84,10 +126,7 @@ def bar(name, title, dataset_name, x_field, y_field, y_display):
             "spec": {
                 "version": 3,
                 "widgetType": "bar",
-                "encodings": {
-                    "x": {"fieldName": x_field, "scale": {"type": "categorical"}},
-                    "y": {"fieldName": y_field, "displayName": y_display, "scale": {"type": "quantitative"}},
-                },
+                "encodings": encodings,
                 "frame": {"showTitle": True, "title": title},
             },
         }
@@ -106,6 +145,8 @@ def table(name, title, dataset_name, columns, disaggregated=True):
             cols.append({"fieldName": c, "displayName": "Registros"})
         elif c == "tabela":
             cols.append({"fieldName": c, "displayName": "Tabela"})
+        elif c == "etapa_label":
+            cols.append({"fieldName": c, "displayName": "Etapa"})
         elif c == "session_id":
             cols.append({"fieldName": c, "displayName": "Sessão"})
         elif c == "created_at":
@@ -206,7 +247,10 @@ logo_markdown = f"![Nexum](data:image/png;base64,{LOGO_B64})"
 datasets = [
     dataset("ds_sessions", "Sessões de conversa (Gold)", Q["ds_sessions"]),
     dataset("ds_funnel", "Funil de vendas (Gold)", Q["ds_funnel"], parameters=PARAMS),
-    dataset("ds_conversion", "Conversão do funil (Gold)", Q["ds_conversion"], parameters=PARAMS),
+    dataset("ds_conversion_cotacao", "Conversão Sessão → Cotação (Gold)", Q["ds_conversion_cotacao"], parameters=PARAMS),
+    dataset("ds_conversion_aprovacao", "Conversão Cotação → Aprovação (Gold)", Q["ds_conversion_aprovacao"], parameters=PARAMS),
+    dataset("ds_conversion_pagamento", "Conversão Aprovação → Pagamento (Gold)", Q["ds_conversion_pagamento"], parameters=PARAMS),
+    dataset("ds_conversion_documento", "Conversão Pagamento → Documento (Gold)", Q["ds_conversion_documento"], parameters=PARAMS),
     dataset("ds_tool_calls", "Chamadas de ferramenta (Gold)", Q["ds_tool_calls"]),
     dataset("ds_agent_turns", "Atividade do agente (Gold)", Q["ds_agent_turns"]),
     dataset("ds_quality", "Qualidade e segurança (Gold)", Q["ds_quality"]),
@@ -226,38 +270,49 @@ funnel_counters = [
 ]
 
 funil_layout = []
-funil_layout.append({"widget": text("logo", [logo_markdown])["widget"], "position": pos(0, 0, 2, 2)})
+funil_layout.append({"widget": text("logo", [logo_markdown])["widget"], "position": pos(0, 0, 3, 3)})
 funil_layout.append({
-    "widget": text("funil-titulo", ["# Nexum Sales Assistant — Funil de vendas"])["widget"],
-    "position": pos(2, 0, 10, 1),
+    "widget": text("funil-titulo", ["# Nexum Sales Assistant"])["widget"],
+    "position": pos(3, 0, 9, 1),
 })
 funil_layout.append({
-    "widget": text("funil-subtitulo", ["Métricas reais do fluxo Bronze → Silver → Gold e do agente de IA. Use o filtro de período na página Filtros. Zero significa ausência de dados operacionais."])["widget"],
-    "position": pos(2, 1, 10, 1),
+    "widget": text("funil-subtitulo", ["**Funil de vendas** — métricas reais do fluxo Bronze → Silver → Gold e do agente de IA. Use o filtro de período na página Filtros. Zero indica ausência de dados operacionais."])["widget"],
+    "position": pos(3, 1, 9, 2),
 })
 for index, (name, title, step) in enumerate(funnel_counters[:3]):
     funil_layout.append({
         **counter(name, title, "ds_funnel", "count(*)", "COUNT(*)", step_filter=f"`etapa` = '{step}'", fmt=NUMBER),
-        "position": pos(index * 4, 2, 4, 3),
+        "position": pos(index * 4, 3, 4, 3),
     })
 for index, (name, title, step) in enumerate(funnel_counters[3:]):
     funil_layout.append({
         **counter(name, title, "ds_funnel", "count(*)", "COUNT(*)", step_filter=f"`etapa` = '{step}'", fmt=NUMBER),
-        "position": pos(index * 6, 5, 6, 3),
+        "position": pos(index * 6, 6, 6, 3),
     })
 conversions = [
-    ("kpi-conv-cotacao", "Sessão → Cotação", "conversao_cotacao"),
-    ("kpi-conv-aprovacao", "Cotação → Aprovação", "conversao_aprovacao"),
-    ("kpi-conv-pagamento", "Aprovação → Pagamento", "conversao_pagamento"),
-    ("kpi-conv-documento", "Pagamento → Documento", "conversao_documento"),
+    ("kpi-conv-cotacao", "Sessão → Cotação", "ds_conversion_cotacao"),
+    ("kpi-conv-aprovacao", "Cotação → Aprovação", "ds_conversion_aprovacao"),
+    ("kpi-conv-pagamento", "Aprovação → Pagamento", "ds_conversion_pagamento"),
+    ("kpi-conv-documento", "Pagamento → Documento", "ds_conversion_documento"),
 ]
-for index, (name, title, step) in enumerate(conversions):
+for index, (name, title, dataset_name) in enumerate(conversions):
     funil_layout.append({
-        **counter(name, title, "ds_conversion", "taxa", "`taxa`", step_filter=f"`etapa` = '{step}'", disaggregated=True, fmt=PERCENT),
-        "position": pos(index * 3, 8, 3, 3),
+        **conversion_counter(name, title, dataset_name),
+        "position": pos(index * 3, 9, 3, 3),
     })
-funil_layout.append({**bar("grafico-funil", "Etapas do funil de vendas", "ds_funnel", "etapa", "count(*)", "Total"), "position": pos(0, 11, 12, 5)})
-funil_layout.append({**table("tabela-funil", "Funil detalhado", "ds_funnel", ["etapa", "count(*)"], disaggregated=False), "position": pos(0, 16, 12, 5)})
+funil_layout.append({
+    **bar(
+        "grafico-funil",
+        "Etapas do funil (ordem do fluxo)",
+        "ds_funnel",
+        "etapa_label",
+        "count(*)",
+        "Total",
+        sort_order=["Sessões", "Cotações", "Aprovações", "Pagamentos simulados", "Documentos simulados"],
+    ),
+    "position": pos(0, 12, 12, 5),
+})
+funil_layout.append({**table("tabela-funil", "Funil detalhado", "ds_funnel", ["etapa_label", "count(*)"], disaggregated=False), "position": pos(0, 17, 12, 5)})
 
 ops_layout = [
     {"widget": text("op-titulo", ["# Operação do agente"])["widget"], "position": pos(0, 0, 12, 1)},
@@ -277,7 +332,14 @@ qualidade_layout = [
     {**counter("kpi-q-validacao", "Falhas de validação", "ds_quality", "total", "`total`", step_filter="`indicador` = 'falhas_validacao'", disaggregated=True, fmt=NUMBER), "position": pos(8, 1, 4, 3)},
     {**counter("kpi-q-pendentes", "Aprovações pendentes", "ds_quality", "total", "`total`", step_filter="`indicador` = 'aprovacoes_pendentes'", disaggregated=True, fmt=NUMBER), "position": pos(0, 4, 6, 3)},
     {**counter("kpi-q-rejeicoes", "Rejeições", "ds_quality", "total", "`total`", step_filter="`indicador` = 'rejeicoes'", disaggregated=True, fmt=NUMBER), "position": pos(6, 4, 6, 3)},
-    {**bar("bar-qualidade", "Indicadores de qualidade e segurança", "ds_quality", "indicador", "total", "Total"), "position": pos(0, 7, 12, 5)},
+    {**bar("bar-qualidade", "Indicadores de qualidade e segurança", "ds_quality", "indicador", "total", "Total", color_mappings=[
+        {"value": "aprovacoes_pendentes", "color": "#F2B134"},
+        {"value": "falhas_validacao", "color": "#F2B134"},
+        {"value": "rejeicoes", "color": "#E26D5A"},
+        {"value": "recusas", "color": "#E26D5A"},
+        {"value": "bloqueios_ferramenta", "color": "#E26D5A"},
+        {"value": "erros_agente", "color": "#E26D5A"},
+    ]), "position": pos(0, 7, 12, 5)},
     {"widget": text("q-nota", ["Recusas cobrem tentativas de prompt injection e pedidos de segredos. Pendentes/rejeições são o estado corrente (não filtráveis por período). Documentos bloqueados aparecem como ausência de documentos no funil."])["widget"], "position": pos(0, 12, 12, 2)},
 ]
 
@@ -310,7 +372,10 @@ filters_page = {
                     {"name": "q_turns", "query": {"datasetName": "ds_agent_turns", "fields": [{"name": "created_at", "expression": "`created_at`"}], "disaggregated": False}},
                     {"name": "q_tool_calls", "query": {"datasetName": "ds_tool_calls", "fields": [{"name": "created_at", "expression": "`created_at`"}], "disaggregated": False}},
                     {"name": "q_funnel", "query": {"datasetName": "ds_funnel", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
-                    {"name": "q_conversion", "query": {"datasetName": "ds_conversion", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
+                    {"name": "q_conv_cotacao", "query": {"datasetName": "ds_conversion_cotacao", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
+                    {"name": "q_conv_aprovacao", "query": {"datasetName": "ds_conversion_aprovacao", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
+                    {"name": "q_conv_pagamento", "query": {"datasetName": "ds_conversion_pagamento", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
+                    {"name": "q_conv_documento", "query": {"datasetName": "ds_conversion_documento", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
                     {"name": "q_cost", "query": {"datasetName": "ds_cost", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
                 ],
                 "spec": {
@@ -322,7 +387,10 @@ filters_page = {
                             {"fieldName": "created_at", "queryName": "q_turns"},
                             {"fieldName": "created_at", "queryName": "q_tool_calls"},
                             {"parameterName": "data_range", "queryName": "q_funnel"},
-                            {"parameterName": "data_range", "queryName": "q_conversion"},
+                            {"parameterName": "data_range", "queryName": "q_conv_cotacao"},
+                            {"parameterName": "data_range", "queryName": "q_conv_aprovacao"},
+                            {"parameterName": "data_range", "queryName": "q_conv_pagamento"},
+                            {"parameterName": "data_range", "queryName": "q_conv_documento"},
                             {"parameterName": "data_range", "queryName": "q_cost"},
                         ]
                     },
@@ -346,9 +414,10 @@ dashboard = {
     ],
     "uiSettings": {
         "theme": {
-            "canvasBackgroundColor": {"light": "#F5F7F9", "dark": "#0E1322"},
+            "canvasBackgroundColor": {"light": "#F7F9FB", "dark": "#0E1322"},
             "widgetBackgroundColor": {"light": "#FFFFFF", "dark": "#161C2E"},
-            "fontColor": {"light": "#0E1B2C", "dark": "#E9EDF3"},
+            "widgetBorderColor": {"light": "#FFFFFF", "dark": "#161C2E"},
+            "fontColor": {"light": "#0B1520", "dark": "#EDF1F6"},
             "selectionColor": {"light": "#0FA88F", "dark": "#34D1B4"},
             "visualizationColors": [
                 "#0FA88F", "#2E5FA3", "#F2B134", "#8A6BD8", "#E26D5A", "#57A6E0", "#9BB8D3"

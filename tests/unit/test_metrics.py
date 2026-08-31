@@ -5,6 +5,7 @@ comportamento com dados vazios e divisão segura — em memória, sem
 Spark externo, sem API real.
 """
 
+import json
 import re
 
 from nexum_sales_assistant.metrics import (
@@ -54,7 +55,10 @@ class TestQuerySources:
         assert set(DATASET_QUERIES) == {
             "ds_sessions",
             "ds_funnel",
-            "ds_conversion",
+            "ds_conversion_cotacao",
+            "ds_conversion_aprovacao",
+            "ds_conversion_pagamento",
+            "ds_conversion_documento",
             "ds_tool_calls",
             "ds_agent_turns",
             "ds_quality",
@@ -65,11 +69,39 @@ class TestQuerySources:
     def test_division_by_zero_is_safe_in_sql(self):
         # As taxas do funil usam NULLIF/COALESCE (ADR-007): denominador
         # zero produz 0, nunca erro de divisão.
-        sql = " ".join(DATASET_QUERIES["ds_conversion"]).lower()
-        assert "nullif" in sql
-        assert "coalesce" in sql
+        for name in (
+            "ds_conversion_cotacao",
+            "ds_conversion_aprovacao",
+            "ds_conversion_pagamento",
+            "ds_conversion_documento",
+        ):
+            sql = " ".join(DATASET_QUERIES[name]).lower()
+            assert "nullif" in sql, name
+            assert "coalesce" in sql, name
         sql_cost = " ".join(DATASET_QUERIES["ds_cost"]).lower()
         assert "nullif" in sql_cost
+
+    def test_conversion_queries_return_single_numeric_row(self):
+        # Cada taxa de conversão é UMA query com UMA linha e UMA coluna
+        # numérica `taxa` — o formato compatível com KPI no Lakeview.
+        for name in (
+            "ds_conversion_cotacao",
+            "ds_conversion_aprovacao",
+            "ds_conversion_pagamento",
+            "ds_conversion_documento",
+        ):
+            sql = " ".join(DATASET_QUERIES[name])
+            assert " AS taxa " in sql, name
+            select_tail = sql.split("contagens AS (SELECT etapa, COUNT(*) AS total FROM funil GROUP BY etapa) ")[-1]
+            assert select_tail.strip().endswith("FROM contagens"), name
+            assert "UNION ALL" not in select_tail, name
+
+    def test_funnel_has_friendly_labels_and_explicit_order(self):
+        sql = " ".join(DATASET_QUERIES["ds_funnel"])
+        for label in ("Sessões", "Cotações", "Aprovações", "Pagamentos simulados", "Documentos simulados"):
+            assert label in sql, label
+        assert "1 AS ordem" in sql
+        assert "5, created_at" in sql
 
 
 class TestEmptyData:
@@ -102,6 +134,48 @@ class TestSafeRate:
     def test_normal_rates(self):
         assert safe_rate(5, 10) == 0.5
         assert safe_rate(0, 10) == 0.0
+
+
+class TestDashboardArtifact:
+    def _artifact(self):
+        import json
+        import pathlib
+
+        path = pathlib.Path(__file__).parent.parent.parent / "resources" / "nexum_sales_metrics.lvdash.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def test_pages_present(self):
+        dash = self._artifact()
+        names = [page["name"] for page in dash["pages"]]
+        assert names == ["filters", "funil", "operacao", "qualidade", "custo", "atualizacao"]
+
+    def test_datasets_include_four_conversion_metrics(self):
+        dash = self._artifact()
+        names = [ds["name"] for ds in dash["datasets"]]
+        for expected in ("ds_conversion_cotacao", "ds_conversion_aprovacao",
+                         "ds_conversion_pagamento", "ds_conversion_documento"):
+            assert expected in names
+
+    def test_only_gold_sources(self):
+        dash = self._artifact()
+        ctes = set()
+        for ds in dash["datasets"]:
+            sql = " ".join(ds.get("queryLines") or [])
+            ctes |= set(re.findall(r"([a-z_][a-z0-9_]*)\s+AS\s*\(", sql, flags=re.IGNORECASE))
+            tables = set(re.findall(r"\bFROM\s+([a-z_][a-z0-9_]*)", sql, flags=re.IGNORECASE))
+            for table in tables - ctes:
+                assert table.startswith("gold_"), f"{ds['name']}: {table}"
+
+    def test_funnel_custom_order_with_friendly_labels(self):
+        dash = self._artifact()
+        serialized = json.dumps(dash, ensure_ascii=False)
+        for label in ("Sessões", "Cotações", "Aprovações", "Pagamentos simulados", "Documentos simulados"):
+            assert label in serialized, label
+
+    def test_logo_embedded(self):
+        dash = self._artifact()
+        serialized = json.dumps(dash, ensure_ascii=False)
+        assert "data:image/png;base64" in serialized
 
 
 class TestAllowedTables:
