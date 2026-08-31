@@ -185,7 +185,20 @@ diário pausado no dev.
 
 ## 12. Execução do chat
 
+Defina as variáveis de ambiente **no mesmo terminal** antes de rodar
+(sem elas o app encerra com instruções):
+
+```powershell
+# PowerShell
+$env:DATABRICKS_CONFIG_PROFILE = "jornada"
+$env:NEXUM_CATALOG = "workspace"
+$env:NEXUM_SCHEMA = "dev"
+uv run streamlit run app/chat.py
+```
+
 ```bash
+# Git Bash
+export DATABRICKS_CONFIG_PROFILE=jornada NEXUM_CATALOG=workspace NEXUM_SCHEMA=dev
 uv run streamlit run app/chat.py
 ```
 
