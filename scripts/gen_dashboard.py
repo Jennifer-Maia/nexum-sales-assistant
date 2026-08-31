@@ -16,6 +16,7 @@ Q = {name: "".join(lines) for name, lines in DATASET_QUERIES.items()}
 
 PARAMS = {
     "keyword": "data_range",
+    "displayName": "Período",
     "dataType": "DATE",
     "complexType": "RANGE",
     "defaultSelection": {
