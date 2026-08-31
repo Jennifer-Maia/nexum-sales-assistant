@@ -34,6 +34,32 @@
       ]
     },
     {
+      "name": "ds_funnel_detailed",
+      "displayName": "Funil detalhado (Gold)",
+      "queryLines": [
+        "WITH funil AS ( SELECT 'sessoes' AS etapa, 'Sessões' AS etapa_label, 1 AS ordem, first_event_at AS data FROM gold_conversation_audit WHERE first_event_at BETWEEN :data_range.min AND :data_range.max UNION ALL SELECT 'cotacoes', 'Cotações', 2, created_at FROM gold_quote_summary WHERE created_at BETWEEN :data_range.min AND :data_range.max UNION ALL SELECT 'aprovacoes', 'Aprovações', 3, created_at FROM gold_quote_summary WHERE approval_status = 'approved' AND created_at BETWEEN :data_range.min AND :data_range.max UNION ALL SELECT 'pagamentos_simulados', 'Pagamentos simulados', 4, created_at FROM gold_quote_summary WHERE payment_status = 'simulated_success' AND created_at BETWEEN :data_range.min AND :data_range.max UNION ALL SELECT 'documentos_simulados', 'Documentos simulados', 5, created_at FROM gold_quote_summary WHERE status = 'completed' AND created_at BETWEEN :data_range.min AND :data_range.max ), contagens AS ( SELECT etapa, etapa_label, ordem, COUNT(*) AS quantidade FROM funil GROUP BY etapa, etapa_label, ordem ) SELECT etapa_label, quantidade, quantidade / NULLIF(MAX(quantidade) OVER (), 0) AS percentual FROM contagens ORDER BY ordem"
+      ],
+      "parameters": [
+        {
+          "keyword": "data_range",
+          "displayName": "Período",
+          "dataType": "DATE",
+          "complexType": "RANGE",
+          "defaultSelection": {
+            "range": {
+              "dataType": "DATE",
+              "min": {
+                "value": "now-12M/M"
+              },
+              "max": {
+                "value": "now/M"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "ds_conversion_cotacao",
       "displayName": "Conversão Sessão → Cotação (Gold)",
       "queryLines": [
@@ -256,6 +282,19 @@
                 }
               },
               {
+                "name": "q_funnel_detailed",
+                "query": {
+                  "datasetName": "ds_funnel_detailed",
+                  "parameters": [
+                    {
+                      "name": "data_range",
+                      "keyword": "data_range"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
                 "name": "q_conv_cotacao",
                 "query": {
                   "datasetName": "ds_conversion_cotacao",
@@ -344,6 +383,10 @@
                   },
                   {
                     "parameterName": "data_range",
+                    "queryName": "q_funnel_detailed"
+                  },
+                  {
+                    "parameterName": "data_range",
                     "queryName": "q_conv_cotacao"
                   },
                   {
@@ -422,7 +465,7 @@
             "name": "funil-subtitulo",
             "multilineTextboxSpec": {
               "lines": [
-                "**Funil de vendas** — métricas reais do fluxo Bronze → Silver → Gold e do agente de IA. Use o filtro de período na página Filtros. Zero indica ausência de dados operacionais."
+                "**Funil de vendas** — métricas reais do fluxo Bronze → Silver → Gold e do agente de IA."
               ]
             }
           },
@@ -430,7 +473,23 @@
             "x": 3,
             "y": 1,
             "width": 9,
-            "height": 2
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "funil-subtitulo-2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Use o filtro de período na página **Filtros** para analisar um intervalo específico. Zero indica ausência de dados operacionais."
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 9,
+            "height": 1
           }
         },
         {
@@ -478,7 +537,7 @@
             "x": 0,
             "y": 3,
             "width": 4,
-            "height": 3
+            "height": 2
           }
         },
         {
@@ -526,7 +585,7 @@
             "x": 4,
             "y": 3,
             "width": 4,
-            "height": 3
+            "height": 2
           }
         },
         {
@@ -574,7 +633,7 @@
             "x": 8,
             "y": 3,
             "width": 4,
-            "height": 3
+            "height": 2
           }
         },
         {
@@ -620,9 +679,9 @@
           },
           "position": {
             "x": 0,
-            "y": 6,
+            "y": 5,
             "width": 6,
-            "height": 3
+            "height": 2
           }
         },
         {
@@ -668,9 +727,9 @@
           },
           "position": {
             "x": 6,
-            "y": 6,
+            "y": 5,
             "width": 6,
-            "height": 3
+            "height": 2
           }
         },
         {
@@ -715,7 +774,7 @@
           },
           "position": {
             "x": 0,
-            "y": 9,
+            "y": 7,
             "width": 3,
             "height": 3
           }
@@ -762,7 +821,7 @@
           },
           "position": {
             "x": 3,
-            "y": 9,
+            "y": 7,
             "width": 3,
             "height": 3
           }
@@ -809,7 +868,7 @@
           },
           "position": {
             "x": 6,
-            "y": 9,
+            "y": 7,
             "width": 3,
             "height": 3
           }
@@ -856,7 +915,7 @@
           },
           "position": {
             "x": 9,
-            "y": 9,
+            "y": 7,
             "width": 3,
             "height": 3
           }
@@ -919,7 +978,7 @@
           },
           "position": {
             "x": 0,
-            "y": 12,
+            "y": 10,
             "width": 12,
             "height": 5
           }
@@ -931,18 +990,22 @@
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "ds_funnel",
+                  "datasetName": "ds_funnel_detailed",
                   "fields": [
                     {
                       "name": "etapa_label",
                       "expression": "`etapa_label`"
                     },
                     {
-                      "name": "count(*)",
-                      "expression": "`count(*)`"
+                      "name": "quantidade",
+                      "expression": "`quantidade`"
+                    },
+                    {
+                      "name": "percentual",
+                      "expression": "`percentual`"
                     }
                   ],
-                  "disaggregated": false
+                  "disaggregated": true
                 }
               }
             ],
@@ -956,8 +1019,19 @@
                     "displayName": "Etapa"
                   },
                   {
-                    "fieldName": "count(*)",
-                    "displayName": "count(*)"
+                    "fieldName": "quantidade",
+                    "displayName": "Quantidade"
+                  },
+                  {
+                    "fieldName": "percentual",
+                    "displayName": "Percentual",
+                    "format": {
+                      "type": "number-percent",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 1
+                      }
+                    }
                   }
                 ]
               },
@@ -969,7 +1043,7 @@
           },
           "position": {
             "x": 0,
-            "y": 17,
+            "y": 15,
             "width": 12,
             "height": 5
           }

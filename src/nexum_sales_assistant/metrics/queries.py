@@ -95,6 +95,34 @@ DATASET_QUERIES = {
     "ds_conversion_aprovacao": _conversion_sql("aprovacoes", "cotacoes"),
     "ds_conversion_pagamento": _conversion_sql("pagamentos_simulados", "aprovacoes"),
     "ds_conversion_documento": _conversion_sql("documentos_simulados", "pagamentos_simulados"),
+    # Funil detalhado: uma linha por etapa com nome amigável,
+    # quantidade e percentual numérico (0-1) sobre o total de sessões
+    # — tabela simples e compatível com o Lakeview. Percentual com
+    # divisão segura (NULLIF — ADR-007) via função de janela; ordem
+    # explícita pela coluna `ordem`.
+    "ds_funnel_detailed": [
+        "WITH funil AS ( ",
+        "SELECT 'sessoes' AS etapa, 'Sessões' AS etapa_label, 1 AS ordem, first_event_at AS data ",
+        "FROM gold_conversation_audit ",
+        "WHERE first_event_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'cotacoes', 'Cotações', 2, created_at FROM gold_quote_summary ",
+        "WHERE created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'aprovacoes', 'Aprovações', 3, created_at FROM gold_quote_summary ",
+        "WHERE approval_status = 'approved' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'pagamentos_simulados', 'Pagamentos simulados', 4, created_at FROM gold_quote_summary ",
+        "WHERE payment_status = 'simulated_success' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "UNION ALL SELECT 'documentos_simulados', 'Documentos simulados', 5, created_at FROM gold_quote_summary ",
+        "WHERE status = 'completed' AND created_at BETWEEN :data_range.min AND :data_range.max ",
+        "), ",
+        "contagens AS ( ",
+        "SELECT etapa, etapa_label, ordem, COUNT(*) AS quantidade FROM funil ",
+        "GROUP BY etapa, etapa_label, ordem ",
+        ") ",
+        "SELECT etapa_label, quantidade, ",
+        "quantidade / NULLIF(MAX(quantidade) OVER (), 0) AS percentual ",
+        "FROM contagens ",
+        "ORDER BY ordem",
+    ],
     # Operação — chamadas de ferramenta com latência e status.
     # Seleção simples: filtro de período por campo (created_at).
     "ds_tool_calls": [

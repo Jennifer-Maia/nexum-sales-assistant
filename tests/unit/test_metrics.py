@@ -55,6 +55,7 @@ class TestQuerySources:
         assert set(DATASET_QUERIES) == {
             "ds_sessions",
             "ds_funnel",
+            "ds_funnel_detailed",
             "ds_conversion_cotacao",
             "ds_conversion_aprovacao",
             "ds_conversion_pagamento",
@@ -65,6 +66,20 @@ class TestQuerySources:
             "ds_cost",
             "ds_update",
         }
+
+    def test_funnel_detailed_shape(self):
+        # Tabela detalhada: etapa amigável, quantidade e percentual
+        # numérico (0-1) com divisão segura e ordem explícita.
+        sql = " ".join(DATASET_QUERIES["ds_funnel_detailed"])
+        assert "etapa_label" in sql
+        assert "AS quantidade" in sql
+        assert "AS percentual" in sql
+        assert "NULLIF" in sql
+        assert "ORDER BY ordem" in sql
+        # Nenhuma coluna numérica vira texto: sem CONCAT/|| em percentual.
+        select_tail = sql.split("SELECT etapa_label, quantidade, ")[-1]
+        assert "CONCAT" not in select_tail
+        assert "||" not in select_tail
 
     def test_division_by_zero_is_safe_in_sql(self):
         # As taxas do funil usam NULLIF/COALESCE (ADR-007): denominador

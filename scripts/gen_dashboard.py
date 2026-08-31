@@ -133,8 +133,14 @@ def bar(name, title, dataset_name, x_field, y_field, y_display, sort_order=None,
     }
 
 
-def table(name, title, dataset_name, columns, disaggregated=True):
-    fields = [{"name": c, "expression": f"`{c}`"} for c in columns]
+def table(name, title, dataset_name, columns, disaggregated=True, formats=None):
+    formats = formats or {}
+    fields = []
+    for c in columns:
+        if c == "count(*)":
+            fields.append({"name": "count(*)", "expression": "COUNT(*)"})
+        else:
+            fields.append({"name": c, "expression": f"`{c}`"})
     cols = []
     for c in columns:
         if c == "atualizado_em":
@@ -147,6 +153,10 @@ def table(name, title, dataset_name, columns, disaggregated=True):
             cols.append({"fieldName": c, "displayName": "Tabela"})
         elif c == "etapa_label":
             cols.append({"fieldName": c, "displayName": "Etapa"})
+        elif c == "quantidade":
+            cols.append({"fieldName": c, "displayName": "Quantidade"})
+        elif c == "percentual":
+            cols.append({"fieldName": c, "displayName": "Percentual"})
         elif c == "session_id":
             cols.append({"fieldName": c, "displayName": "Sessão"})
         elif c == "created_at":
@@ -171,6 +181,8 @@ def table(name, title, dataset_name, columns, disaggregated=True):
             cols.append({"fieldName": c, "displayName": "Custo estimado"})
         else:
             cols.append({"fieldName": c, "displayName": c})
+        if c in formats:
+            cols[-1]["format"] = formats[c]
     return {
         "widget": {
             "name": name,
@@ -247,6 +259,7 @@ logo_markdown = f"![Nexum](data:image/png;base64,{LOGO_B64})"
 datasets = [
     dataset("ds_sessions", "Sessões de conversa (Gold)", Q["ds_sessions"]),
     dataset("ds_funnel", "Funil de vendas (Gold)", Q["ds_funnel"], parameters=PARAMS),
+    dataset("ds_funnel_detailed", "Funil detalhado (Gold)", Q["ds_funnel_detailed"], parameters=PARAMS),
     dataset("ds_conversion_cotacao", "Conversão Sessão → Cotação (Gold)", Q["ds_conversion_cotacao"], parameters=PARAMS),
     dataset("ds_conversion_aprovacao", "Conversão Cotação → Aprovação (Gold)", Q["ds_conversion_aprovacao"], parameters=PARAMS),
     dataset("ds_conversion_pagamento", "Conversão Aprovação → Pagamento (Gold)", Q["ds_conversion_pagamento"], parameters=PARAMS),
@@ -276,18 +289,22 @@ funil_layout.append({
     "position": pos(3, 0, 9, 1),
 })
 funil_layout.append({
-    "widget": text("funil-subtitulo", ["**Funil de vendas** — métricas reais do fluxo Bronze → Silver → Gold e do agente de IA. Use o filtro de período na página Filtros. Zero indica ausência de dados operacionais."])["widget"],
-    "position": pos(3, 1, 9, 2),
+    "widget": text("funil-subtitulo", ["**Funil de vendas** — métricas reais do fluxo Bronze → Silver → Gold e do agente de IA."])["widget"],
+    "position": pos(3, 1, 9, 1),
+})
+funil_layout.append({
+    "widget": text("funil-subtitulo-2", ["Use o filtro de período na página **Filtros** para analisar um intervalo específico. Zero indica ausência de dados operacionais."])["widget"],
+    "position": pos(3, 2, 9, 1),
 })
 for index, (name, title, step) in enumerate(funnel_counters[:3]):
     funil_layout.append({
         **counter(name, title, "ds_funnel", "count(*)", "COUNT(*)", step_filter=f"`etapa` = '{step}'", fmt=NUMBER),
-        "position": pos(index * 4, 3, 4, 3),
+        "position": pos(index * 4, 3, 4, 2),
     })
 for index, (name, title, step) in enumerate(funnel_counters[3:]):
     funil_layout.append({
         **counter(name, title, "ds_funnel", "count(*)", "COUNT(*)", step_filter=f"`etapa` = '{step}'", fmt=NUMBER),
-        "position": pos(index * 6, 6, 6, 3),
+        "position": pos(index * 6, 5, 6, 2),
     })
 conversions = [
     ("kpi-conv-cotacao", "Sessão → Cotação", "ds_conversion_cotacao"),
@@ -298,7 +315,7 @@ conversions = [
 for index, (name, title, dataset_name) in enumerate(conversions):
     funil_layout.append({
         **conversion_counter(name, title, dataset_name),
-        "position": pos(index * 3, 9, 3, 3),
+        "position": pos(index * 3, 7, 3, 3),
     })
 funil_layout.append({
     **bar(
@@ -310,9 +327,19 @@ funil_layout.append({
         "Total",
         sort_order=["Sessões", "Cotações", "Aprovações", "Pagamentos simulados", "Documentos simulados"],
     ),
-    "position": pos(0, 12, 12, 5),
+    "position": pos(0, 10, 12, 5),
 })
-funil_layout.append({**table("tabela-funil", "Funil detalhado", "ds_funnel", ["etapa_label", "count(*)"], disaggregated=False), "position": pos(0, 17, 12, 5)})
+funil_layout.append({
+    **table(
+        "tabela-funil",
+        "Funil detalhado",
+        "ds_funnel_detailed",
+        ["etapa_label", "quantidade", "percentual"],
+        disaggregated=True,
+        formats={"percentual": {"type": "number-percent", "decimalPlaces": {"type": "exact", "places": 1}}},
+    ),
+    "position": pos(0, 15, 12, 5),
+})
 
 ops_layout = [
     {"widget": text("op-titulo", ["# Operação do agente"])["widget"], "position": pos(0, 0, 12, 1)},
@@ -372,6 +399,7 @@ filters_page = {
                     {"name": "q_turns", "query": {"datasetName": "ds_agent_turns", "fields": [{"name": "created_at", "expression": "`created_at`"}], "disaggregated": False}},
                     {"name": "q_tool_calls", "query": {"datasetName": "ds_tool_calls", "fields": [{"name": "created_at", "expression": "`created_at`"}], "disaggregated": False}},
                     {"name": "q_funnel", "query": {"datasetName": "ds_funnel", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
+                    {"name": "q_funnel_detailed", "query": {"datasetName": "ds_funnel_detailed", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
                     {"name": "q_conv_cotacao", "query": {"datasetName": "ds_conversion_cotacao", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
                     {"name": "q_conv_aprovacao", "query": {"datasetName": "ds_conversion_aprovacao", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
                     {"name": "q_conv_pagamento", "query": {"datasetName": "ds_conversion_pagamento", "parameters": [{"name": "data_range", "keyword": "data_range"}], "disaggregated": False}},
@@ -387,6 +415,7 @@ filters_page = {
                             {"fieldName": "created_at", "queryName": "q_turns"},
                             {"fieldName": "created_at", "queryName": "q_tool_calls"},
                             {"parameterName": "data_range", "queryName": "q_funnel"},
+                            {"parameterName": "data_range", "queryName": "q_funnel_detailed"},
                             {"parameterName": "data_range", "queryName": "q_conv_cotacao"},
                             {"parameterName": "data_range", "queryName": "q_conv_aprovacao"},
                             {"parameterName": "data_range", "queryName": "q_conv_pagamento"},
